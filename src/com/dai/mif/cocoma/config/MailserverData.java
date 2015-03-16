@@ -79,7 +79,7 @@ public class MailserverData {
 
         if (this.username == null || this.host == null || this.port == null
                 || this.password == null) {
-            log.warn("Incomplete mail configuration. No mails will be sent.");
+            log.debug("Incomplete mail configuration. No mails will be sent.");
         } else {
             this.createMailSession();
         }
