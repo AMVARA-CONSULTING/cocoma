@@ -1,0 +1,16 @@
+$Id$
+
+Features yet to be implemented for CoCoMa
+=========================================
+
+- Compare currently set values on the server with those configured in the config
+file to show any differences. By this means manipulations, that have been made
+by any users with sufficient rights can be found easily - and reverted if
+desired.
+
+- Add a list of all secured functions and secured features to the code, so that
+it can be checked if the capabilities defined in the config file actually 
+reference existing objects.
+
+- Add a version check of the addressed C8 server and the Cognos SDK used for the
+implementation. Still to be checked if this is possible at all. 

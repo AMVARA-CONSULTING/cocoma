@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<project>
+    <!-- The following property is expected to be overridden by caller -->   
+	
+    <property name="retroweaver.dist.dir" value="."/>   
+	<property name="retroweaver.base.name" value="retroweaver-all"/>
+    <property name="retroweaver.version" value="2.0.7"/>
+    
+    <taskdef name="retroweaver" classname="net.sourceforge.retroweaver.ant.RetroWeaverTask" 
+        classpath="${retroweaver.dist.dir}/${retroweaver.base.name}-${retroweaver.version}.jar" onerror="report" />
+    
+</project>
+
+

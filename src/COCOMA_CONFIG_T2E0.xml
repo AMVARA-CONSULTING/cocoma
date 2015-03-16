@@ -1,0 +1,1051 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoCoMa>
+<version>$Revision: 139 $</version>
+<server>
+		<dispatcherURL>http://ashost0:9082/p2pd/servlet/dispatch</dispatcherURL>
+		<namespace>LDAP</namespace>
+		<username>rroeber</username>
+		<password>bU6i2IQcICcS+0LBVsCYYQ==</password>
+	</server>
+<ui>
+
+
+		<skins>
+			<skin>
+				<name>Daimler</name>
+				<resourceLocation>Daimler</resourceLocation>
+				<preview>../skins/Daimler/preview.htm</preview>
+			</skin>
+		</skins>
+
+		<defaultProfile>
+			<skin>Daimler</skin>
+			<linesPerPage>999</linesPerPage>
+			<listSeparator>background</listSeparator>
+		</defaultProfile>
+
+	</ui>
+<dataSources>
+
+		<dataSource>
+			<name>QSUSERDS</name>
+			<dbalias>APP0</dbalias>
+			<username>mifweb</username>
+			<password>6Fl+jZoL3EMca/9adLMUCA==</password>
+			<isolationLevel>readUncommitted</isolationLevel>
+			<connectionCommands>
+				<openConnection/>
+				<closeConnection/>
+				<openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+				<closeSession/>
+			</connectionCommands>
+		</dataSource>
+
+		<dataSource>
+			<name>FK1XAT03</name>
+			<dbalias>APP0</dbalias>
+			<username>mifweb</username>
+			<password>6Fl+jZoL3EMca/9adLMUCA==</password>
+			<isolationLevel>readUncommitted</isolationLevel>
+			<connectionCommands>
+				<openConnection/>
+				<closeConnection/>
+				<openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+				<closeSession/>
+			</connectionCommands>
+		</dataSource>
+
+		<dataSource>
+			<name>Audit</name>
+			<dbalias>CRN0</dbalias>
+			<username>AUD008A1</username>
+			<password>ICv60/kgD/3gSpkXTeFs8Q==</password>
+			<isolationLevel>readUncommitted</isolationLevel>
+		</dataSource>
+	</dataSources>
+<dispatchers>
+
+		<dispatcher global="true">
+			<name>http://ashost0:9082/p2pd</name>
+			<loadBalancingMode>weightedRoundRobin</loadBalancingMode>
+			<governorLimit>50</governorLimit>
+			<peakStartHour>0</peakStartHour>
+			<peakEndHour>23</peakEndHour>
+			<connectionsHighAffinity>1</connectionsHighAffinity>
+			<connectionsLowAffinity>2</connectionsLowAffinity>
+			<maxProcessesInteractiveReporting>10</maxProcessesInteractiveReporting>
+			<queueTimeoutReporting>120</queueTimeoutReporting>
+
+			<auditLevel>
+				<contentManagerService>BASIC</contentManagerService>
+				<reportDataService>REQUEST</reportDataService>
+				<eventManagementService>BASIC</eventManagementService>
+				<jobService>BASIC</jobService>
+				<monitorService>BASIC</monitorService>
+				<presentationService>BASIC</presentationService>
+				<reportService>REQUEST</reportService>
+				<reportServiceNativeQuery>TRUE</reportServiceNativeQuery>
+				<systemService>BASIC</systemService>
+				<dispatcher>BASIC</dispatcher>
+			</auditLevel>
+
+		</dispatcher>
+
+	</dispatchers>
+<security>
+
+		<roles>
+		
+			<role>
+				<name>System Administrators</name>
+				<keepExisting>true</keepExisting>
+				<members>
+					<user>apiuser</user>
+					<user>rroeber</user>
+				</members>
+				<removeMembers>
+					<group>Everyone</group>
+				</removeMembers>
+			</role>
+			
+			<!-- ======================= -->
+			<!-- READONLY Administrators -->
+			<!-- ======================= -->
+		
+			<role>
+				<name>System Administrators (ReadOnly)</name>
+				<members>
+					<!-- <user></user> -->
+				</members>
+			</role>
+            
+			<role>
+				<name>WorklistUser</name>
+				<members>
+					<!-- <user></user> -->
+					<user>test111</user>
+					<user>test2111</user>
+					<user>DE_15</user>
+					<user>KESSLERA</user>
+				</members>
+			</role>
+
+			<role>
+				<name>QSWorklistUser</name>
+				<members>
+					<user>test111</user>
+					<user>test2111</user>
+					<user>DE_15</user>
+					<user>KESSLERA</user>
+				</members>
+			</role>
+
+		</roles>
+
+		<permissions>
+
+			<permission>
+				<target>/content</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/folder[@name='MIF_QueryStudio']/folder[@name='MIF_QueryStudio new (3.1)']</target>
+				<read>true</read>
+				<write>true</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_Adapter"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_CFO"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_CONS"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_DERO"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_Drucklisten"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_MDR"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_MNTR"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+
+			<permission>
+				<target>/content/package[@name="MIF_Schatten"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+
+			<permission>
+				<target>/content/package[@name="SMB"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>WorklistUser</role>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_CAVLGL"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_CAVMGNT"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_CRI"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_ELI"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_ELIALL"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_EXTVAL"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_HIDDEN"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_OTHER"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_RAVLGL"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_RAVMGNT"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_RAVSALES"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_SPR_LGL"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+			<permission>
+				<target>/content/package[@name="MIF_QS3.1_SPR_MGNT"]</target>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+
+		</permissions>
+	</security>
+<capabilities>
+
+		<capability>
+			<name>Query Studio</name>
+			<permission>
+				<read>true</read>
+				<write>true</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+				</members>
+			</permission>
+			<features>
+				<feature>
+					<name>Advanced</name>
+					<permission>
+						<read>true</read>
+						<write>true</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Create</name>
+					<permission>
+						<read>true</read>
+						<write>true</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+			</features>
+		</capability>
+
+		<capability>
+			<name>Report Studio</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+				<feature>
+					<name>User Defined SQL</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>HTML Items in Report</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Bursting</name>
+					<permission>
+						<read>false</read>
+						<write>false</write>
+						<execute>false</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Create/Delete</name>
+					<permission>
+						<read>false</read>
+						<write>false</write>
+						<execute>false</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Cognos Viewer</name>
+			<permission>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+				<feature>
+					<name>Context Menu</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Selection</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Run With Options</name>
+					<permission>
+						<read>false</read>
+						<write>false</write>
+						<execute>false</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Toolbar</name>
+					<permission>
+						<read>false</read>
+						<write>false</write>
+						<execute>false</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>false</traverse>
+						<members>
+							<role>QSWorklistUser</role>
+							<role>WorklistUser</role>
+						</members>
+					</permission>
+				</feature>
+			</features>
+		</capability>
+
+		<capability>
+			<name>Administration</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+
+		<capability>
+			<name>Administration</name>
+			<permission>
+				<read>true</read>
+				<write>true</write>
+				<execute>true</execute>
+				<setPolicy>true</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>System Administrators</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Analysis Studio</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+
+		<capability>
+			<name>Event Studio</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Metric Studio</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Controller Studio</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Planning Contributor</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Specification Execution</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Scheduling</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<capability>
+			<name>Detailed Errors</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+		<!-- ======================= -->
+		<!-- READONLY Administrators -->
+		<!-- ======================= -->
+
+		<capability>
+			<name>Administration</name>
+			<permission>
+				<read>true</read>
+				<write>false</write>
+				<execute>true</execute>
+				<setPolicy>true</setPolicy>
+				<traverse>true</traverse>
+				<members>
+					<role>System Administrators (ReadOnly)</role>
+				</members>
+			</permission>
+			<features>
+				<feature>
+					<name>Adaptive Analytics Administration</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Administration tasks</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Configure and manage the system</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Controller Administration</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Data Source Connections</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Distribution Lists and Contacts</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Metric Studio Administration</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Planning Administration</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>PowerPlay Servers</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Printers</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Run activities and schedules</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Set capabilities and manage UI profiles</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Styles and portlets</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>
+				<feature>
+					<name>Users\, Groups\, and Roles</name>
+					<permission>
+						<read>true</read>
+						<write>false</write>
+						<execute>true</execute>
+						<setPolicy>false</setPolicy>
+						<traverse>true</traverse>
+						<members>
+							<role>System Administrators (ReadOnly)</role>
+						</members>
+					</permission>
+				</feature>			
+			</features>
+		</capability>
+		
+		
+		<!-- =========================== -->
+		<!-- Remove 'Show Hidden' option -->
+		<!-- =========================== -->
+
+		<capability>
+			<name>Hide Entries</name>
+			<permission>
+				<read>false</read>
+				<write>false</write>
+				<execute>false</execute>
+				<setPolicy>false</setPolicy>
+				<traverse>false</traverse>
+				<members>
+					<role>QSWorklistUser</role>
+					<role>WorklistUser</role>
+				</members>
+			</permission>
+			<features>
+			</features>
+		</capability>
+		
+
+	</capabilities>
+<!--
+<deployments>
+		<deployment>
+			<name>MIF_QueryStudio_3.1_All</name>
+			<password></password>
+			<recordingLevel>basic</recordingLevel>
+		</deployment>
+</deployments>
+-->
+	<restrictedContent>
+		<unrestricted>
+			<role>System Administrators</role>
+		</unrestricted>
+		<visible>
+			<searchPath>/content/folder[@name='MIF_QueryStudio']</searchPath>
+		</visible>
+	</restrictedContent>
+</CoCoMa>
