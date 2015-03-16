@@ -29,6 +29,9 @@ public class SecurityData {
     private List<AbstractSecurityObject> securityObjects;
 
     private List<SecurityPermission> securityPermissions;
+    
+    private Boolean SecurityConfTagInXML = false;
+    
 
     /**
      * @param conf
@@ -70,6 +73,9 @@ public class SecurityData {
             roleData.readConfig(conf, configKey);
             this.securityObjects.add(roleData);
         }
+        if (rolesList.size()>0) {
+        	SecurityConfTagInXML = true;
+        }
 
         // --- groups
 
@@ -82,7 +88,9 @@ public class SecurityData {
             groupData.readConfig(conf, configKey);
             this.securityObjects.add(groupData);
         }
-
+        if (groupsList.size()>0) {
+        	SecurityConfTagInXML = true;
+        }
         // --- permissions
 
         List<Object> permissionsList = conf
@@ -96,8 +104,15 @@ public class SecurityData {
             permissionData.readConfig(conf, configKey);
             this.securityPermissions.add(permissionData);
         }
+        if (permissionsList.size()>0) {
+        	SecurityConfTagInXML = true;
+        }
     }
 
+    public Boolean getSecurityTagFoundInXMLConfig() {
+    	return this.SecurityConfTagInXML;
+    }
+    
     /**
      *
      * @return

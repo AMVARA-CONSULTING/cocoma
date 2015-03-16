@@ -40,6 +40,7 @@ public class Logging {
 
 	private String logFilePrefix;
 	private String logFileDir;
+	private Level logLevel;
 
 	/**
 	 * Constructor for the Logging class. This constructor is private - the
@@ -93,30 +94,30 @@ public class Logging {
 		return log;
 	}
 
-	// /**
-	// * Set a new log level to be used by all currently active and all future
-	// * Logger instances.
-	// *
-	// * @param level
-	// * The new leg level to be used
-	// *
-	// * @see {@link org.apache.log4j.Level}
-	// */
-	// public void setLogLevel(Level level) {
-	// this.logLevel = level;
-	// for (Logger log : this.logMap.values()) {
-	// log.setLevel(this.logLevel);
-	// }
-	// }
+	/**
+	 * Set a new log level to be used by all currently active and all future
+	 * Logger instances.
+	 * 
+	 * @param level
+	 *            The new leg level to be used
+	 * 
+	 * @see {@link org.apache.log4j.Level}
+	 */
+	public void setLogLevel(Level level) {
+		this.logLevel = level;
+		for (Logger log : this.logMap.values()) {
+			log.setLevel(this.logLevel);
+		}
+	}
 
-	// /**
-	// * Getter for the logLevel property
-	// *
-	// * @return Reference to the currently set LogLevel object.
-	// */
-	// public Level getLogLevel() {
-	// return this.logLevel;
-	// }
+	/**
+	 * Getter for the logLevel property
+	 * 
+	 * @return Reference to the currently set LogLevel object.
+	 */
+	public Level getLogLevel() {
+		return this.logLevel;
+	}
 
 	/**
 	 * Set a new prefix for the log files.

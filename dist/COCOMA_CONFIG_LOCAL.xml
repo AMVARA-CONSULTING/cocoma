@@ -34,7 +34,7 @@
  	
 	<backup>
 	   <name>FullBackup</name>
-	   <enabled>true</enabled>
+	   <enabled>false</enabled>
 	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
 	   <use_datetimesuffix>true</use_datetimesuffix>
 	</backup>
@@ -56,18 +56,13 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>../deployment_incoming/MIFReporting_revision_63252.zip</archive>
-			
+			<archive>deployment_incoming/MIFReporting_revision_63252.zip</archive>
+			<!-- 
 			<delete_items>
-				<item>/content/package[@name='MIF_Adapter']</item>
-				<item>/content/package[@name='MIF_CFO']</item>
-				<item>/content/package[@name='MIF_CONS']</item>
-				<item>/content/package[@name='MIF_DERO']</item>
-				<item>/content/package[@name='MIF_IMI']</item>
-				<item>/content/package[@name='MIF_MNTR']</item>
-				<item>/content/package[@name='MIF_Schatten']</item>
+				<item>/content/folder[@name='Samples_PowerCube']</item>
+				<item>/content/folder[@name='Samples_PowerCube_Dummy']</item>
 			</delete_items>
-			
+			-->
 			<runCureJar>false</runCureJar>
 			<runCureJar_searchPath>			
 			<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->

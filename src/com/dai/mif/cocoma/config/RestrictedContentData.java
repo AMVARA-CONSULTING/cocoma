@@ -69,7 +69,8 @@ public class RestrictedContentData {
         
     	if ( !keys.hasNext()) {
         	log.debug("No restrictions config option found. Skipping restrictions reading.");
-        } else {
+        	this.restrictionDefined = false;
+    	} else {
 	        log.debug("Restrictions found! Will read.");		
 	        if (restrictionDefined) {
 	
@@ -127,6 +128,10 @@ public class RestrictedContentData {
 
     }
 
+    public Boolean getRestrictionsDefined() {
+		return restrictionDefined;
+    }
+    
     /**
      *
      * @return

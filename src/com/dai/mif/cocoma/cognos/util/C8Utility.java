@@ -477,8 +477,6 @@ public class C8Utility {
 				+ objDispatcher.getRsAuditLevel().getValue());
 		log.info("rsAuditNativeQuery: "
 				+ objDispatcher.getRsAuditNativeQuery().isValue());
-
-		log.debug("Need more information? Send request to ralf.roeber@amvara.de");
 	
 	}
 

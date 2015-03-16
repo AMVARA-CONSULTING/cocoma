@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.dai.mif.cocoma.console.PwdConsole;
@@ -21,7 +22,7 @@ import com.dai.mif.cocoma.logging.Logging;
  * consist of various different configuration values.
  *
  * @author riedchr (NOW! Consulting GmbH) for Daimler AG, Project MIF
- * @author Last change by $Author: Stefan Brauner $
+ * @author Last change by $Author: Ralf Roeber $
  *
  * @since Feb 3, 2010
  * @version $Revision: 163 $ ($Date:: 2010-10-12 11:16:13 +0200#$)
@@ -40,7 +41,7 @@ public class CoCoMaConfiguration {
 
 	private List<DispatcherData> dispatchers;
 
-	private XMLConfiguration conf;
+	public XMLConfiguration conf;
 
 	private SecurityData securityData;
 
@@ -53,6 +54,9 @@ public class CoCoMaConfiguration {
 	private UIData uiData;
 
 	private RestrictedContentData restrictedContentData;
+
+	// DEFAULT Log4J Loglevel if not set in CONFIG.XML
+	private String log4jloglevel ;
 
 	/**
 	 * Read the given configuration file and prepare the data objects
@@ -80,6 +84,16 @@ public class CoCoMaConfiguration {
 
 		this.version = conf.getString("version");
 
+
+		// look for log4j loglevel configuration first !
+		this.setLog4jloglevel(conf.getString("log4jloglevel"));
+		this.log.debug("log4-level:"+getLog4jloglevel());
+		if (getLog4jloglevel().length()>0) {
+			this.log.debug("Setting loglevel from XML config-file");
+//			Logger.getRootLogger().setLevel(Level.toLevel(getLog4jloglevel()));
+			Logging.getInstance().setLogLevel(Level.toLevel(getLog4jloglevel()));
+		}
+		
 		// read the data sources defined in the configuration
 		log.debug("Reading Datasource Config");
 		List<Object> dataSourceDataList = conf
@@ -442,5 +456,19 @@ public class CoCoMaConfiguration {
     public BackupData getBackupData() {
         return backupData;
     }
+
+	/**
+	 * @param log4jloglevel the log4jloglevel to set
+	 */
+	public void setLog4jloglevel(String log4jloglevel) {
+		this.log4jloglevel = log4jloglevel;
+	}
+
+	/**
+	 * @return the log4jloglevel
+	 */
+	public String getLog4jloglevel() {
+		return log4jloglevel;
+	}
 
 }

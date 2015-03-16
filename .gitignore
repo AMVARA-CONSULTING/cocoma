@@ -24,7 +24,7 @@ src_sicherung_20141113/
 *.dmg
 *.gz
 *.iso
-# *.jar
+CoCoMa*.jar
 *.rar
 *.tar
 *.zip

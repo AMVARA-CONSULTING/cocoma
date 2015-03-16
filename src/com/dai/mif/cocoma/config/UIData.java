@@ -34,6 +34,8 @@ public class UIData {
     private String skin;
 
     private String listSeparator;
+    
+    private Boolean UIdataFoundIXmlConfig = false;
 
     /**
      * Constructor for the {@link UIData} class. It takes a reference to the
@@ -61,6 +63,7 @@ public class UIData {
 
         this.skinData = readSkinData(conf);
         if ( this.skinData.size() != 0 ) {
+        	UIdataFoundIXmlConfig = true;
         	log.debug("Skin Config Options found. Reading Skin Data");
         	// read the data for the default user profile
 	        this.listSeparator = conf.getString(RECORD_KEY_PREFIX
@@ -75,16 +78,19 @@ public class UIData {
 	        if (!this.listSeparator.equals("background")
 	                && !this.listSeparator.equals("line")
 	                && !this.listSeparator.equals("none")) {
-	            throw new CoCoMaConfigException(
+	        	UIdataFoundIXmlConfig = false;
+	        	throw new CoCoMaConfigException(
 	                    "Invalid value for listViewSeparator. May only be one of: background, line or none");
-	        }
+	        	}
 	
 	        if (this.linesPerPage < 1) {
+	        	UIdataFoundIXmlConfig = false;
 	            throw new CoCoMaConfigException(
 	                    "Invalid value for linesPerPage. Must be a value >= 1");
 	        }
 	
 	        if (this.skin.length() < 1) {
+	        	UIdataFoundIXmlConfig = false;
 	            throw new CoCoMaConfigException(
 	                    "Invalid value for skin. A skin name must be specified.");
 	        }
@@ -94,6 +100,11 @@ public class UIData {
         }
     }
 
+    public Boolean getUItagFoundInXmlConfig() {
+    	return UIdataFoundIXmlConfig;
+    }
+    
+    
     /**
      * Method to read configuration details for the portal skins. The respective
      * {@link UISkinData} objects are collected in a list in this class.
