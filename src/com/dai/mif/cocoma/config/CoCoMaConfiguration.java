@@ -88,7 +88,7 @@ public class CoCoMaConfiguration {
 		// look for log4j loglevel configuration first !
 		this.setLog4jloglevel(conf.getString("log4jloglevel"));
 		this.log.debug("log4-level:"+getLog4jloglevel());
-		if (getLog4jloglevel().length()>0) {
+		if ( getLog4jloglevel() != null && getLog4jloglevel().length()>0) {
 			this.log.debug("Setting loglevel from XML config-file");
 //			Logger.getRootLogger().setLevel(Level.toLevel(getLog4jloglevel()));
 			Logging.getInstance().setLogLevel(Level.toLevel(getLog4jloglevel()));
@@ -468,6 +468,9 @@ public class CoCoMaConfiguration {
 	 * @return the log4jloglevel
 	 */
 	public String getLog4jloglevel() {
+		if (log4jloglevel == null ) {
+			log4jloglevel="";
+		}
 		return log4jloglevel;
 	}
 

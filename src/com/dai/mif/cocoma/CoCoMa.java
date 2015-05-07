@@ -56,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v2.6";
-	private static String productRevision = " Build: @@Cognos 10.2.1/2015-03-16_1933/29@@ ";
+	private static String productRevision = " Build: @@Cognos 10.2.1/2015-05-07_1144/85@@ ";
 
 	/** UID used as key for password encryption */
 	private static final String COCOMA_UID = "07369e30-1175-11df-8a39-0800200c9a66";
@@ -88,6 +88,12 @@ public class CoCoMa {
 	private static boolean checkDispatcherInformation = false;
 
 	private static boolean consoleLogging = false;
+
+	/*
+	 * If using --crypt on commandline, this variable stores the cleartext password as next
+	 * argument from commandline
+	 */
+	private static String crypt = "";
 
 	private static Logger log;
 
@@ -164,6 +170,18 @@ public class CoCoMa {
 				+ lf
 				+ "enters content configuration phase where security settings are applied to the "
 				+ "various content objects" + lf + lf;
+		helpString += "--crypt <password in cleartext>"
+			+ lf
+			+ "read cleartext password from commandline and returns crypted password." 
+			+ "Be careful using this option. Password may be stored in commandline history. " 
+			+ "Better use --setpass as option. This will read password from console and " 
+			+ "store the crypted password to the right place in your config.xml."
+			+ lf + lf;
+		helpString += "--donotaskforbackup"
+			+ lf
+			+ "Does not ask to confirm 'YES, I HAVE A BACKUP'. " 
+			+ "Better set create-fullbackup option in config file to true. " 
+			+ "" + lf + lf;
 
 		return helpString;
 	}
@@ -191,6 +209,18 @@ public class CoCoMa {
 		// at first check any command line arguments
 		readCommandlineArguments(args);
 
+		if (CoCoMa.getCrypt().length()>0)  {
+			log.info("Password to crypt: "+CoCoMa.getCrypt());
+			// prepare crypt module
+			@SuppressWarnings("unused")
+			Cryptography cryptClass = Cryptography.initialize(COCOMA_UID);
+			String encryptedPw = cryptClass.encrypt(CoCoMa.getCrypt());
+			log.info("Encrypted Password: "+encryptedPw);
+			log.info("Cut and paste this password into the config.xml file of your choice.");
+			System.exit(0);
+		}
+		
+		
 		if (infoMode) {
 
 			showProductInfo();
@@ -304,6 +334,7 @@ public class CoCoMa {
 	private static boolean phaseAdvancedDispatcherSetting = false;
 	private static boolean phaseDeployment = false;
 	private static boolean phaseContentConfiguration = false;
+	private static boolean phaseBackupDonotAsk = false;
 
 	/**
 	 * Start the actual work by applying the configured data to the C8 system to
@@ -315,47 +346,55 @@ public class CoCoMa {
 	 */
 	private void process(C8Access c8Access) {
 
-		// create full content store backup
+		// create full content store backup ... always usefull before any changes destroy your environment.
 		if (this.configuration.getBackupData().isEnabled()) {
+			log.info("----------------------------");
 			log.info("Creating Contentstore Backup");
 			C8ExportDeployment export = new C8ExportDeployment(c8Access,
 					this.configuration.getBackupData());
 			export.createExport();
-			log.info("Creating Contentstore Backup ... done");
+			log.info("done");
+			log.info("----------------------------");
 		}
 
 		// Adv. Dispatcher Settings
-		List<DispatcherData> dispatchers = this.configuration.getDispatchers();
-		if (dispatchers.size() != 0) {
-			log.info("Trying to configuring dispatchers");
-			log.info("There are " + dispatchers.size()
-					+ " dispatchers to be configured.");
-			// If there is more than 0 dispatchers in Config file ... go ahead
-			for (DispatcherData dispatcherData : dispatchers) {
-				C8Dispatcher dispatcher = new C8Dispatcher(dispatcherData,
-						c8Access);
-				String dispatcherName = dispatcherData.getDispatcherName();
-				if (dispatcherData.getAdvancedParameters().length > 0) {
-					log.info("Applying "
-							+ dispatcherData.getAdvancedParameters().length
-							+ " Adv.Settings on Dispatcher:" + dispatcherName
-							+ " ");
-					try {
-						dispatcher.setAdvancedDispatcherSettings();
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+		if (phaseAdvancedDispatcherSetting) {
+			log.info("Perfoming content phaseAdvancedDispatcherSetting");
+			processAdvancedDispatcherSetting(c8Access);
+			List<DispatcherData> dispatchers = this.configuration.getDispatchers();
+			if (dispatchers.size() != 0) {
+				log.info("Trying to configuring dispatchers");
+				log.info("There are " + dispatchers.size()
+						+ " dispatchers to be configured.");
+				// If there is more than 0 dispatchers in Config file ... go ahead
+				for (DispatcherData dispatcherData : dispatchers) {
+					C8Dispatcher dispatcher = new C8Dispatcher(dispatcherData,
+							c8Access);
+					String dispatcherName = dispatcherData.getDispatcherName();
+					if (dispatcherData.getAdvancedParameters().length > 0) {
+						log.info("Applying "
+								+ dispatcherData.getAdvancedParameters().length
+								+ " Adv.Settings on Dispatcher:" + dispatcherName
+								+ " ");
+						try {
+							dispatcher.setAdvancedDispatcherSettings();
+						} catch (RemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else {
+						log.info("No advanced Dispatcher Settings found in configfile. ");
+						log.info("if you want to use adv. dispatcher settings, add them to your config-file");
+						log.info("Add in <dispatcher>-Section ... "
+								+ "<advancedSettings><name>CM.OUTPUT</name><value>c:\\temp\\</value></advancedSettings> "
+								+ "to configfile, to configure the global settings above any dispatcher.");
 					}
-				} else {
-					log.info("No advanced Dispatcher Settings found in configfile. ");
-					log.info("if you want to use adv. dispatcher settings, add them to your config-file");
-					log.info("Add in <dispatcher>-Section ... "
-							+ "<advancedSettings><name>CM.OUTPUT</name><value>c:\\temp\\</value></advancedSettings> "
-							+ "to configfile, to configure the global settings above any dispatcher.");
 				}
+			} else {
+				log.info("No Dispatcher configuration settings in Configfile. Nothing to set.");
 			}
 		} else {
-			log.info("No Dispatcher configuration settings in Configfile. Nothing to set.");
+			log.info("Skipping content phaseAdvancedDispatcherSetting.");
 		}
 
 		try {
@@ -371,6 +410,7 @@ public class CoCoMa {
 			} else {
 				log.info("Skipping basic configuration phase.");
 			}
+
 
 			// deployments to be performed by CoCoMa
 
@@ -389,13 +429,6 @@ public class CoCoMa {
 				processContentConfiguration(c8Access);
 			} else {
 				log.info("Skipping content configuration phase.");
-			}
-
-			if (phaseAdvancedDispatcherSetting) {
-				log.info("Perfoming content phaseAdvancedDispatcherSetting");
-				processAdvancedDispatcherSetting(c8Access);
-			} else {
-				log.info("Skipping content phaseAdvancedDispatcherSetting.");
 			}
 
 			// --- exit with the proper exit codes
@@ -473,7 +506,7 @@ public class CoCoMa {
 			boolean doDeployment = true;
 
 			// Ask for backup if autobackup is not enabled
-			if (this.configuration.getBackupData().isEnabled() == false) {
+			if (this.configuration.getBackupData().isEnabled() == false && phaseBackupDonotAsk == false) {
 				log.debug("Autobackup was disabled in configfile. Ask for backup!");
 				String answer = "YES, I HAVE A BACKUP";
 				doDeployment = showDeploymentConfirmationPrompt(
@@ -481,6 +514,10 @@ public class CoCoMa {
 								+ "Are you sure, you want to execute the deployments?"
 								+ lf
 								+ "You should only do so, if you have created a backup of the content store before."
+								+ lf
+								+ "Disable this question: use --donotaskforbackup on commandline "
+								+ lf
+								+ "Or configure backup section in config.xml, setting backup to true."
 								+ lf
 								+ "If you really want to execute the deployments, please answer: "
 								+ answer + lf + lf + "Your answer: ", answer);
@@ -541,6 +578,7 @@ public class CoCoMa {
 					log.info("Deploymentfolder: "
 							+ depData.getDeploymentFolder());
 					log.info("Archive         : " + depData.getArchive());
+					
 					deployment.execute();
 					log.info("Done executing deployment '" + depData.getName()
 							+ "'" + "( " + depl_number + " of "
@@ -563,6 +601,7 @@ public class CoCoMa {
 						}
 					} else {
 						log.info("Run cure.Jar = false");
+						log.info("Set options in config.xml to execute cure.jar and set all reports to use 'modellLast()' version.");
 					}
 				}
 			} else {
@@ -578,7 +617,7 @@ public class CoCoMa {
 		// show information about the program itself
 		log.info("---------------------------------------------------o_o-");
 		log.info("Welcome to CoCoMa for IBM Cognos 10.x ");
-		log.info("(C) 2011,2014 Ralf Roeber, AMVARA Consulting, Barcelona");
+		log.info("(C) 2011-2015 Ralf Roeber, AMVARA Consulting, Barcelona");
 		log.info(getVersionString());
 		log.info("Use --help to see options.");
 		log.info("------------------------------------");
@@ -887,12 +926,24 @@ public class CoCoMa {
 				if (command.equals("phasecontent")) {
 					phaseContentConfiguration = true;
 				}
+				
+				if (command.equals("donotaskforbackup")) {
+					phaseBackupDonotAsk = true;
+				}
+				
+				if (command.equals("crypt")) {
+					setCrypt(args[i+1]);
+				}
+				
 			}
 		}
 
 		// if none of the phase switches is set, do a complete run
-		if (!phaseBasicConfiguration && !phaseDeployment
-				&& !phaseContentConfiguration) {
+		if (!phaseBasicConfiguration 
+				&& !phaseDeployment
+				&& !phaseContentConfiguration 
+				&& crypt.length()==0 
+				&& !infoMode) {
 			phaseBasicConfiguration = true;
 			phaseDeployment = true;
 			phaseContentConfiguration = true;
@@ -975,5 +1026,19 @@ public class CoCoMa {
 	 */
 	public static boolean isInteractiveMode() {
 		return CoCoMa.interactiveMode;
+	}
+
+	/**
+	 * @param crypt the crypt to set
+	 */
+	public static void setCrypt(String crypt) {
+		CoCoMa.crypt = crypt;
+	}
+
+	/**
+	 * @return the crypt
+	 */
+	public static String getCrypt() {
+		return crypt;
 	}
 }

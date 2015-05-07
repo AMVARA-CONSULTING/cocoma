@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoCoMa>
+<log4jloglevel>INFO</log4jloglevel>
+<version>$Revision: 139 $</version>
+	<server>
+			<!-- 
+			dispatcherURL: This is the URL where to find your Cognos Server. 
+							It may be the cgi-bin URL from your webserver or
+							the p2pd URL from your application server as well.
+							Try which one fits your needs best.
+			-->
+			<dispatcherURL>http://192.168.33.135:9300/p2pd/servlet/dispatch</dispatcherURL>
+			<!-- 
+			namespace: 		This is the namespace ID configured in Cognos Configuration.
+							Don't be missguided by the namespace shown in your browser, when
+							you log in. Theses two can be different and are a common mistake.
+							Use the namespaceID you find in CognosConfiguration. 
+			-->
+			<namespace>LDAP</namespace>
+			<!-- 
+			username: 		This is the username of an account that has administrator rights
+							in your enviroment
+			-->
+			<username>administrator</username>
+			<!-- 
+			password:		This is the crypted password of your account. Decryption is done by 
+							CoCoMa. So no worry with security hazzards. Empty the password and
+							call CoCoMa with commandline parameter "setpass" to create and store
+							a newly crypted password. 
+			-->
+			<password>jxWkxnSGloWpa2NAcfhFVw==</password>
+			<version>10</version>
+			<!-- ================================================================ -->
+			<!-- Using Windows netshares with Java Programm requires  -->
+			<!-- drive letters to be replace with remote information from command "net use" -->
+			<!-- Y:\temp_rrr\deployment > net use -->
+			<!-- Neue Verbindungen werden nicht gespeichert. -->
+			<!-- Status       Lokal     Remote                    Netzwerk -->
+			<!-- ================================================================ -->
+			<!-- OK           Y:        \\192.168.33.135\c$       Microsoft Windows Network -->
+			<!-- ================================================================ -->
+			<!-- Y:\temp_rrr translates into \\192.168.33.135\c$\temp_rrr -->
+			<!--  \\192.168.33.135\c$\Programme\ibm\cognos\c1021_server\deployment\  -->
+			<deploymentFolder></deploymentFolder>
+	</server>
+ 	
+
+	<!-- 
+	Backup:		This sections steers the CoCoMa behavior around creating or not a backup
+				before deployment. It might be usefull for a rollback if something unpredicted
+				happens.
+	 -->
+	<backup>
+	   <!-- 
+	   name: 	name of the archive that will be used for storeing the backup.
+	    -->
+	   <name>FullBackup</name>
+	   <!--  
+	   enabled:	true or false. Setting this to true, causes CoCoMa to create a backup 
+	   			before deployment of any other type.
+	    -->
+	   <enabled>false</enabled>
+		<!-- 
+		password:	encrypted password for the ZIP archive containing the backup
+		 -->
+	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
+	   <!-- 
+	   use_datetimesuffix:	true or false. Settings this to true will cause CoCoMa
+	   						to included a timestamp in the archive name of the ZIP file
+	   						containing the fullbackup. This might be usefull, for versioning.
+	   						Makes it a little bit difficult to reimport fully automated
+	   						a backup after some dpeloyment failures. Use it as you like.
+	    -->
+	   <use_datetimesuffix>false</use_datetimesuffix>
+	</backup>
+
+	
+	<!--  
+	deployments:		This sections describes what to deploy into the Cognos environment. It
+						is used to defined content deployments from ZIP-archives, that
+						normally contains reports, modells and a like.
+	-->
+	<deployments>
+		<!-- 
+			within the deployments tag, use deployment-tag to define one or more deployments.
+		 -->
+		<deployment>
+			<!--   
+			name: 	This defines the name of the import to be shown in Cognos Connection.
+			-->
+			<name>Reimport_FullBackup_before_after_autodeployment</name>
+			<!-- 
+			name_set_datetime_suffix:	true or false. The archive name may be suffixed by a timestamp
+										in cognos connection. Settings this option to true will
+										put a timestamp behinde the import archive name in
+										cognos connection.
+										This will not influence the archive name used on disc.
+			-->
+			<name_set_datetime_suffix>
+				false
+			</name_set_datetime_suffix>
+			<!-- 
+			password:	if the archive is crypted and secured via password, use this password
+						to tell cognos when importing a secured deployment archive.
+			-->
+			<password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
+			<!-- 
+			prefix_archive_after_deployment:	Use this option and CoCoMa will copy the imported
+												arhive to <archive_name>+timestamp. In other
+												words, CoCoMa adds the actual timestamp to the
+												imported archive name.
+			-->
+			<prefix_archive_after_deployment>yyyyMMdd_HHmmss</prefix_archive_after_deployment>
+			<!-- recordingLevel:	This is the recording level from Cognos Connection. 
+									Could be basic as well. Use it  as you like. 
+			-->
+			<recordingLevel>
+				full
+			</recordingLevel>
+			<!-- archive:			name of the archive to be read from disc.	
+			-->
+			<archive>FullBackup_before_autodeployment.zip</archive>
+			<!-- show_job_history_after_deployment:		true or false. No comment.  -->
+			<show_job_history_after_deployment>true</show_job_history_after_deployment>
+		</deployment>
+	</deployments>
+
+</CoCoMa>

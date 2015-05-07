@@ -83,6 +83,9 @@
 				<include name="README.*" />
 				<exclude name="TODO.txt"/>
 			</fileset>
+			<fileset dir="${src.dir}/../documentation">
+				<include name="*.pdf" />
+			</fileset>
 		</copy>
 	</target>
 

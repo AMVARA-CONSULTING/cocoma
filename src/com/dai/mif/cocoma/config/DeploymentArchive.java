@@ -19,6 +19,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
+import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -48,8 +49,10 @@ public class DeploymentArchive {
         this.log = Logging.getInstance().getLog(this.getClass());
 
         try {
-            this.archive = new ZipFile(path);
+        	this.archive = new ZipFile(path);
+        	
         } catch (IOException e) {
+        	log.error("IO Exception. ZIP password protected? Check file: "+path);
             log.error(e.getMessage());
         }
     }

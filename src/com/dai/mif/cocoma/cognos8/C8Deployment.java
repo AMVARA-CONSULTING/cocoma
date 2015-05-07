@@ -6,6 +6,7 @@ package com.dai.mif.cocoma.cognos8;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.rmi.RemoteException;
@@ -38,12 +39,16 @@ import com.cognos.developer.schemas.bibus._3.DeploymentOptionString;
 //import com.cognos.developer.schemas.bibus._3.HistoryDetailDeploymentSummary;
 //import com.cognos.developer.schemas.bibus._3.HistoryDetailRequestArguments;
 import com.cognos.developer.schemas.bibus._3.AsynchReplyStatusEnum;
+import com.cognos.developer.schemas.bibus._3.DeploymentImportRule;
+import com.cognos.developer.schemas.bibus._3.DeploymentOptionArrayProp;
+import com.cognos.developer.schemas.bibus._3.DeploymentOptionEnum;
 import com.cognos.developer.schemas.bibus._3.FaultDetail;
 import com.cognos.developer.schemas.bibus._3.FaultDetailArrayProp;
 import com.cognos.developer.schemas.bibus._3.FaultDetailMessage;
 import com.cognos.developer.schemas.bibus._3.ImportDeployment;
 import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
 import com.cognos.developer.schemas.bibus._3.MultilingualString;
+import com.cognos.developer.schemas.bibus._3.MultilingualStringProp;
 import com.cognos.developer.schemas.bibus._3.MultilingualToken;
 import com.cognos.developer.schemas.bibus._3.MultilingualTokenProp;
 import com.cognos.developer.schemas.bibus._3.Option;
@@ -59,10 +64,12 @@ import com.cognos.developer.schemas.bibus._3.UpdateActionEnum;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.cognos.util.C8Access;
+import com.dai.mif.cocoma.config.CoCoMaConfiguration;
 import com.dai.mif.cocoma.config.DeploymentArchive;
 import com.dai.mif.cocoma.config.DeploymentData;
 import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
 import com.dai.mif.cocoma.logging.Logging;
+import com.esotericsoftware.wildcard.Paths;
 
 /**
  *
@@ -123,27 +130,33 @@ public class C8Deployment {
 		this.deploymentData
 				.setDeploymentSrcArchiveName(deploymentSourceArchive);
 
-		if (deploymentFolder == null) {
+		if (deploymentFolder == null || deploymentFolder.length()==0) {
 			// No deployment folder entered, trying to continue (using
 			// deployment name)
-			log.error("No deployment folder entered in the configuration.");
-			log.error("Without deployment folder, no deployment possible.");
-			System.exit(2);
-			return true;
+			log.warn("No deployment folder entered in the configuration.");
+			log.warn("Trying deployment without copying files to target folder. Hope it is there already. We will se later, if Cognos finds it.");
 		} else {
 			log.info("Using Deploymentfolder : " + deploymentFolder);
 			this.deploymentData.setDeploymentTargetFolder(deploymentFolder);
-		}
-
-		File deploymentFolderFile = new File(deploymentFolder);
-		if (!deploymentFolderFile.isDirectory()) {
-			// Invalid deployment folder entered, trying to continue (using
-			// deployment name)
-			log.warn("The deployment folder '" + deploymentFolder
-					+ "' does not exist or is not a directory.");
-			log.warn("Will try using current folder");
-		} else {
-			log.debug("Checked Deploymentfolder to exist and be a directory successfull");
+			File deploymentFolderFile = new File(deploymentFolder);
+			if (!deploymentFolderFile.isDirectory()) {
+				// Invalid deployment folder entered, trying to continue (using
+				// deployment name)
+				log.warn("The deployment folder '" + deploymentFolder
+						+ "' does not exist or is not a directory.");
+				log.warn("Will try using current folder");
+			} else {
+				log.debug("Checked Deploymentfolder to exist and be a directory successfull");
+			}
+			// Checking if it's possible to copy to deployment folder
+			boolean writableDir = new File(deploymentFolder).canWrite();
+			if (!writableDir) {
+				log.error("Unable to write to deployment folder '"
+						+ deploymentFolder + "'.");
+				return false;
+			} else {
+				log.info("Check if deploymentFolder has write access done: OK");
+			}
 		}
 
 		File deploymentSourceFile;
@@ -170,18 +183,39 @@ public class C8Deployment {
 			this.deploymentData.setArchive(deploymentSourceArchive);
 
 		} else {
+			if (deploymentSourceArchive.indexOf("*") > 0) {
+				log.debug("Archivename contains '*' ... will look for complete filename now");
+				File dir = new File(".");
+
+				Paths paths = new Paths();
+				paths.glob("./", deploymentSourceArchive);
+				log.debug("Found "+paths.count()+" file(s) matching ["+deploymentSourceArchive+"]");
+				for (File file : paths.getFiles()) {
+					try {
+						deploymentSourceArchive = file.getCanonicalPath();
+						log.debug("File:"+file.getCanonicalPath());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						log.error("Something went wrong looking for files.");
+						log.error("To be debugged.");
+						e.printStackTrace();
+						System.exit(2);
+					}
+				}
+				log.debug("Will use deploymentarchive now: "+deploymentSourceArchive);
+			}
+			
 			// Using archive as configured
 			deploymentSourceFile = new File(deploymentSourceArchive);
 			this.deploymentData
 					.setDeploymentSrcArchiveName(deploymentSourceArchive);
 			if (!deploymentSourceFile.exists()) {
-				log.error("The deployment '" + deploymentSourceArchive
+				log.warn("The deployment '" + deploymentSourceArchive
 						+ "' does not exist.");
-				log.error("Deployment not possible. Check config file and file situation on drive.");
-				CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, "The deployment '" + deploymentSourceArchive
-						+ "' does not exist. Deployment not possible. Check config file and file situation on drive.");
-				throw new CoCoMaC8Exception(
-						"An error occurred while deploying content:");
+				log.warn("Will try to deploy anyhow. See what Cognos portal can do for us.");
+				archiveName = deploymentSourceArchive;
+				deploymentTargetArchive = deploymentSourceArchive;
+
 			} else {
 				log.debug("Deploymentarchive:" + deploymentSourceArchive);
 				// Show size in kBytes
@@ -194,141 +228,128 @@ public class C8Deployment {
 				if (filesize > 5000) {
 					log.info("Deployment file is larger than 5MB - pls. be very patient. This may take a while.");
 				}
+				// Determine the correct name of the original archive inside the
+				// ZIP
+				// file (i. e. after manual
+				// renaming) with parsing the zip archive (if deployment is not
+				// encrypted)
+				DeploymentArchive zipArchiv = new DeploymentArchive(
+						deploymentSourceArchive, deploymentPassword);
+				this.deploymentData
+						.setDeploymentNameOfArchiveInZipDeploymentFile(zipArchiv
+								.determineOriginName());
+				if (this.deploymentData
+						.getDeploymentNameOfArchiveInZipDeploymentFile()
+						.length() == 0) {
+					log.warn("Archive name could not be determined. Using \""
+							+ deploymentName + "\" as fallback.");
+					archiveName = deploymentName + ".zip";
+				}
 			}
-
-			// Checking if it's possible to copy to deployment folder
-			boolean writableDir = new File(deploymentFolder).canWrite();
-			if (!writableDir) {
-				log.error("Unable to write to deployment folder '"
-						+ deploymentFolder + "'.");
-				return false;
-			} else {
-				log.info("Check if deploymentFolder has write access done: OK");
-			}
-		}
-
-		// Determine the correct name of the original archive inside the ZIP
-		// file (i. e. after manual
-		// renaming) with parsing the zip archive (if deployment is not
-		// encrypted)
-		DeploymentArchive zipArchiv = new DeploymentArchive(
-				deploymentSourceArchive, deploymentPassword);
-		this.deploymentData
-				.setDeploymentNameOfArchiveInZipDeploymentFile(zipArchiv
-						.determineOriginName());
-		if (this.deploymentData.getDeploymentNameOfArchiveInZipDeploymentFile()
-				.length() == 0) {
-			log.warn("Archive name could not be determined. Using \""
-					+ deploymentName + "\" as fallback.");
-			archiveName = deploymentName + ".zip";
 		}
 
 		// String for DateTime as Suffix or Prefix
 		String datetime = new SimpleDateFormat("yyyyMMdd-HHmmss")
 				.format(Calendar.getInstance().getTime());
 
-		// Check if deploymentFolder ends with "/" (trailing slash)
-		if (deploymentFolder.endsWith("/") || deploymentFolder.endsWith("\\")) {
-			log.debug("DeploymentFolder config option has trailing slash. ok.");
-		} else {
-			log.debug("Deploymentfolder is missing trailing slash. Added "
-					+ File.separatorChar);
-			deploymentFolder += File.separatorChar;
-		}
-
-		// Check if a new target name is needed
-		// String oldArchiveName = deploymentSourceFile.getName();
-		// if (oldArchiveName.compareTo(archiveName) != 0
-		// && archiveName.length() > 0) {
-		// deploymentTargetArchive = deploymentFolder + archiveName;
-		// this.deploymentData.setName(archiveName.replace(".zip", ""));
-		// log.debug("Changed archive name from '" + oldArchiveName + "' to '"
-		// + archiveName + "'");
-		//
-		// } else if (deploymentSourceArchive.startsWith(deploymentFolder)) {
-		// // Same name + same target = no further steps needed
-		// log.debug("Same name + same target ... nothing special todo, just logging.");
-		// } else {
-		// deploymentTargetArchive = deploymentFolder
-		// + "_autodepl_" +datetime+ "_" +deploymentSourceFile.getName();
-		// }
-
-		// Add Timestamp to deploymenttargtArchive
-		deploymentTargetArchive = deploymentFolder + "_autodepl_" + datetime
-				+ "_" + deploymentSourceFile.getName();
-
-		File deploymentTargetFile = new File(deploymentTargetArchive);
-
-		// Check if the target file already exists
-		if (deploymentTargetFile.exists()) {
-			log.warn("The file '"
-					+ deploymentTargetFile.getName()
-					+ "' already exists in the deployment folder. Renaming the file.");
-			if (!deploymentTargetFile.canWrite()) {
-				// No write permissions, rename wouldn't be possible
-				log.error("No write permissions for '"
-						+ deploymentTargetFile.getName() + "'.");
-				return false;
-			}
-
-			String tmpTargetName = deploymentTargetArchive + "-" + datetime;
-			File tmpTargetFile = new File(tmpTargetName);
-			boolean targetSuccess = deploymentTargetFile
-					.renameTo(tmpTargetFile);
-			if (!targetSuccess) {
-				log.error("Renaming of the existing archive failed");
-				return false;
+		// ----
+		// sanity Check on deployment folders and copy file to the folder
+		// ----
+		if (deploymentFolder != null && deploymentFolder.length()>0) {
+			// Check if deploymentFolder ends with "/" (trailing slash)
+			if (deploymentFolder.endsWith("/")
+					|| deploymentFolder.endsWith("\\")) {
+				log.debug("DeploymentFolder config option has trailing slash. ok.");
 			} else {
-				log.info("File was renamed to: " + tmpTargetFile);
+				log.debug("Deploymentfolder is missing trailing slash. Added "
+						+ File.separatorChar);
+				deploymentFolder += File.separatorChar;
 			}
-		}
 
-		// Copy archive to deployment folder (with correct name)
-		log.debug("Copy " + deploymentSourceArchive + " --> "
-				+ deploymentTargetArchive);
-		this.deploymentData
-				.setDeploymentSrcArchiveName(deploymentSourceArchive);
-		this.deploymentData
-				.setDeploymentTargetArchiveName(deploymentTargetArchive);
+			// Add Timestamp to deploymenttargtArchive
+			deploymentTargetArchive = deploymentFolder + "_autodepl_"
+					+ datetime + "_" + deploymentSourceFile.getName();
 
-		FileInputStream fiss = null;
-		FileOutputStream fisd = null;
-		long transfered = 0;
-		try {
+			File deploymentTargetFile = new File(deploymentTargetArchive);
+
+			// Check if the target file already exists
+			if (deploymentTargetFile.exists()) {
+				log.warn("The file '"
+						+ deploymentTargetFile.getName()
+						+ "' already exists in the deployment folder. Renaming the file.");
+				if (!deploymentTargetFile.canWrite()) {
+					// No write permissions, rename wouldn't be possible
+					log.error("No write permissions for '"
+							+ deploymentTargetFile.getName() + "'.");
+					return false;
+				}
+
+				String tmpTargetName = deploymentTargetArchive + "-" + datetime;
+				File tmpTargetFile = new File(tmpTargetName);
+				boolean targetSuccess = deploymentTargetFile
+						.renameTo(tmpTargetFile);
+				if (!targetSuccess) {
+					log.error("Renaming of the existing archive failed");
+					return false;
+				} else {
+					log.info("File was renamed to: " + tmpTargetFile);
+				}
+			}
+
+			// Copy archive to deployment folder (with correct name)
+			log.debug("Copy " + deploymentSourceArchive + " --> "
+					+ deploymentTargetArchive);
+			this.deploymentData
+					.setDeploymentSrcArchiveName(deploymentSourceArchive);
+			this.deploymentData
+					.setDeploymentTargetArchiveName(deploymentTargetArchive);
+
+			FileInputStream fiss = null;
+			FileOutputStream fisd = null;
+			long transfered = 0;
 			try {
-				fiss = new FileInputStream(deploymentSourceArchive);
-				FileChannel sourceChannel = fiss.getChannel();
+				try {
+					fiss = new FileInputStream(deploymentSourceArchive);
+					FileChannel sourceChannel = fiss.getChannel();
 
-				fisd = new FileOutputStream(deploymentTargetArchive);
-				FileChannel destChannel = fisd.getChannel();
+					fisd = new FileOutputStream(deploymentTargetArchive);
+					FileChannel destChannel = fisd.getChannel();
 
-				transfered = destChannel.transferFrom(sourceChannel, 0,
-						sourceChannel.size());
-			} finally {
-				if (fiss != null) {
-					fiss.close();
+					transfered = destChannel.transferFrom(sourceChannel, 0,
+							sourceChannel.size());
+				} finally {
+					if (fiss != null) {
+						fiss.close();
+					}
+					if (fisd != null) {
+						fisd.close();
+					}
 				}
-				if (fisd != null) {
-					fisd.close();
-				}
+			} catch (IOException e) {
+				log.error("Copy process failed.");
+				log.debug("Will try to continue anyhow. This maybe a reimport backup job.");
+				log.debug(e.getMessage());
+				return true;
 			}
-		} catch (IOException e) {
-			log.error("Copy process failed.");
-			log.debug(e.getMessage());
-			return false;
-		}
 
-		if (transfered > 0) {
-			log.debug("Copy process successful.");
-			return true;
+			if (transfered > 0) {
+				log.debug("Copy process successful.");
+				return true;
+			} else {
+				log.error("Copy process failed. Transfered bytes = 0. Check target permissions, check network.");
+				return false;
+			}
 		} else {
-			log.error("Copy process failed. Transfered bytes = 0. Check target permissions, check network.");
-			return false;
+			log.debug("No sanity check on target folder and archive done."); // end of deployFolder sanity check
+			deploymentTargetArchive = deploymentSourceFile.getName();
+			log.debug("Will use "+deploymentTargetArchive+" presuming it exists. Cognos will check this. Let's see later.");
 		}
-	}
+		return true;
+	}// end of function
 
 	private BaseClass[] addArchive(String deploySpec, String nameOfArchive) {
 
+		String importName = nameOfArchive + "_import";
 		ImportDeployment importDeploy = null;
 		BaseClass[] addedDeploymentObjects = null;
 		BaseClass[] bca = new BaseClass[1];
@@ -342,26 +363,70 @@ public class C8Deployment {
 		MultilingualToken myMultilingualToken = new MultilingualToken();
 
 		myMultilingualToken.setLocale(strLocale);
-		myMultilingualToken.setValue(nameOfArchive);
+		myMultilingualToken.setValue(importName);
 		multilingualTokenArr[0] = myMultilingualToken;
 		multilingualTokenProperty.setValue(multilingualTokenArr);
 
 		importDeploy = new ImportDeployment();
-		addOpts = new AddOptions();
 		importDeploy.setName(multilingualTokenProperty);
+
+		// deploymentOptions
+		DeploymentOptionArrayProp doap = new DeploymentOptionArrayProp();
+		String password = this.deploymentData.getPassword();
+		if (password != null && password.length() >= 1) {
+			DeploymentOption[] opt = new DeploymentOption[1];
+			opt = (DeploymentOption[]) preparePasswordOptionForPackage(password);
+
+			log.debug("Getting deploymentOptions for: "
+					+ deploymentTargetArchive.replaceAll(".zip", ""));
+			opt = (DeploymentOption[]) getDeployedOption(
+					deploymentTargetArchive.replaceAll(".zip", ""), opt);
+			log.debug("Got deploymentoptions using deployment password.");
+			DeploymentOption optNew[] = new DeploymentOption[opt.length + 1];
+			log.debug("Looping over deploymentOptions ");
+			for (int i = 0; i < opt.length; i++) {
+				optNew[i] = opt[i];
+			}
+
+			log.debug("Adding password as options to new option-set.");
+			log.debug(opt[0].getName());
+			optNew[opt.length] = deploymentData.getArchiveEncryptPassword();
+			opt = optNew;
+			deploymentData.setDeploymentOptions(opt);
+
+			doap.setValue(opt);
+			importDeploy.setDeploymentOptions(doap);
+
+		} else {
+			// doap.setValue(importName);
+		}
+
+		// AddOptions
+		addOpts = new AddOptions();
 		addOpts.setUpdateAction(UpdateActionEnum.replace);
+
 		bca[0] = importDeploy;
 
+		// setdescription
+		// MultilingualString[] myDescription = null;
+		// myDescription[0].setValue("AMVARA CONSULTING");
+		// MultilingualStringProp myDescriptionStringProp = null;
+		// myDescriptionStringProp.setValue( myDescription );
+		// importDeploy.setDescription(myDescriptionStringProp);
+
+		log.debug("baseClass and options have been prepared. Will call cmService.add() new.");
 		try {
 			ContentManagerService_PortType cmService = this.c8Access
 					.getCmService();
 			addedDeploymentObjects = cmService.add(objOfSearchPath, bca,
 					addOpts);
+			log.debug("Adding done();");
 		} catch (RemoteException remoEx) {
 			System.out
 					.println("An error occurred when adding a deployment object:"
 							+ "\n" + remoEx.getMessage());
 		}
+
 		if ((addedDeploymentObjects != null)
 				&& (addedDeploymentObjects.length > 0)) {
 			return addedDeploymentObjects;
@@ -369,6 +434,20 @@ public class C8Deployment {
 			return null;
 		}
 	} // addArchive
+
+	private Object preparePasswordOptionForPackage(String password) {
+		log.debug("Found password in deployment section of configuration file.");
+		log.debug("Will add encryption password to deploymentOptions");
+		DeploymentOption[] opt = new DeploymentOption[1];
+		DeploymentOptionString archiveEncryptPassword = new DeploymentOptionString();
+		archiveEncryptPassword.setValue("<credential><password>" + password
+				+ "</password></credential>");
+		deploymentData.setArchiveEncryptPassword(archiveEncryptPassword);
+		archiveEncryptPassword.setName(DeploymentOptionEnum
+				.fromString("archiveEncryptPassword"));
+		opt[0] = archiveEncryptPassword;
+		return opt;
+	}
 
 	public Option[] getDeployedOption(String myArchive) {
 		Option[] deployOptEnum = new Option[] {};
@@ -379,10 +458,43 @@ public class C8Deployment {
 			deployOptEnum = cmService.getDeploymentOptions(myArchive,
 					new Option[] {});
 		} catch (RemoteException e) {
-			System.out
-					.println("An error occurred in getting Deployment options."
-							+ "\n" + "The error: " + e.getMessage());
-			e.printStackTrace();
+			log.error("!! Severe !! An error occurred in getting Deployment options."
+					+ "\n" + "The error: " + e.getMessage());
+			e.getCause();
+			e.getStackTrace();
+
+			CoCoMa.setErrorCode(
+					CoCoMa.COCOMA_ERROR_CRTICAL_ERROR,
+					"Deployment Options not found! Archive not found is possibl reason. Check filesystem");
+			log.error("Deployment Options not found! Archive not found is possible reason. Check filesystem or run on other dispatcher?");
+			log.error("No further execution possible.");
+			log.error("System.exit code=2.");
+			System.exit(2);
+		}
+
+		return deployOptEnum;
+	} // getDeployedOption
+
+	public Option[] getDeployedOption(String myArchive, Option[] p_opt) {
+		Option[] deployOptEnum = new Option[] {};
+
+		cmService = this.c8Access.getCmService();
+
+		try {
+			deployOptEnum = cmService.getDeploymentOptions(myArchive, p_opt);
+		} catch (RemoteException e) {
+			log.error("!! Severe !! An error occurred in getting Deployment options."
+					+ "\n" + "The error: " + e.getMessage());
+			e.getCause();
+			e.getStackTrace();
+
+			CoCoMa.setErrorCode(
+					CoCoMa.COCOMA_ERROR_CRTICAL_ERROR,
+					"Deployment Options not found! Archive not found is possibl reason. Check filesystem");
+			log.error("Deployment Options not found! Archive not found is possible reason. Check filesystem or run on other dispatcher?");
+			log.error("No further execution possible.");
+			log.error("System.exit code=2.");
+			System.exit(2);
 		}
 
 		return deployOptEnum;
@@ -393,15 +505,23 @@ public class C8Deployment {
 	 * 
 	 * @throws CoCoMaC8Exception
 	 * @throws RemoteException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	public String deployContent(String strNewImportName,
 			String strDeployedArchive) throws CoCoMaC8Exception,
 			RemoteException, InterruptedException {
 
 		log.debug("Create deployment in Contentstore now ... ");
+		log.debug("------------------------------------------");
+
+		// put the names of ZIP file and so on in a meaningfull place
 		log.debug("NewImportName: " + strNewImportName);
 		log.debug("DeployedArchive: " + strDeployedArchive);
+		log.debug("------------------------------------------");
+		deploymentData
+				.setDeploymentTargetCognosPortalArchiveName(strNewImportName);
+		deploymentData.setDeploymentTargetArchiveName(strDeployedArchive);
+
 		AsynchReply asynchReply = null;
 		String reportEventID = "false";
 		String deployType = "import";
@@ -410,42 +530,43 @@ public class C8Deployment {
 		SearchPathSingleObject searchPathObject = new SearchPathSingleObject();
 
 		// Add an archive name to the content store
+		log.debug("adding Archive: " + strNewImportName);
 		BaseClass[] ArchiveInfo = addArchive(deployType, strNewImportName);
+		log.debug("done");
 
 		if ((ArchiveInfo != null) && (ArchiveInfo.length == 1)) {
 			deployPath = ArchiveInfo[0].getSearchPath().getValue();
 			searchPathObject.set_value(deployPath);
-			log.info("Import Archive prepared at: " + deployPath);
+			log.info("Import Job prepared at: " + deployPath);
+			deploymentData.setDeploymentSearchpath(deployPath);
 		} else {
 			return reportEventID;
 		}
 
-		// Log ArchiveInfo
-		// log.debug("ArchiveInfo:");
-		// log.debug("----");
-		// log.debug(" CreationTime: " + ArchiveInfo[0].getCreationTime());
-		// log.debug(" DefaultName: " + ArchiveInfo[0].getDefaultName());
-		// log.debug(" Disabled: " + ArchiveInfo[0].getDisabled());
-		// log.debug(" Name: " + ArchiveInfo[0].getName());
-		// log.debug(" Owner: " + ArchiveInfo[0].getOwner());
-		// log.debug(" Position: " + ArchiveInfo[0].getPosition());
-		// log.debug(" HasChildren: " + ArchiveInfo[0].getHasChildren());
-		// log.debug(" Version: " + ArchiveInfo[0].getVersion());
-		// log.debug("----");
-
+		//
+		log.debug("Finally getting deployment options and finetuning.");
 		Option[] myDeploymentOptionsEnum = null;
-		myDeploymentOptionsEnum = getDeployedOption(strDeployedArchive);
+		if (deploymentData.getPassword() != null) {
+			myDeploymentOptionsEnum = getDeployedOption(strDeployedArchive,
+					deploymentData.getDeploymentOptions());
+		} else {
+			myDeploymentOptionsEnum = getDeployedOption(strDeployedArchive);
+		}
+		if (myDeploymentOptionsEnum == null) {
+			reportEventID = "false";
+			return reportEventID;
+		}
 
 		// Loop over DeploymentOptionsEnum
-		log.debug("ArchiveOptions:");
+		log.debug("Deployment-Options:");
 		log.debug("----");
 		for (int i = 0; i < myDeploymentOptionsEnum.length; i++) {
 			Option oname = myDeploymentOptionsEnum[i];
 			DeploymentOption onameS = (DeploymentOption) oname;
 			String optionName = onameS.getName().getValue();
-			log.debug(i + ".) Deployment Option: " + optionName + " ");
-
 			String OptionClassName = oname.getClass().getName();
+			log.debug(i + ".) Deployment Option: " + optionName + " ("
+					+ OptionClassName.substring(53) + ")");
 
 			if (DEPLOY_OPTION_NAME == OptionClassName) {
 				DeploymentObjectInformation[] packDeployInfo = ((DeploymentOptionObjectInformationArray) myDeploymentOptionsEnum[i])
@@ -459,29 +580,39 @@ public class C8Deployment {
 					log.debug("FolderName: " + packFolderName
 							+ " PackagePath: " + packagePath);
 				}
+
+				// Option_MultilingualString
 			} else if (DEPLOY_OPTION_MLSTRING == OptionClassName) {
-				MultilingualString[] packDeployptionStrings = ((DeploymentOptionMultilingualString) myDeploymentOptionsEnum[i])
-						.getValue();
+				DeploymentOptionMultilingualString packDeployOptionStrings = ((DeploymentOptionMultilingualString) myDeploymentOptionsEnum[i]); // ((DeploymentOptionMultilingualString)
+																																				// myDeploymentOptionsEnum[i]).getValue();
+
 				// Loop over DeploymentObjectInformation
-				for (int j = 0; j < packDeployptionStrings.length; j++) {
-					String packDeployStringsValue = packDeployptionStrings[j]
-							.getValue();
-					if (packDeployStringsValue.length() == 0) {
-						packDeployStringsValue = "<not set>";
-					}
-					if (optionName == "deploymentScreenTip") {
-						packDeployptionStrings[j]
-								.setValue("This is an autodeployment entry.");
-						((DeploymentOptionMultilingualString) myDeploymentOptionsEnum[i])
-								.setValue(packDeployptionStrings);
-						packDeployStringsValue = packDeployptionStrings[j]
-								.getValue();
-					}
-					String packDeployStringsClass = packDeployptionStrings[j]
-							.getClass().toString();
-					log.debug(optionName + ": " + packDeployStringsValue + " ["
-							+ packDeployStringsClass + "]");
-				}
+				log.debug("Loop over deploymentOption MultilingualString");
+				// TODO Fix this code
+				// getName and getValue are available here
+
+				// for (int j = 0; j < packDeployOptionStrings.length; j++) {
+				// String packDeployStringsValue =
+				// packDeployOptionStrings[j].getValue();
+				// if (packDeployStringsValue.length() == 0) {
+				// packDeployStringsValue = "<not set>";
+				// }
+				// if (optionName == "deploymentScreenTip"
+				// || optionName == "deploymentDescription") {
+				// packDeployOptionStrings[j]
+				// .setValue("This is an autodeployment entry. - AMVARA CONSULTING -");
+				// ((DeploymentOptionMultilingualString)
+				// myDeploymentOptionsEnum[i])
+				// .setValue(packDeployOptionStrings);
+				// log.debug("Setting " + optionName);
+				// }
+				// String packDeployStringsClass = packDeployOptionStrings[j]
+				// .getClass().toString();
+				// log.debug(optionName + ": " + packDeployStringsValue + " ["
+				// + packDeployStringsClass + "]");
+				// }
+
+				// Option_string
 			} else if (DEPLOY_OPTION_STRING == OptionClassName) {
 				String deployOptionString = ((DeploymentOptionString) myDeploymentOptionsEnum[i])
 						.getValue();
@@ -489,7 +620,8 @@ public class C8Deployment {
 				if (optionName == "archive") {
 					((DeploymentOptionString) myDeploymentOptionsEnum[i])
 							.setValue(strDeployedArchive);
-					log.debug("Archive name set to " + strDeployedArchive);
+					log.debug("Archive name to be imported from filesystem set to: "
+							+ strDeployedArchive);
 				}
 
 			} else {
@@ -498,56 +630,75 @@ public class C8Deployment {
 		}
 		log.debug("----");
 
+		// Set the password as Option for the archive?
+		if (deploymentData.getPassword() != null && deploymentData.getPassword().length()>0) {
+			log.debug("Found password in configuration ... will add this as option to deployment import job.");
+			myDeploymentOptionsEnum = addOption(myDeploymentOptionsEnum,
+					deploymentData.getArchiveEncryptPassword());
+		}
+
+		// Put the options to the BC
 		OptionArrayProp deploymentOptionsArray = new OptionArrayProp();
 		deploymentOptionsArray.setValue(myDeploymentOptionsEnum);
-
 		((ImportDeployment) ArchiveInfo[0]).setOptions(deploymentOptionsArray);
 
+		// Update the archive specs on the server
 		try {
-			log.debug("Executing deployment ");
+			log.info("Executing deployment ... pls. be patient ");
 			cmService.update(ArchiveInfo, new UpdateOptions());
 
-			
 		} catch (RemoteException remoteEx) {
-//			log.error("An error occurred while deploying content:"
-//					+ remoteEx.getMessage());
-//			remoteEx.printStackTrace();
-//			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, remoteEx
-//					.getMessage().toString());
-//			throw new CoCoMaC8Exception(
-//					"An error occurred while deploying content:", remoteEx);
 			log.error("RemoteException caught");
 			reportEventID = "remoteException";
 		}
-		
-		log.debug("Executing Monitoring for deployment ");
-		monitorService = this.c8Access.getMonitorService(false, this.c8Access.getUrl());
-		asynchReply = monitorService.run(searchPathObject,
-				new ParameterValue[] {}, new Option[] {});
-		
-		// Check for deployment to finish
-		if (!(asynchReply.getStatus().equals(AsynchReplyStatusEnum.complete))
-				&& !(asynchReply.getStatus()
-						.equals(AsynchReplyStatusEnum.conversationComplete))) {
-			log.debug("Call AsyncReply wait");
-			asynchReply = c8Access.getAsyncReply(asynchReply);
-			log.debug("Waiting Finished.");
-		}
-		
-		log.debug("AsynchReplyStatus: "+asynchReply.getStatus());
-		
-		reportEventID = "true";
-		
-		return reportEventID;
-	}// deployContent
 
+		// Check for deployment to finish
+		if (deploymentData.getDisplayHistoryAfterDeployment()) {
+			log.debug("Executing Monitoring for deployment ");
+			monitorService = this.c8Access.getMonitorService(false,
+					this.c8Access.getUrl());
+			asynchReply = monitorService.run(searchPathObject,
+					new ParameterValue[] {}, new Option[] {});
+			if (!(asynchReply.getStatus()
+					.equals(AsynchReplyStatusEnum.complete))
+					&& !(asynchReply.getStatus()
+							.equals(AsynchReplyStatusEnum.conversationComplete))) {
+				log.debug("Call AsyncReply wait");
+				asynchReply = c8Access.getAsyncReply(asynchReply);
+				log.debug("Waiting Finished.");
+			}
+
+			log.debug("AsynchReplyStatus: " + asynchReply.getStatus());
+		} else {
+			log.debug("Will not display deployment history, because option was configured 'false'.");
+			log.debug("E.g. for FullBackup-reimports it makes no sense to look for a history. Because the history will be overwritten wiith the very same deployment.");
+		}
+		reportEventID = "true";
+
+		return reportEventID;
+	} // deployContent
+
+	private Option[] addOption(Option[] ori_opts,
+			DeploymentOptionString new_opts) {
+		// TODO Auto-generated method stub
+		Option[] newOpt = new Option[ori_opts.length + 1];
+		for (int i = 0; i < ori_opts.length; i++) {
+			newOpt[i] = ori_opts[i];
+		}
+		newOpt[ori_opts.length] = new_opts;
+		ori_opts = newOpt;
+		return ori_opts;
+	}
 
 	/**
 	 * displayImportHistory
 	 * 
 	 * @parameters String name, String impDeploymentName
 	 */
-	public void displayImportHistory(String name, String impDeploymentName) {
+	public void displayImportHistory(DeploymentData deploymentData) {
+
+		// public void displayImportHistory(String name, String
+		// impDeploymentName) {
 		PropEnum props[] = new PropEnum[] { PropEnum.defaultName,
 				PropEnum.searchPath, PropEnum.deployedObjectStatus,
 				PropEnum.objectClass, PropEnum.status, PropEnum.hasMessage,
@@ -555,40 +706,49 @@ public class C8Deployment {
 				PropEnum.detail, PropEnum.actualExecutionTime,
 				PropEnum.actualCompletionTime };
 
-		String impPath = "/adminFolder/importDeployment[@name='"
-				+ (impDeploymentName.length() > 0 ? impDeploymentName : name)
-				+ "']" + "//history//*";
+		String impPath = deploymentData.getDeploymentSearchpath()
+				+ "//history//*";
+		;
+		// String impPath = "/adminFolder/importDeployment[@name='"
+		// + (impDeploymentName.length() > 0 ? impDeploymentName : name)
+		// + "']" + "//history//*";
 
 		log.info("History for: " + impPath);
 		String msg = "Import started on "
 				+ Calendar.getInstance().getTime().toString() + ": "
-				+ "Importing \"" + name + "\"";
+				+ "Importing \"" + deploymentData.getDeploymentSearchpath()
+				+ "\"";
 		log.info(msg);
-		
+
 		SearchPathMultipleObject spMulti = new SearchPathMultipleObject(impPath);
 
 		BaseClass bc[] = null;
 		try {
 			bc = cmService.query(spMulti, props, new Sort[] {},
-						new QueryOptions());
+					new QueryOptions());
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		if (bc != null && bc.length > 0)
+		if (bc != null && bc.length > 0) {
 			for (int i = 0; i < bc.length; i++) {
-				if (bc[i].getObjectClass().getValue().toString() == "deploymentDetail" ) {
+				if (bc[i].getObjectClass().getValue().toString() == "deploymentDetail") {
 					DeploymentDetail dd = (DeploymentDetail) bc[i];
 					// Print messages if any
 					FaultDetailArrayProp faultArray = dd.getMessage();
 					FaultDetail[] faultDetail = faultArray.getValue();
-					for(int j=0;j<faultDetail.length;j++) {
-						FaultDetailMessage[] faultMessage = faultDetail[j].getMessage();
-						log.info("Message: "+faultMessage[0].getMessage() );
+					for (int j = 0; j < faultDetail.length; j++) {
+						FaultDetailMessage[] faultMessage = faultDetail[j]
+								.getMessage();
+						log.info("Message: " + faultMessage[0].getMessage());
 					}
 				}
 			}
+		} else {
+			log.debug("Strange ... no response received quering the history of the deployment.");
+			log.debug("Check it yourself. And maybe investigate for reason.");
+		}
 
 	}// displayImportHistory
 
@@ -652,7 +812,7 @@ public class C8Deployment {
 				e.printStackTrace();
 			}
 			log.debug("return value: " + returnresult_deployContent);
-			displayImportHistory(strNewImportName, strNewImportName);
+			displayImportHistory(deploymentData);
 
 		} else {
 			log.error("prepareDeploymentArchive not successfull.");

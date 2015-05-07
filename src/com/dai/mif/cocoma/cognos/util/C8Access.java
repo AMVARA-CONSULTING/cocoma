@@ -110,16 +110,27 @@ public class C8Access {
 	}
 	
 	public AsynchReply getAsyncReply( AsynchReply asReply ) {
+		
+		int maxWaitRetries = 10;
+		int cntWaitRetries = 0;
+		int sleepTimeMs = 10000;
+		
+		
+		
 		try {
+			log.debug("Entering while-loop to wait for conversation status ...");
 			while (!(asReply.getStatus()
 					.equals(AsynchReplyStatusEnum.complete))
 					&& !(asReply.getStatus()
 							.equals(AsynchReplyStatusEnum.conversationComplete))) {
+				
 				if (hasSecondaryRequest(asReply, "wait")) {
 					log.debug("Waiting for converstation to finish.");
 					asReply = this.getMonitorService(false, this.getUrl()).wait(
 							asReply.getPrimaryRequest(),
 							new ParameterValue[] {}, new Option[] {});
+					log.debug("asReply received ... ");
+					log.debug("Status: "+asReply.getStatus());
 				} else {
 					log.error("Error: Wait method not available as expected.");
 				}
@@ -129,7 +140,7 @@ public class C8Access {
 			log.error("!!! Received reportError while waiting for AsyncReply");
 			log.error(e1);
 			log.debug("Will ask server again ... just a moment ... ");
-			while (!(asReply.getStatus()
+			while (cntWaitRetries<maxWaitRetries && !(asReply.getStatus()
 					.equals(AsynchReplyStatusEnum.complete))
 					&& !(asReply.getStatus()
 							.equals(AsynchReplyStatusEnum.conversationComplete))) {
@@ -140,8 +151,17 @@ public class C8Access {
 								asReply.getPrimaryRequest(),
 								new ParameterValue[] {}, new Option[] {});
 					} catch (RemoteException e) {
-						log.error("!!! Received reportError while waiting for AsyncReply");
-						log.error(e1);
+						cntWaitRetries++;
+						log.debug("!!! Received reportError while waiting for AsyncReply. Will keep trying.");
+						log.debug("Counter: "+cntWaitRetries+" -> " +maxWaitRetries);
+						log.debug(e1);
+						try {
+							log.debug("Sleeping "+sleepTimeMs+" milliseconds.");
+							Thread.sleep(sleepTimeMs);
+						} catch (InterruptedException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
 					}
 				} else {
 					log.error("Error: Wait method not available as expected.");

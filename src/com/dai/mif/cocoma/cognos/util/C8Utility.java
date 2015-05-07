@@ -388,13 +388,14 @@ public class C8Utility {
 					PropEnum.rsAuditLevel, PropEnum.rsAuditNativeQuery,
 					PropEnum.rsAffineConnections, PropEnum.rsMaximumProcesses,
 					PropEnum.rsNonAffineConnections, PropEnum.rsQueueLimit,
-					PropEnum.runningState, PropEnum.serverGroup, PropEnum.state };
+					PropEnum.runningState, PropEnum.serverGroup, PropEnum.state
+					};
 
 			cmService = this.c8Access.getCmService();
 			String activeCM = cmService.getActiveContentManager();
 
 			log.info("--------------------------------------------------------------");
-			log.info("activeCM: "+activeCM);
+			log.info("Active ContentManager: "+activeCM);
 			log.info(" ... this is the Dispatcher with the active ContentManager. Use it for deployments.");
 			
 			BaseClass[] dispatchers = cmService.query(
@@ -410,6 +411,7 @@ public class C8Utility {
 				Dispatcher_Type dispatch = (Dispatcher_Type) dispatchers[disp_index];
 				int dispnum = disp_index + 1; // Convert from zero based.
 
+				log.debug("");
 				OutputDispatcherInformation(dispatch, dispnum);
 			}
 		} catch (Exception ex) {

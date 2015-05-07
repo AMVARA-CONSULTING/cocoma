@@ -18,8 +18,9 @@
 			<!-- OK           Y:        \\192.168.33.135\c$       Microsoft Windows Network -->
 			<!-- ================================================================ -->
 			<!-- Y:\temp_rrr translates into \\192.168.33.135\c$\temp_rrr -->
-			<deploymentFolder>\\192.168.33.135\c$\Programme\ibm\cognos\c1021_server\deployment\</deploymentFolder>
-	</server>
+			<!--  \\192.168.33.135\c$\Programme\ibm\cognos\c1021_server\deployment\ -->
+			<deploymentFolder></deploymentFolder>
+	 </server>
 	
 <!--  
 	<mailserver>
@@ -35,7 +36,7 @@
  	
 	<backup>
 	   <name>FullBackup</name>
-	   <enabled>false</enabled>
+	   <enabled>true</enabled>
 	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
 	   <use_datetimesuffix>true</use_datetimesuffix>
 	</backup>
@@ -51,13 +52,13 @@
 				 -->
 				true
 			</name_set_datetime_suffix>
-			<password>Ad63BGTKYKwoMqGMW3xGYw==</password>
+			<password></password>
 			<prefix_archive_after_deployent>yyyyMMdd_HHmmss</prefix_archive_after_deployent>
 			<recordingLevel>
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>deployment_incoming/MIFReporting_revision_63252.zip</archive>
+			<archive>deployment_incoming\MIFReporting_revision_*.zip</archive>
 			<!-- 
 			<delete_items>
 				<item>/content/folder[@name='Samples_PowerCube']</item>

@@ -4,13 +4,18 @@
 package com.dai.mif.cocoma.logging;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class provides basic logging functionality. It offers methods for
@@ -50,8 +55,30 @@ public class Logging {
 	private Logging() {
 		Logging.loggingInstance = this;
 		this.logMap = new HashMap<Class<?>, Logger>();
+
+		Properties logger_props = new Properties();
+		try {
+			logger_props.load(new FileInputStream("log4j.properties"));
+			PropertyConfigurator.configure(logger_props);
+		} catch (FileNotFoundException e1) {
+			System.out.println("-----------------------------------------------");
+			System.out.println("Pls. create a log4j.properties file to control ");
+			System.out.println("logging behaviour!");
+			System.out.println("-----------------------------------------------");
+		} catch (IOException e1) {
+			System.out.println("-----------------------------------------------");
+			System.out.println("Pls. create a log4j.properties file to control ");
+			System.out.println("logging behaviour!");
+			System.out.println("-----------------------------------------------");
+		}
+		
 		this.log = getLog(this.getClass());
+
 		this.logFileDir = ".";
+
+		Logger logger = Logger.getRootLogger();
+		logger.setLevel(Level.INFO);
+	
 	}
 
 	/**

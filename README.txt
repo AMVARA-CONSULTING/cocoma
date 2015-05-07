@@ -1,4 +1,4 @@
-$Id: README.txt 165 2014-11-18 10:13:28Z rroeber $
+$Id: README.txt 165 2015-05-07 10:13:28Z rroeber $
 
 CoCoMa - Cognos Configuration Manager
 -------------------------------------
@@ -136,6 +136,12 @@ like keepass.
 	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
 	   <use_datetimesuffix>false</use_datetimesuffix>
 	</backup>
+
+
+As of version 2.7 there are a couple of new features:
+--------------------------------------------------------
+- Fullcontentstore Backup reimport is now possible, secured archives can be openend with password by CoCoMa
+- Wildcards in deployment archive filenames may contain absolute or relative foldernames. Archive is searched for on disc. If found archive name is logged to console. Deployment in Cognos will be prepared if found or not, as archive might also already be on the target application server machine. Carefully read warnings and error messages if in doubt.
 
 
 --------------------------------------------------------

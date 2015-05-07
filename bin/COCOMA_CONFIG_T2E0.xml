@@ -75,7 +75,10 @@
 			<connectionsLowAffinity>2</connectionsLowAffinity>
 			<maxProcessesInteractiveReporting>10</maxProcessesInteractiveReporting>
 			<queueTimeoutReporting>120</queueTimeoutReporting>
-
+			<advancedSettings>
+				<name>CM.AMVARA_TEST_FROM_CONFIG1</name>
+				<value>AMVARA_XXX_FROM_CONFIG1</value>
+			</advancedSettings>
 			<auditLevel>
 				<contentManagerService>BASIC</contentManagerService>
 				<reportDataService>REQUEST</reportDataService>
