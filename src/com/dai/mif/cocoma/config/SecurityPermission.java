@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 
 /**
  *
@@ -50,7 +50,7 @@ public class SecurityPermission {
      * @param configKey
      */
     public void readConfig(XMLConfiguration conf, String configKey)
-            throws CoCoMaConfigException {
+            throws ConfigException {
         try {
             this.permissionRead = conf.getBoolean(configKey + ".read", true);
             this.permissionWrite = conf.getBoolean(configKey + ".write", false);
@@ -88,7 +88,7 @@ public class SecurityPermission {
                 }
             }
         } catch (Exception e) {
-            throw new CoCoMaConfigException(e.getMessage());
+            throw new ConfigException(e.getMessage());
         }
 
     }

@@ -12,28 +12,9 @@
 
 	<property file="build.properties" />
 
-	<property name="build.version"
-              value="Cognos 10.2.1" />
-    <tstamp>
-        <format property="build.time"
-                pattern="yyyy-MM-dd_HHmm"
-                unit="hour" />
-    </tstamp>
-	<buildnumber file="build.number" />
-
-    <property name="version.code"
-              value="${build.version}/${build.time}/${build.number}" />
-
-    <echo>Version: ${version.code}</echo>
-
-    <replaceregexp file="..\src\com\dai\mif\cocoma\CoCoMa.java"
-                   match="Build: @@+.*@@"
-                   byline="true"
-                   replace="Build: @@${version.code}@@" />
-	
 	<import file="retroweaver-taskdef.xml" />
 	<import file="one-jar-ant-task.xml" />
-
+	
 	<description>
 	    Build script for the CoCoMa project. It offers ANT targets 
 		to build a JAR export and additionally to convert the code into Java 1.4 
@@ -43,26 +24,22 @@
 	<path id="classpath">
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
-			<!-- <exclude name="cognos/**" /> -->
-		</fileset>
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-			<exclude name="commons-collections-*.jar" />
-			<exclude name="commons-configuration-*.jar" />
-			<exclude name="commons-lang-*.jar" />
-			<exclude name="commons-logging*.jar" />
-			<exclude name="log4j*.jar" />
+			<!-- exclude name="commons-collections-*.jar" / -->
+			<!-- exclude name="commons-configuration-*.jar" / -->
+			<!-- exclude name="commons-lang-*.jar" / -->
+			<!-- exclude name="commons-logging*.jar" / -->
+			<!-- exclude name="log4j*.jar" / -->
 		</fileset>
 	</path>
-	
+
 	<!-- ====================================== 
           target: build targets for Cognos 8.4.1              
          ====================================== -->
-	
+
 	<target name="cognos-8.4.1">
 		<property name="cognosVersion" value="cognos_1021" />
 	</target>
-	
+
 	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
 		<antcall target="one-jar" />
 		<antcall target="copy-dist" />
@@ -81,14 +58,32 @@
 				<include name="*.bat" />
 				<include name="*.sh" />
 				<include name="README.*" />
-				<exclude name="TODO.txt"/>
-			</fileset>
-			<fileset dir="${src.dir}/../documentation">
-				<include name="*.pdf" />
+				<exclude name="TODO.txt" />
 			</fileset>
 		</copy>
 	</target>
 
+	<target name="copy-2mif-share">
+		<copy todir="mif-share.dir">
+			<fileset dir="..">
+				<include name="../templates/" />
+				<include name="README.*" />
+				<include name="*.sh" />
+			</fileset>
+			<fileset dir="../production_config_files/">
+				<include name="*.xml" />
+			</fileset>
+			<fileset dir="../documentation/">
+				<include name="*.pdf" />
+			</fileset>
+			<fileset dir="../src/">
+				<include name="*.properties" />
+			</fileset>
+			<fileset dir="../dist/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
 	<!-- - - - - - - - - - - - - - - - - - 
           target: one-jar                      
          - - - - - - - - - - - - - - - - - -->
@@ -104,15 +99,11 @@
 			<lib>
 				<fileset dir="${lib.dir}">
 					<include name="**/*.jar" />
-					<!-- <exclude name="cognos/**" /> -->
-				</fileset>
-				<fileset dir="${lib.dir}">
-					<include name="**/*.jar" />
-					<exclude name="commons-collections-*.jar" />
-					<exclude name="commons-configuration-*.jar" />
-					<exclude name="commons-lang-*.jar" />
-					<exclude name="commons-logging*.jar" />
-					<exclude name="log4j*.jar" />
+					<!-- exclude name="commons-collections-*.jar" / -->
+					<!-- exclude name="commons-configuration-*.jar" / -->
+					<!-- exclude name="commons-lang-*.jar" / -->
+					<!-- exclude name="commons-logging*.jar" / -->
+					<!-- exclude name="log4j*.jar" / -->
 				</fileset>
 			</lib>
 			<binlib>
@@ -143,15 +134,11 @@
 			<lib>
 				<fileset dir="${lib.dir}">
 					<include name="**/*.jar" />
-					<!-- <exclude name="cognos/**" /> -->
-				</fileset>
-				<fileset dir="${lib.dir}">
-					<include name="**/*.jar" />
-					<exclude name="commons-collections-*.jar" />
-					<exclude name="commons-configuration-*.jar" />
-					<exclude name="commons-lang-*.jar" />
-					<exclude name="commons-logging*.jar" />
-					<exclude name="log4j*.jar" />
+					<!-- exclude name="commons-collections-*.jar" / -->
+					<!-- exclude name="commons-configuration-*.jar" / -->
+					<!-- exclude name="commons-lang-*.jar" / -->
+					<!-- exclude name="commons-logging*.jar" / -->
+					<!-- exclude name="log4j*.jar" / -->
 				</fileset>
 			</lib>
 			<binlib>
@@ -208,12 +195,7 @@
 			</fileset>
 		</delete>
 
-		<javac classpathref="classpath" 
-				srcdir="${src.dir}" 
-			destdir="${build.dir}" 
-			debug="true">
-			<compilerarg value="-Xlint:unchecked"/>
-		</javac>
+		<javac classpathref="classpath" srcdir="${src.dir}" destdir="${build.dir}" debug="true" />
 
 		<copy todir="${build.dir}">
 			<fileset dir="${src.dir}">

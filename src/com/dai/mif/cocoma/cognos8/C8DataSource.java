@@ -86,14 +86,17 @@ public class C8DataSource {
 
 		log.info("Creating data source " + dataSourceData.getName());
 
-		// {0}: DSN, {1}: User, {2}: Password, {3}: asynchronous
-		String connectionStringPattern = "^User ID:^?Password:;LOCAL;D2;DSN={0};UID=%s;PWD=%s;{0}@ASYNC={3}@0/0@COLSEQ=";
+		// {0}: DSN, {1}: User, {2}: Password, {3}: asynchronous, {4}: dbserver (JDBC), {5}: dbport (JDBC), {6}: dbname (JDBC)
+		String connectionStringPattern = (this.dataSourceData.getJDBC() == true) ? "^User ID:^?Password:;LOCAL;D2;DSN=APP0;UID=%s;PWD=%s;APP0@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR:^User ID:^?Password:;LOCAL;JD-D2;URL=jdbc:db2://{4}:{5}/{6};DRIVER_NAME=com.ibm.db2.jcc.DB2Driver" : "^User ID:^?Password:;LOCAL;D2;DSN=APP0;UID=%s;PWD=%s;APP0@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR";
 
 		String connectionString = MessageFormat.format(connectionStringPattern,
 				this.dataSourceData.getDBAlias(),
 				this.dataSourceData.getUserName(),
-				this.dataSourceData.getPassword(), (asynchronous ? 1 : 0));
-
+				this.dataSourceData.getPassword(), (asynchronous ? 1 : 0),
+				this.dataSourceData.getDBServer(),
+				this.dataSourceData.getDBPort(),
+				this.dataSourceData.getDBName());
+		
 		log.debug("Connection string: " + connectionString);
 
 		ContentManagerService_PortType cmService = this.c8Access.getCmService();
@@ -128,10 +131,11 @@ public class C8DataSource {
 		if (openConnectionCommandsValue.length() > 0) {
 			openConnectionCommands = new DataSourceCommandBlockProp();
 			DataSourceCommandBlock commandBlock = new DataSourceCommandBlock();
-			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
-					"<commandBlock><commands><sqlCommand><sql>"
-							+ openConnectionCommandsValue
-							+ "</sql></sqlCommand></commands></commandBlock>");
+//			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
+//					"<commandBlock><commands><sqlCommand><sql>"
+//							+ openConnectionCommandsValue
+//							+ "</sql></sqlCommand></commands></commandBlock>");
+			XmlEncodedXML commandBlockValue = new XmlEncodedXML(openConnectionCommandsValue);
 			commandBlock.set_value(commandBlockValue.toString());
 			openConnectionCommands.setValue(commandBlock);
 			log.debug("Setting open connection commands to "
@@ -149,10 +153,11 @@ public class C8DataSource {
 		if (closeConnectionCommandsValue.length() > 0) {
 			closeConnectionCommands = new DataSourceCommandBlockProp();
 			DataSourceCommandBlock commandBlock = new DataSourceCommandBlock();
-			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
-					"<commandBlock><commands><sqlCommand><sql>"
-							+ closeConnectionCommandsValue
-							+ "</sql></sqlCommand></commands></commandBlock>");
+//			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
+//					"<commandBlock><commands><sqlCommand><sql>"
+//							+ closeConnectionCommandsValue
+//							+ "</sql></sqlCommand></commands></commandBlock>");
+			XmlEncodedXML commandBlockValue = new XmlEncodedXML(closeConnectionCommandsValue);
 			commandBlock.set_value(commandBlockValue.toString());
 			closeConnectionCommands.setValue(commandBlock);
 			log.debug("Setting close connection commands to "
@@ -171,10 +176,11 @@ public class C8DataSource {
 		if (openSessionCommandsValue.length() > 0) {
 			openSessionCommands = new DataSourceCommandBlockProp();
 			DataSourceCommandBlock commandBlock = new DataSourceCommandBlock();
-			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
-					"<commandBlock><commands><sqlCommand><sql>"
-							+ openSessionCommandsValue
-							+ "</sql></sqlCommand></commands></commandBlock>");
+//			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
+//					"<commandBlock><commands><sqlCommand><sql>"
+//							+ openSessionCommandsValue
+//							+ "</sql></sqlCommand></commands></commandBlock>");
+			XmlEncodedXML commandBlockValue = new XmlEncodedXML(openSessionCommandsValue);
 			commandBlock.set_value(commandBlockValue.toString());
 			openSessionCommands.setValue(commandBlock);
 			log.debug("Setting open session commands to "
@@ -192,10 +198,11 @@ public class C8DataSource {
 		if (closeSessionCommandsValue.length() > 0) {
 			closeSessionCommands = new DataSourceCommandBlockProp();
 			DataSourceCommandBlock commandBlock = new DataSourceCommandBlock();
-			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
-					"<commandBlock><commands><sqlCommand><sql>"
-							+ closeSessionCommandsValue
-							+ "</sql></sqlCommand></commands></commandBlock>");
+//			XmlEncodedXML commandBlockValue = new XmlEncodedXML(
+//					"<commandBlock><commands><sqlCommand><sql>"
+//							+ closeSessionCommandsValue
+//							+ "</sql></sqlCommand></commands></commandBlock>");
+			XmlEncodedXML commandBlockValue = new XmlEncodedXML(closeSessionCommandsValue);
 			commandBlock.set_value(commandBlockValue.toString());
 			closeSessionCommands.setValue(commandBlock);
 			log.debug("Setting close session commands to "

@@ -3,14 +3,10 @@
  */
 package com.dai.mif.cocoma.config;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
-
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -19,7 +15,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -73,15 +68,18 @@ public class DeploymentArchive {
          */
 
         boolean encrypted = false;
-        log.debug("Will determine original archive name contained in exportRecord.xml from deployment archive.");
+        log.debug("Will try determine original archive name contained in exportRecord.xml from deployment archive.");
         log.debug("ZIP-archive: "+archive.getName());
         
         
-        unzipFunction(System.getProperty("java.io.tmpdir"), archive.getName());
-		log.debug("Archive "+archive.getName()+" unzipped to directory: "+System.getProperty("java.io.tmpdir"));
 
+		if (password!=null && password.length()>0) {
+			log.debug("Password for archive was set. Archive is encrypted. ");
+			encrypted=true;
+		}
+		
         if(encrypted){
-            log.debug("Was encrypted .. checking PW");
+            log.debug(" .. checking PW");
             if(password == null){
                 log.error("Empty password value, possibly an error while decrypting the password.");
             } else if(password.length() == 0){
@@ -91,42 +89,47 @@ public class DeploymentArchive {
 
             log.warn("Deployment is encrypted. Decryption of the zip file content is not possible");
             return archiveName;
-        }
-
-        // Determine the name of the deployment
-        String tmpXmlFileName = System.getProperty("java.io.tmpdir")+ File.separator + "exportRecord.xml";
-
-        File tmpXmlFile = new File(tmpXmlFileName);
-        if (!tmpXmlFile.exists()) {
-            log.error("Can't access exportRecord.xml. Perhaps insufficient permissions for temporary directory.");
-            log.debug("tmpXmlFilePath: "+tmpXmlFile.getAbsolutePath());
-            log.debug("tmpXmlFileName: "+tmpXmlFile.getName());
-            return archiveName;
         } else {
-        	log.debug("Will try reading "+tmpXmlFile.getAbsolutePath());
-        }
-
-        XMLConfiguration xmlConfig;
-        try {
-            xmlConfig = new XMLConfiguration(tmpXmlFileName);
-            xmlConfig.setBasePath("deploymentRecord");
-            archiveName = xmlConfig.getString("archive") + ".zip";
-            log.debug("Found archive name in ZIP file: "+archiveName);
-        } catch (ConfigurationException e) {
-            log.error(e.getMessage());
-        }
+	        // Unzip possible
+	        unzipFunction(System.getProperty("java.io.tmpdir"), archive.getName());
+			log.debug("Archive "+archive.getName()+" unzipped to directory: "+System.getProperty("java.io.tmpdir"));
+	
+	        // Determine the name of the deployment
+	        String tmpXmlFileName = System.getProperty("java.io.tmpdir")+ File.separator + "exportRecord.xml";
+	
+	        File tmpXmlFile = new File(tmpXmlFileName);
+	        if (!tmpXmlFile.exists()) {
+	            log.error("Can't access unzipped files. Perhaps insufficient permissions for temporary directory?");
+	            log.debug("tmpXmlFilePath: "+tmpXmlFile.getAbsolutePath());
+	            log.debug("tmpXmlFileName: "+tmpXmlFile.getName());
+	            return archiveName;
+	        } else {
+	        	log.debug("Will try reading "+tmpXmlFile.getAbsolutePath());
+	        }
+	
+	        XMLConfiguration xmlConfig;
+	        try {
+	            xmlConfig = new XMLConfiguration(tmpXmlFileName);
+	            xmlConfig.setBasePath("deploymentRecord");
+	            archiveName = xmlConfig.getString("archive") + ".zip";
+	            log.debug("Found archive name in ZIP file: "+archiveName);
+	        } catch (ConfigurationException e) {
+	            log.error(e.getMessage());
+	        }
+	        
+	        
+	        // Delete File
+	        File tmp = new File(tmpXmlFileName);
+	        log.debug("Removing tempfile "+tmpXmlFile.getAbsolutePath());
+	        tmp.delete();
+	        if (!tmpXmlFile.exists()) {
+	        	log.debug("File has been removed.");
+	        } else {
+	        	log.error("Tempfile was not removed. Remove it yourself.");
+	        }
         
-        
-        // Delete File
-        File tmp = new File(tmpXmlFileName);
-        log.debug("Removing tempfile "+tmpXmlFile.getAbsolutePath());
-        tmp.delete();
-        if (!tmpXmlFile.exists()) {
-        	log.debug("File has been removed.");
-        } else {
-        	log.error("Tempfile was not removed. Remove it yourself.");
-        }
-        
+        } // else if encrypted
+	        
         return archiveName;
     }
     

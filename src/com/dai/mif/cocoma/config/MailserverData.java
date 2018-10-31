@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.crypt.Cryptography;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -52,7 +52,7 @@ public class MailserverData {
     /**
      * @param conf
      */
-    public MailserverData(XMLConfiguration conf) throws CoCoMaConfigException {
+    public MailserverData(XMLConfiguration conf) throws ConfigException {
         this.conf = conf;
         Cryptography crypt = Cryptography.getInstance();
         this.log = Logging.getInstance().getLog(this.getClass());
@@ -69,7 +69,7 @@ public class MailserverData {
             this.password = crypt.decrypt(cryptedPass);
         } catch (Exception e) {
             if (!CoCoMa.isInteractiveMode()) {
-                throw new CoCoMaConfigException(
+                throw new ConfigException(
                         "Error decrypting the mail password: " + e.getMessage(),
                         e);
             } else {
@@ -142,9 +142,9 @@ public class MailserverData {
 
     /**
      * @param password
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      */
-    public void setPassword(String password) throws CoCoMaConfigException {
+    public void setPassword(String password) throws ConfigException {
 
         Cryptography crypt = Cryptography.getInstance();
 
@@ -153,7 +153,7 @@ public class MailserverData {
             conf.save();
             conf.reload();
         } catch (ConfigurationException e) {
-            throw new CoCoMaConfigException("Error saving the password: "
+            throw new ConfigException("Error saving the password: "
                     + e.getMessage());
         }
 
@@ -208,7 +208,7 @@ public class MailserverData {
      * Fills the placeholders in mail subject and text Available placeholders
      * (surrounced by {}): HOST, STATUS, ARCHIVE, DATE, TIME, VERSION
      *
-     * TODO: {OPTIONS} fehlt noch. nur was für options?
+     * TODO: {OPTIONS} fehlt noch. nur was fuer options?
      * @return
      */
     public String fillPlaceholders(String text, DeploymentData deployment,

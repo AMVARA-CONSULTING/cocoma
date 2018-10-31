@@ -17,6 +17,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+
 /** Collects filesystem paths using wildcards, preserving the directory structure. Copies, deletes, and zips paths. */
 public class Paths implements Iterable<String> {
 	static private final Comparator<Path> LONGEST_TO_SHORTEST = new Comparator<Path>() {
@@ -57,8 +58,8 @@ public class Paths implements Iterable<String> {
 		File dirFile = new File(dir);
 		if (!dirFile.exists()) return this;
 
-		List<String> includes = new ArrayList();
-		List<String> excludes = new ArrayList();
+		List<String> includes = new ArrayList<String>();
+		List<String> excludes = new ArrayList<String>();
 		if (patterns != null) {
 			for (String pattern : patterns) {
 				if (pattern.charAt(0) == '!')
@@ -148,8 +149,8 @@ public class Paths implements Iterable<String> {
 		File dirFile = new File(dir);
 		if (!dirFile.exists()) return this;
 
-		List<String> includes = new ArrayList();
-		List<String> excludes = new ArrayList();
+		List<String> includes = new ArrayList<String>();
+		List<String> excludes = new ArrayList<String>();
 		if (patterns != null) {
 			for (String pattern : patterns) {
 				if (pattern.charAt(0) == '!')
@@ -279,11 +280,11 @@ public class Paths implements Iterable<String> {
 
 	/** Returns the paths as File objects. */
 	public List<File> getFiles () {
-		return getFiles(new ArrayList(paths));
+		return getFiles(new ArrayList<Path>(paths));
 	}
 
 	private ArrayList<File> getFiles (List<Path> paths) {
-		ArrayList<File> files = new ArrayList(paths.size());
+		ArrayList<File> files = new ArrayList<File>(paths.size());
 		for (Path path : paths)
 			files.add(path.file());
 		return files;
@@ -291,7 +292,7 @@ public class Paths implements Iterable<String> {
 
 	/** Returns the portion of the path after the root directory where the path was collected. */
 	public List<String> getRelativePaths () {
-		ArrayList<String> stringPaths = new ArrayList(paths.size());
+		ArrayList<String> stringPaths = new ArrayList<String>(paths.size());
 		for (Path path : paths)
 			stringPaths.add(path.name);
 		return stringPaths;
@@ -299,7 +300,7 @@ public class Paths implements Iterable<String> {
 
 	/** Returns the full paths. */
 	public List<String> getPaths () {
-		ArrayList<String> stringPaths = new ArrayList(paths.size());
+		ArrayList<String> stringPaths = new ArrayList<String>(paths.size());
 		for (File file : getFiles())
 			stringPaths.add(file.getPath());
 		return stringPaths;
@@ -307,7 +308,7 @@ public class Paths implements Iterable<String> {
 
 	/** Returns the paths' filenames. */
 	public List<String> getNames () {
-		ArrayList<String> stringPaths = new ArrayList(paths.size());
+		ArrayList<String> stringPaths = new ArrayList<String>(paths.size());
 		for (File file : getFiles())
 			stringPaths.add(file.getName());
 		return stringPaths;
@@ -370,7 +371,7 @@ public class Paths implements Iterable<String> {
 		};
 	}
 
-	static private final class Path {
+	public static final class Path {
 		public final String dir;
 		public final String name;
 

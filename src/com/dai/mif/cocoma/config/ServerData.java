@@ -8,7 +8,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.crypt.Cryptography;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 
 /**
  *
@@ -31,7 +31,7 @@ public class ServerData {
     /**
      * @param conf
      */
-    public ServerData(XMLConfiguration conf) throws CoCoMaConfigException {
+    public ServerData(XMLConfiguration conf) throws ConfigException {
 
         this.conf = conf;
 
@@ -47,7 +47,7 @@ public class ServerData {
             this.password = crypt.decrypt(cryptedPass);
         } catch (Exception e) {
             if (!CoCoMa.isInteractiveMode()) {
-                throw new CoCoMaConfigException(
+                throw new ConfigException(
                         "Error decrypting the password: " + e.getMessage(), e);
             } else {
                 this.password = "";
@@ -55,28 +55,28 @@ public class ServerData {
         }
 
         if (this.dispatcherURL.length() == 0) {
-            throw new CoCoMaConfigException("DispatcherURL is empty.");
+            throw new ConfigException("DispatcherURL is empty.");
         }
         if (this.nameSpace.length() == 0) {
-            throw new CoCoMaConfigException("Namspace is empty.");
+            throw new ConfigException("Namspace is empty.");
         }
         if (this.userName.length() == 0) {
-            throw new CoCoMaConfigException("Username is empty.");
+            throw new ConfigException("Username is empty.");
         }
         if (this.password == null) {
-            throw new CoCoMaConfigException("Password could not be decrypted");
+            throw new ConfigException("Password could not be decrypted");
         } else if ((this.password.length() == 0)
                 && (!CoCoMa.isInteractiveMode())) {
-            throw new CoCoMaConfigException("Password is empty.");
+            throw new ConfigException("Password is empty.");
         }
 
     }
 
     /**
      * @param password
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      */
-    public void setPassword(String password) throws CoCoMaConfigException {
+    public void setPassword(String password) throws ConfigException {
 
         Cryptography crypt = Cryptography.getInstance();
 
@@ -85,7 +85,7 @@ public class ServerData {
             conf.save();
             conf.reload();
         } catch (ConfigurationException e) {
-            throw new CoCoMaConfigException("Error saving the password: "
+            throw new ConfigException("Error saving the password: "
                     + e.getMessage());
         }
 

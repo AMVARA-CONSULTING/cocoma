@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -46,11 +46,11 @@ public class UIData {
      *            Instance of {@link XMLConfiguration} to be used for reading
      *            the configuration details.
      *
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      *             This exception is thrown whenever an invalid configuration
      *             value is detected.
      */
-    public UIData(XMLConfiguration conf) throws CoCoMaConfigException {
+    public UIData(XMLConfiguration conf) throws ConfigException {
 
     	//
         // Prepare Logger
@@ -79,19 +79,19 @@ public class UIData {
 	                && !this.listSeparator.equals("line")
 	                && !this.listSeparator.equals("none")) {
 	        	UIdataFoundIXmlConfig = false;
-	        	throw new CoCoMaConfigException(
+	        	throw new ConfigException(
 	                    "Invalid value for listViewSeparator. May only be one of: background, line or none");
 	        	}
 	
 	        if (this.linesPerPage < 1) {
 	        	UIdataFoundIXmlConfig = false;
-	            throw new CoCoMaConfigException(
+	            throw new ConfigException(
 	                    "Invalid value for linesPerPage. Must be a value >= 1");
 	        }
 	
 	        if (this.skin.length() < 1) {
 	        	UIdataFoundIXmlConfig = false;
-	            throw new CoCoMaConfigException(
+	            throw new ConfigException(
 	                    "Invalid value for skin. A skin name must be specified.");
 	        }
         }
@@ -113,7 +113,7 @@ public class UIData {
      *         skins to be created.
      */
     private List<UISkinData> readSkinData(XMLConfiguration conf)
-            throws CoCoMaConfigException {
+            throws ConfigException {
 
         List<UISkinData> skinList = new ArrayList<UISkinData>();
 

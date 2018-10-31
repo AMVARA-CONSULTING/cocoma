@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<CoCoMa>
+<version>$Revision: 139 $</version>
+<server>
+		<dispatcherURL>http://127.0.0.1:8080/crn0/bi/v1/disp</dispatcherURL>
+		<namespace>LDAP</namespace>
+		<username>rroeber</username>
+		<password>jxWkxnSGloWpa2NAcfhFVw==</password>
+		<version>10</version>
+	</server>
+	
+	
+<dataSources>
+
+		<dataSource>
+			<name>QSUSERDS_test_test</name>
+			<dbalias>APP0</dbalias>
+			<username>mifweb</username>
+			<password>6Fl+jZoL3EMca/9adLMUCA==</password>
+			<isolationLevel>readUncommitted</isolationLevel>
+			<connectionCommands>
+				<openConnection/>
+				<closeConnection/>
+				<openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+				<openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
+				<closeSession/>
+			</connectionCommands>
+			<jdbc>
+				<dbserver>DBHOST</dbserver>
+				<dbname>FK1XAP03</dbname>
+				<dbport>60010</dbport></jdbc></dataSource>
+	</dataSources>
+<dispatchers>
+
+		<dispatcher global="true">
+			<name>http://ashost0:9080/p2pd0</name>
+			<loadBalancingMode>weightedRoundRobin</loadBalancingMode>
+			<governorLimit>50</governorLimit>
+			<peakStartHour>0</peakStartHour>
+			<peakEndHour>23</peakEndHour>
+			<connectionsHighAffinity>1</connectionsHighAffinity>
+			<connectionsLowAffinity>2</connectionsLowAffinity>
+			<maxProcessesInteractiveReporting>10</maxProcessesInteractiveReporting>
+			<queueTimeoutReporting>120</queueTimeoutReporting>
+			<advancedSettings>
+				<name>CM.AMVARA_TEST_FROM_CONFIG1</name>
+				<value>AMVARA_XXX_FROM_CONFIG1</value>
+			</advancedSettings>
+			<auditLevel>
+				<contentManagerService>BASIC</contentManagerService>
+				<reportDataService>REQUEST</reportDataService>
+				<eventManagementService>BASIC</eventManagementService>
+				<jobService>BASIC</jobService>
+				<monitorService>BASIC</monitorService>
+				<presentationService>BASIC</presentationService>
+				<reportService>REQUEST</reportService>
+				<reportServiceNativeQuery>TRUE</reportServiceNativeQuery>
+				<systemService>BASIC</systemService>
+				<dispatcher>BASIC</dispatcher>
+			</auditLevel>
+
+		</dispatcher>
+
+	</dispatchers>
+
+</CoCoMa>

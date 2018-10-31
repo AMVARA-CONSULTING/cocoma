@@ -300,7 +300,7 @@ public class C8Utility {
 				for (BaseClass bc : results) {
 					Account acc = (Account) bc;
 
-					String accData = "Account: "
+					String accData = "\nAccount: "
 							+ acc.getSearchPath().getValue() + "\n\tuserName: "
 							+ acc.getUserName().getValue()
 							+ "\n\tdefaultName: "
@@ -376,20 +376,33 @@ public class C8Utility {
 			// Create a Search Path that eliminates all but the dispatchers
 			String searchPath = "/configuration/dispatcher";
 
-			PropEnum[] confprop = { PropEnum.brsAffineConnections,
+			PropEnum[] confprop = { 
+					PropEnum.brsAffineConnections,
+					PropEnum.brsAuditLevel, 
+					PropEnum.brsAuditNativeQuery,
 					PropEnum.brsMaximumProcesses,
-					PropEnum.brsNonAffineConnections, PropEnum.capacity,
-					PropEnum.dispatcherPath, PropEnum.msNonPeakDemandBeginHour,
+					PropEnum.brsNonAffineConnections, 
+					PropEnum.capacity,
+					PropEnum.dispatcherAuditLevel, 
+					PropEnum.dispatcherPath, 
+					PropEnum.jsAuditLevel,
+					PropEnum.msNonPeakDemandBeginHour,
 					PropEnum.msNonPeakDemandMaximumTasks,
 					PropEnum.msPeakDemandBeginHour,
 					PropEnum.msPeakDemandMaximumTasks,
-					PropEnum.dispatcherAuditLevel, PropEnum.jsAuditLevel,
-					PropEnum.brsAuditLevel, PropEnum.brsAuditNativeQuery,
-					PropEnum.rsAuditLevel, PropEnum.rsAuditNativeQuery,
-					PropEnum.rsAffineConnections, PropEnum.rsMaximumProcesses,
-					PropEnum.rsNonAffineConnections, PropEnum.rsQueueLimit,
-					PropEnum.runningState, PropEnum.serverGroup, PropEnum.state
-					};
+					PropEnum.rsAuditLevel, 
+					PropEnum.rsAuditNativeQuery,
+					PropEnum.rsAffineConnections, 
+					PropEnum.rsMaximumProcesses,
+					PropEnum.rsNonAffineConnections, 
+					PropEnum.rsQueueLimit,
+					PropEnum.runningState, 
+					PropEnum.serverGroup, 
+					PropEnum.state,
+					PropEnum.applicationGUID,
+					PropEnum.applicationID,
+					PropEnum.applicationURL
+			};
 
 			cmService = this.c8Access.getCmService();
 			String activeCM = cmService.getActiveContentManager();
@@ -480,6 +493,7 @@ public class C8Utility {
 		log.info("rsAuditNativeQuery: "
 				+ objDispatcher.getRsAuditNativeQuery().isValue());
 	
+		
 	}
 
 }

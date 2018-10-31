@@ -9,7 +9,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import com.cognos.developer.schemas.bibus._3.AuditLevelEnum;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -74,7 +74,7 @@ public class DispatcherData {
      * @param i
      */
     public DispatcherData(XMLConfiguration config, int i)
-            throws CoCoMaConfigException {
+            throws ConfigException {
 
         //
         // Prepare Logger
@@ -124,8 +124,8 @@ public class DispatcherData {
         this.advancedDispatcherSettings = new String[advancedParameters_list
                 .size()][2];
 
-        log.info("Looking for " + tempkey);
-        log.info("Size:" + advancedParameters_list.size());
+        log.debug("Looking for " + tempkey);
+        log.debug("Size:" + advancedParameters_list.size());
         for (int i_advSettingslist = 0; i_advSettingslist < advancedParameters_list
                 .size(); i_advSettingslist++) {
 
@@ -150,7 +150,7 @@ public class DispatcherData {
             advancedParameters_array[i_advSettingslist][1] = adv_value;
             this.advancedDispatcherSettings[i_advSettingslist][1] = adv_value;
         }
-        log.info(advancedDispatcherSettings.length
+        log.debug(advancedDispatcherSettings.length
                 + " advancedParameters reading finished.");
 
         // audit levels
@@ -176,54 +176,54 @@ public class DispatcherData {
                 + ".auditLevel.dispatcher"));
 
         if (this.dispatcherName.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher (" + i
+            throw new ConfigException("Dispatcher (" + i
                     + ") name is empty.");
         }
 
         if (this.loadBalancingMode.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName + ") loadBalancingMode is empty.");
         } else if (!this.loadBalancingMode.equals("weightedRoundRobin")
                 && !this.loadBalancingMode.equals("clusterCompatible")) {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Dispatcher loadBalancingMode may only be one of the following values: 'weightedRoundRobin' or 'clusterCompatible'");
         }
 
         if (this.governorLimit.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName + ") governerLimit is empty.");
         }
 
         if (this.peakStartHour.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName + ") peakStartHour is empty.");
         }
 
         if (this.peakEndHour.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName + ") peakEndHour is empty.");
         }
 
         if (this.connectionsHighAffinity.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName
                     + ") connectionsHighAffinity is empty.");
         }
 
         if (this.connectionsLowAffinity.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName
                     + ") connectionsLowAffinity is empty.");
         }
 
         if (this.maxProcessesInteractiveReporting.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName
                     + ") maxProcessesInteractiveReporting is empty.");
         }
 
         if (this.queueTimeoutReporting.length() == 0) {
-            throw new CoCoMaConfigException("Dispatcher ("
+            throw new ConfigException("Dispatcher ("
                     + this.dispatcherName + ") queueTimeoutReporting is empty.");
         }
     }
@@ -304,12 +304,12 @@ public class DispatcherData {
      * @return
      */
     private String parseAuditLevel(String auditLevel)
-            throws CoCoMaConfigException {
+            throws ConfigException {
 
         String level = "";
 
         if ((auditLevel == null) || (auditLevel.length() == 0)) {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Audit level could not be parsed, is null or empty");
         } else if (auditLevel.equals("MINIMAL")) {
             level = AuditLevelEnum._minimal;
@@ -322,7 +322,7 @@ public class DispatcherData {
         } else if (auditLevel.equals("TRACE")) {
             level = AuditLevelEnum._trace;
         } else {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Invalid value for audit level: "
                             + auditLevel
                             + ". Can only be one of BASIC, FULL, MINIMAL, REQUEST, TRACE.");

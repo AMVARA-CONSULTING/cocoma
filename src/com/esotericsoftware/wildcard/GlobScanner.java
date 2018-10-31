@@ -9,7 +9,7 @@ import java.util.List;
 
 class GlobScanner {
 	private final File rootDir;
-	private final List<String> matches = new ArrayList(128);
+	private final List<String> matches = new ArrayList<String>(128);
 
 	public GlobScanner (File rootDir, List<String> includes, List<String> excludes, boolean ignoreCase) {
 		if (rootDir == null) throw new IllegalArgumentException("rootDir cannot be null.");
@@ -26,11 +26,11 @@ class GlobScanner {
 		if (excludes == null) throw new IllegalArgumentException("excludes cannot be null.");
 
 		if (includes.isEmpty()) includes.add("**");
-		List<Pattern> includePatterns = new ArrayList(includes.size());
+		List<Pattern> includePatterns = new ArrayList<Pattern>(includes.size());
 		for (String include : includes)
 			includePatterns.add(new Pattern(include, ignoreCase));
 
-		List<Pattern> allExcludePatterns = new ArrayList(excludes.size());
+		List<Pattern> allExcludePatterns = new ArrayList<Pattern>(excludes.size());
 		for (String exclude : excludes)
 			allExcludePatterns.add(new Pattern(exclude, ignoreCase));
 
@@ -42,7 +42,7 @@ class GlobScanner {
 			//
 			for (Iterator matchIter = matches.iterator(); matchIter.hasNext();) {
 				String filePath = (String)matchIter.next();
-				List<Pattern> excludePatterns = new ArrayList(allExcludePatterns);
+				List<Pattern> excludePatterns = new ArrayList<Pattern>(allExcludePatterns);
 				try {
 					// Shortcut for excludes that are "**/XXX", just check file name.
 					for (Iterator excludeIter = excludePatterns.iterator(); excludeIter.hasNext();) {
@@ -98,7 +98,7 @@ class GlobScanner {
 
 		if (!scanAll) {
 			// If not scanning all the files, we know exactly which ones to include.
-			List matchingIncludes = new ArrayList(1);
+			List<Pattern> matchingIncludes = new ArrayList<Pattern>(1);
 			for (Pattern include : includes) {
 				if (matchingIncludes.isEmpty())
 					matchingIncludes.add(include);
@@ -110,7 +110,7 @@ class GlobScanner {
 			// Scan every file.
 			for (String fileName : dir.list()) {
 				// Get all include patterns that match.
-				List<Pattern> matchingIncludes = new ArrayList(includes.size());
+				List<Pattern> matchingIncludes = new ArrayList<Pattern>(includes.size());
 				for (Pattern include : includes)
 					if (include.matches(fileName)) matchingIncludes.add(include);
 				if (matchingIncludes.isEmpty()) continue;
@@ -122,7 +122,7 @@ class GlobScanner {
 	private void process (File dir, String fileName, List<Pattern> matchingIncludes) {
 		// Increment patterns that need to move to the next token.
 		boolean isFinalMatch = false;
-		List<Pattern> incrementedPatterns = new ArrayList();
+		List<Pattern> incrementedPatterns = new ArrayList<Pattern>();
 		for (Iterator iter = matchingIncludes.iterator(); iter.hasNext();) {
 			Pattern include = (Pattern)iter.next();
 			if (include.incr(fileName)) {
@@ -267,10 +267,10 @@ class GlobScanner {
 
 	public static void main (String[] args) {
 		// System.out.println(new Paths("C:\\Java\\ls", "**"));
-		List<String> includes = new ArrayList();
+		List<String> includes = new ArrayList<String>();
 		includes.add("website/in*");
 		// includes.add("**/lavaserver/**");
-		List<String> excludes = new ArrayList();
+		List<String> excludes = new ArrayList<String>();
 		// excludes.add("**/*.php");
 		// excludes.add("website/**/doc**");
 		long start = System.nanoTime();

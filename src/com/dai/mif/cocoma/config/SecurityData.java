@@ -12,7 +12,7 @@ import com.cognos.developer.schemas.bibus._3.Account;
 import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.Group;
 import com.cognos.developer.schemas.bibus._3.Role;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 
 /**
  *
@@ -37,7 +37,7 @@ public class SecurityData {
      * @param conf
      */
     @SuppressWarnings("unchecked")
-    public SecurityData(XMLConfiguration conf) throws CoCoMaConfigException {
+    public SecurityData(XMLConfiguration conf) throws ConfigException {
         fixedObjects = new ArrayList<AbstractSecurityObject>();
         securityObjects = new ArrayList<AbstractSecurityObject>();
         securityPermissions = new ArrayList<SecurityPermission>();

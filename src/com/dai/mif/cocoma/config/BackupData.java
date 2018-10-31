@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.crypt.Cryptography;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -26,6 +26,7 @@ public class BackupData {
     private String password;
     private boolean enabled;
     private boolean use_datetimesuffix;
+    private boolean backup_configured;
     
     private XMLConfiguration conf;
     private Logger log;
@@ -33,13 +34,17 @@ public class BackupData {
     /**
      * @param conf
      */
-    public BackupData(XMLConfiguration conf) throws CoCoMaConfigException {
+    public BackupData(XMLConfiguration conf) throws ConfigException {
         this.conf = conf;
         Cryptography crypt = Cryptography.getInstance();
         this.log = Logging.getInstance().getLog(this.getClass());
 
         log.debug("Parsing backup configuration");
 
+        // Check for backupSection
+        this.setBackup_configured(conf.getKeys("backup").hasNext()) ;
+        
+        // Read rest of Configuration
         this.enabled = conf.getBoolean("backup.enabled", false);
         this.name = conf.getString("backup.name", "FullBackup");
         this.password = conf.getString("backup.password", null);
@@ -50,7 +55,7 @@ public class BackupData {
             this.password = crypt.decrypt(cryptedPass);
         } catch (Exception e) {
             if (!CoCoMa.isInteractiveMode()) {
-                throw new CoCoMaConfigException(
+                throw new ConfigException(
                         "Error decrypting the backup password: " + e.getMessage(), e);
             } else {
                 this.password = null;
@@ -60,9 +65,9 @@ public class BackupData {
 
     /**
      * @param password
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      */
-    public void setPassword(String password) throws CoCoMaConfigException {
+    public void setPassword(String password) throws ConfigException {
 
         Cryptography crypt = Cryptography.getInstance();
 
@@ -71,7 +76,7 @@ public class BackupData {
             conf.save();
             conf.reload();
         } catch (ConfigurationException e) {
-            throw new CoCoMaConfigException("Error saving the password: "
+            throw new ConfigException("Error saving the password: "
                     + e.getMessage());
         }
 
@@ -130,6 +135,14 @@ public class BackupData {
     public boolean getUseDateTimeSuffix() {
         return use_datetimesuffix;
     }
+
+	public boolean isBackup_configured() {
+		return backup_configured;
+	}
+
+	public void setBackup_configured(boolean backup_configured) {
+		this.backup_configured = backup_configured;
+	}
 
 
 }

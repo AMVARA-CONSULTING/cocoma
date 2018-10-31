@@ -14,7 +14,7 @@ import com.cognos.developer.schemas.bibus._3.DeploymentOption;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionString;
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.crypt.Cryptography;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -125,7 +125,7 @@ public class DeploymentData {
 	 * @param configKey
 	 */
 	public void readConfig(XMLConfiguration conf, String configKey)
-			throws CoCoMaConfigException {
+			throws ConfigException {
 
 		this.conf = conf;
 		this.configKey = configKey;
@@ -150,7 +150,7 @@ public class DeploymentData {
 		} catch (Exception e) {
 			this.status = DEPLOYMENT_STATUS_ERROR;
 			if (!CoCoMa.isInteractiveMode()) {
-				throw new CoCoMaConfigException(
+				throw new ConfigException(
 						"Error decrypting the deployment password: "
 								+ e.getMessage(), e);
 			} else {
@@ -183,7 +183,7 @@ public class DeploymentData {
 		log.debug("Looking for config entry 'delete items': " + configKey
 				+ ".delete_items.item");
 
-		List deleteItemsDataList = conf.getList(configKey
+		List<?> deleteItemsDataList = conf.getList(configKey
 				+ ".delete_items.item");
 		this.deleteItems = new ArrayList<String>();
 		for (int i = 0; i < deleteItemsDataList.size(); i++) {
@@ -340,9 +340,9 @@ public class DeploymentData {
 	 * Setting password for deployment archive
 	 * 
 	 * @param password
-	 * @throws CoCoMaConfigException
+	 * @throws ConfigException
 	 */
-	public void setPassword(String password) throws CoCoMaConfigException {
+	public void setPassword(String password) throws ConfigException {
 
 		Cryptography crypt = Cryptography.getInstance();
 
@@ -351,7 +351,7 @@ public class DeploymentData {
 			conf.save();
 			conf.reload();
 		} catch (ConfigurationException e) {
-			throw new CoCoMaConfigException("Error saving the password: "
+			throw new ConfigException("Error saving the password: "
 					+ e.getMessage());
 		}
 

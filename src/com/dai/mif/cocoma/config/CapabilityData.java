@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 
 /**
  *
@@ -55,7 +55,7 @@ public class CapabilityData {
 	 * @param configKey
 	 */
 	public void readConfig(XMLConfiguration conf, String configKey)
-			throws CoCoMaConfigException {
+			throws ConfigException {
 		try {
 			this.permissionRead = conf.getBoolean(configKey
 					+ ".permission.read", true);
@@ -101,7 +101,7 @@ public class CapabilityData {
 			readConfiguredFeatures(conf, configKey);
 
 		} catch (Exception e) {
-			throw new CoCoMaConfigException(e.getMessage());
+			throw new ConfigException(e.getMessage());
 		}
 
 	}
@@ -111,7 +111,7 @@ public class CapabilityData {
 	 * @param configKey
 	 */
 	private void readConfiguredFeatures(XMLConfiguration conf, String configKey)
-			throws CoCoMaConfigException {
+			throws ConfigException {
 
 		String[] featureNames = conf.getStringArray(configKey
 				+ ".features.feature.name");

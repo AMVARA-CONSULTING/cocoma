@@ -118,7 +118,7 @@ public class c10access {
 
 	/**
 	 * initReportService() setzt den BiBusHeader passend zum reportService
-	 * benötigt "import com.cognos.org.apache.axis.client.Stub"
+	 * benoetigt "import com.cognos.org.apache.axis.client.Stub"
 	 */
 	public void SetBiBusHeader() {
 		this.log.debug(" --> ConnectinitReportService() ");

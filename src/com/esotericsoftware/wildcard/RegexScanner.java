@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 class RegexScanner {
 	private final File rootDir;
 	private final List<Pattern> includePatterns;
-	private final List<String> matches = new ArrayList(128);
+	private final List<String> matches = new ArrayList<String>(128);
 
 	public RegexScanner (File rootDir, List<String> includes, List<String> excludes) {
 		if (rootDir == null) throw new IllegalArgumentException("rootDir cannot be null.");
@@ -27,11 +27,11 @@ class RegexScanner {
 		if (includes == null) throw new IllegalArgumentException("includes cannot be null.");
 		if (excludes == null) throw new IllegalArgumentException("excludes cannot be null.");
 
-		includePatterns = new ArrayList();
+		includePatterns = new ArrayList<Pattern>();
 		for (String include : includes)
 			includePatterns.add(Pattern.compile(include, Pattern.CASE_INSENSITIVE));
 
-		List<Pattern> excludePatterns = new ArrayList();
+		List<Pattern> excludePatterns = new ArrayList<Pattern>();
 		for (String exclude : excludes)
 			excludePatterns.add(Pattern.compile(exclude, Pattern.CASE_INSENSITIVE));
 
@@ -69,10 +69,10 @@ class RegexScanner {
 
 	public static void main (String[] args) {
 		// System.out.println(new Paths("C:\\Java\\ls", "**"));
-		List<String> includes = new ArrayList();
+		List<String> includes = new ArrayList<String>();
 		includes.add("core[^T]+php");
 		// includes.add(".*/lavaserver/.*");
-		List<String> excludes = new ArrayList();
+		List<String> excludes = new ArrayList<String>();
 		// excludes.add("website/**/doc**");
 		long start = System.nanoTime();
 		List<String> files = new RegexScanner(new File("..\\website\\includes"), includes, excludes).matches();

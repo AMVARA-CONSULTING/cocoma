@@ -54,7 +54,7 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>deployment_incoming/MIF_QueryStudio.zip</archive>
+			<archive>deployment_incoming/IBM_Cognos_Samples.zip</archive>
 			<!--
 			<delete_items>
 				<item>/content/folder[@name='Samples_PowerCube']</item>

@@ -11,7 +11,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -51,9 +51,9 @@ public class RestrictedContentData {
 
     /**
      * @param conf
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      */
-    public void readConfig(XMLConfiguration conf) throws CoCoMaConfigException {
+    public void readConfig(XMLConfiguration conf) throws ConfigException {
 
     	//
         // Prepare Logger
@@ -119,7 +119,7 @@ public class RestrictedContentData {
 	            if (this.unrestrictedGroups.isEmpty()
 	                    && this.unrestrictedRoles.isEmpty()
 	                    && this.unrestrictedUsers.isEmpty()) {
-	                throw new CoCoMaConfigException(
+	                throw new ConfigException(
 	                        "There must be at least one group, one role or one user defined to be able to see even hidden elements.");
 	            }
 

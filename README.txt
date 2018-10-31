@@ -43,7 +43,47 @@ Other commandline argument:
 --dispatcherinfo ... generates information about dispatchers found within the 
 					 connected environment(s).
 
+--dumpaccounts
 
+
+As of Version 3.1: Cognos 10.2.1/2016-05-25_1825/153
+--------------------------------------------------------
+added support for jdbc variables to xml config file, now we can add jdbc configuration content in xml configuration file, an example:
+...
+	...
+	<dataSources>
+		<dataSource>
+			...
+			<jdbc>
+				<dbserver>DBHOST</dbserver> <!-- this is the url to the jdbc server -->
+				<dbname>FK1XAP03</dbname> <!-- this is the database name, to which we want to connect -->
+				<dbport>60008</dbport> <!-- this is the port to the jdbc server -->
+			</jdb>
+			...
+		</dataSource>
+	</dataSources
+	...
+...
+
+As of Version 2.9: Cognos 10.2.1/2016-05-25_1825/153
+--------------------------------------------------------
+- received ticket with issue description: 0031052397
+- Version counting changed to automated build counting; 
+	future version will not contain version string "2.8" anymore
+	version string will be replace by automated version-counting 
+- checked, and switched to java 1.8.72, also running under 1.8.74
+- option "--setpass" now check if mailhost and backup is configured. will only ask for password, if configured.
+- datasource option "<openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>" may be repeated to include several sql statements in datasource
+  e.g.
+				<openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+				<openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
+- development framework "eClipse" was changed to Version: Mars.1 Release (4.5.1), Build id: 20150924-1200
+- smoketests against Test4 and localhost successfull
+
+As of version 2.7 there are a couple of new features:
+--------------------------------------------------------
+- Fullcontentstore Backup reimport is now possible, secured archives can be openend with password by CoCoMa
+- Wildcards in deployment archive filenames may contain absolute or relative foldernames. Archive is searched for on disc. If found archive name is logged to console. Deployment in Cognos will be prepared if found or not, as archive might also already be on the target application server machine. Carefully read warnings and error messages if in doubt.
 
 As of version 1.9 the config file has to be extended:
 -----------------------------------------------------
@@ -136,12 +176,6 @@ like keepass.
 	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
 	   <use_datetimesuffix>false</use_datetimesuffix>
 	</backup>
-
-
-As of version 2.7 there are a couple of new features:
---------------------------------------------------------
-- Fullcontentstore Backup reimport is now possible, secured archives can be openend with password by CoCoMa
-- Wildcards in deployment archive filenames may contain absolute or relative foldernames. Archive is searched for on disc. If found archive name is logged to console. Deployment in Cognos will be prepared if found or not, as archive might also already be on the target application server machine. Carefully read warnings and error messages if in doubt.
 
 
 --------------------------------------------------------

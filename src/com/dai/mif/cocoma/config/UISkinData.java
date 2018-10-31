@@ -5,7 +5,7 @@ package com.dai.mif.cocoma.config;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 
 /**
  * This class encapsulates data about portal skins that shall be created or
@@ -31,14 +31,14 @@ public class UISkinData {
      * @param skinName
      *            The name that is to be associated with this skin.
      *
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      *             This exception is thrown when there is an invalid value for
      *             the skin name.
      */
-    public UISkinData(String skinName) throws CoCoMaConfigException {
+    public UISkinData(String skinName) throws ConfigException {
         this.name = skinName;
         if (name.length() < 1) {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Invalid value for name. String must not be empty");
         }
     }
@@ -54,22 +54,22 @@ public class UISkinData {
      *            The configuration key to be used to access the correct data in
      *            the config file.
      *
-     * @throws CoCoMaConfigException
+     * @throws ConfigException
      *             This exception is thrown when an invalid value has been
      *             specified in the configuration.
      */
     public void readConfig(XMLConfiguration conf, String configKey)
-            throws CoCoMaConfigException {
+            throws ConfigException {
 
         this.preview = conf.getString(configKey + ".preview");
         this.resourceLocation = conf.getString(configKey + ".resourceLocation");
 
         if (preview.length() < 1) {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Invalid value for preview. String must not be empty");
         }
         if (resourceLocation.length() < 1) {
-            throw new CoCoMaConfigException(
+            throw new ConfigException(
                     "Invalid value for resourceLocation. String must not be empty");
         }
     }

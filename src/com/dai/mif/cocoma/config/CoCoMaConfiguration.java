@@ -13,7 +13,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.dai.mif.cocoma.console.PwdConsole;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -67,7 +67,7 @@ public class CoCoMaConfiguration {
 	 */
 	@SuppressWarnings("unchecked")
 	public void read(File configFile) throws ConfigurationException,
-			CoCoMaConfigException {
+			ConfigException {
 
 		this.log = Logging.getInstance().getLog(this.getClass());
 
@@ -117,7 +117,7 @@ public class CoCoMaConfiguration {
 		}
 
 		if (globalConfigured && (this.dispatchers.size() > 1)) {
-			throw new CoCoMaConfigException(
+			throw new ConfigException(
 					"At least one of the configured dispatchers is set as "
 							+ "global dispatcher but more than one dispatcher "
 							+ "is configured. When using the global flag for a "
@@ -209,7 +209,7 @@ public class CoCoMaConfiguration {
      * Method to prompt for the password needed to access the server. This
      * method starts an interactive prompt via STDIN.
      */
-    public void setServerPassword() throws CoCoMaConfigException {
+    public void setServerPassword() throws ConfigException {
         boolean passwordSet = (this.serverData.getPassword().length() > 0);
         if (passwordSet) {
             String passAlreadySetMsg = "A password for server "
@@ -232,7 +232,7 @@ public class CoCoMaConfiguration {
             if (password != null) {
                 this.serverData.setPassword(password);
             } else {
-                throw new CoCoMaConfigException("The passwords do not match.");
+                throw new ConfigException("The passwords do not match.");
             }
         }
     }
@@ -241,14 +241,27 @@ public class CoCoMaConfiguration {
      * Method to prompt for the password needed to access the mailserver. This
      * method starts an interactive prompt via STDIN.
      */
-    public void setMailserverPassword() throws CoCoMaConfigException {
+    public void setMailserverPassword() throws ConfigException {
+    	
+    	try {
+			if (!this.mailserverData.getHost().isEmpty()) {
+				log.debug("found Mailserver Entry:"+this.mailserverData.getHost());
+			}
+		} catch (Exception e1) {
+			log.debug("No MailServer Host entry found ... so no pw to set!");
+			return;
+		}
+    	
     	boolean passwordSet =false;
+
+    	
     	try {
 			passwordSet = (this.mailserverData.getPassword().length() > 0);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			passwordSet = false;
 		}
+
 	    if (passwordSet) {
             String passAlreadySetMsg = "A password for mailserver "
                     + this.mailserverData.getHost() + " with user "
@@ -268,7 +281,7 @@ public class CoCoMaConfiguration {
             if (password != null) {
                 this.mailserverData.setPassword(password);
             } else {
-                throw new CoCoMaConfigException("The passwords do not match.");
+                throw new ConfigException("The passwords do not match.");
             }
         }
     }
@@ -277,8 +290,22 @@ public class CoCoMaConfiguration {
      * Method to prompt for the password needed to access the content store backups. This
      * method starts an interactive prompt via STDIN.
      */
-    public void setBackupPassword() throws CoCoMaConfigException {
-        boolean passwordSet = (this.backupData.getPassword().length() > 0);
+    public void setBackupPassword() throws ConfigException {
+    	
+    	// Check for Config-Item
+		if (this.backupData.isBackup_configured() ) {
+			log.debug("Backup is configured:"+this.backupData.getName());
+		} else {
+			log.debug("No Backup configured ... setting a pw would be useless. Skipping");
+			return;
+		}
+    	
+    	boolean passwordSet;
+		try {
+			passwordSet = (this.backupData.getPassword().length() > 0);
+		} catch (Exception e) {
+			passwordSet=false;
+		}
         if (passwordSet) {
             String passAlreadySetMsg = "A password for content store backups "
                     + "has already been set. To reset the password, "
@@ -294,7 +321,7 @@ public class CoCoMaConfiguration {
             if (password != null) {
                 this.backupData.setPassword(password);
             } else {
-                throw new CoCoMaConfigException("The passwords do not match.");
+                throw new ConfigException("The passwords do not match.");
             }
         }
     }
@@ -303,7 +330,7 @@ public class CoCoMaConfiguration {
      * Method to prompt for the password needed to access the content store backups. This
      * method starts an interactive prompt via STDIN.
      */
-    public void setDeploymentPasswords() throws CoCoMaConfigException {
+    public void setDeploymentPasswords() throws ConfigException {
         for(DeploymentData deployment : this.deployments){
             boolean passwordSet = (deployment.getPassword().length() > 0);
             if (passwordSet) {
@@ -322,7 +349,7 @@ public class CoCoMaConfiguration {
                 if (password != null) {
                     deployment.setPassword(password);
                 } else {
-                    throw new CoCoMaConfigException("The passwords do not match.");
+                    throw new ConfigException("The passwords do not match.");
                 }
             }
         }
@@ -334,7 +361,7 @@ public class CoCoMaConfiguration {
 	 * currently set data sources. This method starts an interactive prompt via
 	 * STDIN for each data source defined in the configuration.
 	 */
-	public void setDataSourcesPasswords() throws CoCoMaConfigException {
+	public void setDataSourcesPasswords() throws ConfigException {
 
 		for (DataSourceData ds : this.dataSources) {
 			boolean passwordSet = (ds.getPassword().length() > 0);
@@ -359,7 +386,7 @@ public class CoCoMaConfiguration {
 				if (password != null) {
 					ds.setPassword(password);
 				} else {
-					throw new CoCoMaConfigException(
+					throw new ConfigException(
 							"The passwords do not match.");
 				}
 			}
@@ -375,18 +402,18 @@ public class CoCoMaConfiguration {
 	 *
 	 * @return The newly entered password
 	 *
-	 * @throws CoCoMaConfigException
+	 * @throws ConfigException
 	 *             This exception is thrown whenever there is a problem with the
 	 *             password prompt or when the passwords do not match.
 	 */
 	private static String promptForPassword(String intro)
-			throws CoCoMaConfigException {
+			throws ConfigException {
 
 		String pwd = PwdConsole.unmaskedPasswordPrompt(intro, "Password:",
 				"Retype password:");
 
 		if (pwd == null) {
-			throw new CoCoMaConfigException("The passwords do not match");
+			throw new ConfigException("The passwords do not match");
 		}
 
 		return pwd;

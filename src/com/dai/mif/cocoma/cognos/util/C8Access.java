@@ -4,12 +4,9 @@
 
 package com.dai.mif.cocoma.cognos.util;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 
 import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
@@ -177,8 +174,8 @@ public class C8Access {
 		log.debug("--> ConnectToCognosServer10()");
 		log.debug("Server: " + serverURL);
 		try {
-			cmService = new ContentManagerServiceStub(new java.net.URL(
-					serverURL), cmServiceLocator);
+			cmService = new ContentManagerServiceStub(new java.net.URL(serverURL), cmServiceLocator);
+			
 			monitorService = monitorServiceLocator.getmonitorService(new java.net.URL(serverURL));
 
 			String timeoutValueConfig = "0";
@@ -250,7 +247,7 @@ public class C8Access {
 
 	/**
 	 * initReportService() setzt den BiBusHeader passend zum reportService
-	 * benötigt "import com.cognos.org.apache.axis.client.Stub"
+	 * benoetigt "import com.cognos.org.apache.axis.client.Stub"
 	 */
 	public void SetBiBusHeader() {
 		this.log.debug(" --> ConnectinitReportService() ");
@@ -267,8 +264,8 @@ public class C8Access {
 			CMbibus = (BiBusHeader) temp.getValueAsType(new QName(BiBus_NS,
 					BiBus_H));
 		} catch (Exception e) {
-			this.log.debug("Getting BiBus Header Exception:" + e);
-			this.log.debug("Will setHeader to cmService now");
+			this.log.error(" !!! Found BiBus Header Exception:" + e.getMessage());
+			this.log.error("Will setHeader to cmService now");
 		}
 
 		if (CMbibus != null) {
@@ -375,13 +372,13 @@ public class C8Access {
 	public MonitorService_PortType getMonitorService(boolean isNewConversation, String RSGroup) {
 		  BiBusHeader bibus = null; 
 		  bibus = 
-		    getHeaderObject(((Stub)monitorService).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), isNewConversation, RSGroup); 
+		    getHeaderObject(((Stub)monitorService).getHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), isNewConversation, RSGroup); 
 		 
 		  if (bibus == null)  
 		  { 
 		    BiBusHeader CMbibus = null; 
 		    CMbibus = 
-		      getHeaderObject(((Stub)cmService).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, RSGroup); 
+		      getHeaderObject(((Stub)cmService).getHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, RSGroup); 
 		  
 		    ((Stub)monitorService).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", CMbibus); 
 		  } 

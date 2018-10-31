@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CoCoMa>
-<log4jloglevel>INFO</log4jloglevel>
+<log4jloglevel>DEBUG</log4jloglevel>
 <version>$Revision: 139 $</version>
 	<server>
 			<!-- 
@@ -9,7 +9,7 @@
 							the p2pd URL from your application server as well.
 							Try which one fits your needs best.
 			-->
-			<dispatcherURL>http://192.168.33.135:9300/p2pd/servlet/dispatch</dispatcherURL>
+			<dispatcherURL>http://127.0.0.1:9080/p2pd0/servlet/dispatch</dispatcherURL>
 			<!-- 
 			namespace: 		This is the namespace ID configured in Cognos Configuration.
 							Don't be missguided by the namespace shown in your browser, when
@@ -21,14 +21,14 @@
 			username: 		This is the username of an account that has administrator rights
 							in your enviroment
 			-->
-			<username>administrator</username>
+			<username>rroeber</username>
 			<!-- 
 			password:		This is the crypted password of your account. Decryption is done by 
 							CoCoMa. So no worry with security hazzards. Empty the password and
 							call CoCoMa with commandline parameter "setpass" to create and store
 							a newly crypted password. 
 			-->
-			<password>jxWkxnSGloWpa2NAcfhFVw==</password>
+			<password>yWj+Wbyabk5l4SFANAvT0Q==</password>
 			<version>10</version>
 			<!-- ================================================================ -->
 			<!-- Using Windows netshares with Java Programm requires  -->
@@ -119,7 +119,7 @@
 			</recordingLevel>
 			<!-- archive:			name of the archive to be read from disc.	
 			-->
-			<archive>FullBackup_before_autodeployment.zip</archive>
+			<archive>FullBackup_Autodeployment.zip</archive>
 			<!-- show_job_history_after_deployment:		true or false. No comment.  -->
 			<show_job_history_after_deployment>true</show_job_history_after_deployment>
 		</deployment>

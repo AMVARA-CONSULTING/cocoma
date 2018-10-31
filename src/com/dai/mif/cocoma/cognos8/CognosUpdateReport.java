@@ -12,7 +12,6 @@ import com.cognos.developer.schemas.bibus._3.QueryOptions;
 import com.cognos.developer.schemas.bibus._3.Report;
 import com.cognos.developer.schemas.bibus._3.SearchPathMultipleObject;
 import com.cognos.developer.schemas.bibus._3.Sort;
-import com.cognos.developer.schemas.bibus._3.StringArrayProp;
 import com.cognos.developer.schemas.bibus._3.StringProp;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.cognos.util.C8Access;
@@ -48,7 +47,7 @@ public class CognosUpdateReport {
 			if (report.length > 50)
 				log.info("please be patient. Set loglevel to DEBUG to see details.");
 
-			String[] percentage_done_liste = new String[10];
+			String[] percentage_done_liste = new String[12];
 			
 			for (int i = 0; i < report.length; i++) {
 
@@ -107,7 +106,8 @@ public class CognosUpdateReport {
 							log.debug("Upgradeing Report|Query");
 							cmService.update(new BaseClass[] { report[i] },
 									new UpdateOptions());
-							log.debug(i + "/" + report.length
+							int i_cnt = i+1;
+							log.debug(i_cnt + "/" + report.length
 									+ " has been updated: "
 									+ report[i].getSearchPath().getValue());
 						} else {

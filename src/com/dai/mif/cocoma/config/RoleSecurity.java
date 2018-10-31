@@ -205,11 +205,14 @@ public class RoleSecurity extends AbstractSecurityObject {
 
         if (this.keepExistingMembers) {
             BaseClass[] existingMembers = role.getMembers().getValue();
-            for (BaseClass member : existingMembers) {
-                members.add(member);
+            if (existingMembers != null) {
+	            for (BaseClass member : existingMembers) {
+	                members.add(member);
+	            }
+
             }
         }
-
+        
         for (AbstractSecurityObject aso : securityObjects) {
             String defaultName = aso.getC8Object().getDefaultName().getValue();
             if (this.roleMembers.contains(defaultName)

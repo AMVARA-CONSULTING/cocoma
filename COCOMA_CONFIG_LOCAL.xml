@@ -1,97 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CoCoMa>
-<log4jloglevel>INFO</log4jloglevel>
-<version>$Revision: 139 $</version>
+	<log4jloglevel>INFO</log4jloglevel>
+	<version>$Revision: 139 $</version>
 	<server>
-			<dispatcherURL>http://192.168.33.135:9300/p2pd/servlet/dispatch</dispatcherURL>
-			<namespace>LDAP</namespace>
-			<username>administrator</username>
-			<password>jxWkxnSGloWpa2NAcfhFVw==</password>
-			<version>10</version>
-			<!-- ================================================================ -->
-			<!-- Using Windows netshares with Java Programm requires  -->
-			<!-- drive letters to be replace with remote information from command "net use" -->
-			<!-- Y:\temp_rrr\deployment > net use -->
-			<!-- Neue Verbindungen werden nicht gespeichert. -->
-			<!-- Status       Lokal     Remote                    Netzwerk -->
-			<!-- ================================================================ -->
-			<!-- OK           Y:        \\192.168.33.135\c$       Microsoft Windows Network -->
-			<!-- ================================================================ -->
-			<!-- Y:\temp_rrr translates into \\192.168.33.135\c$\temp_rrr -->
-			<!--  \\192.168.33.135\c$\Programme\ibm\cognos\c1021_server\deployment\ -->
-			<deploymentFolder></deploymentFolder>
-	 </server>
-	
-<!--  
-	<mailserver>
-        <username>amvara.roeber@extaccount.com</username>
-        <host>mailhost</host>
-        <port>25</port>
--->
-        <!-- Strategy: TLS  -->
-<!--         <strategy/>
-		<password>hdb7fPCDpRl9uORM1zzYMw==</password>
-	</mailserver>
--->
- 	
+		<dispatcherURL>http://127.0.0.1:9080/p2pd0/servlet/dispatch
+		</dispatcherURL>
+		<namespace>LDAP</namespace>
+		<username>rroeber</username>
+		<password>6DQv6pGEnjS+RxdC0lt4vA==</password>
+		<version>10</version>
+		<!-- ================================================================ -->
+		<!-- Using Windows netshares with Java Programm requires -->
+		<!-- drive letters to be replace with remote information from command "net 
+			use" -->
+		<!-- Y:\temp_rrr\deployment > net use -->
+		<!-- Neue Verbindungen werden nicht gespeichert. -->
+		<!-- Status Lokal Remote Netzwerk -->
+		<!-- ================================================================ -->
+		<!-- OK Y: \\192.168.33.135\c$ Microsoft Windows Network -->
+		<!-- ================================================================ -->
+		<!-- Y:\temp_rrr translates into \\192.168.33.135\c$\temp_rrr -->
+		<!-- \\192.168.33.135\c$\Programme\ibm\cognos\c1021_server\deployment\ -->
+		<deploymentFolder></deploymentFolder>
+	</server>
+
 	<backup>
-	   <name>FullBackup</name>
-	   <enabled>true</enabled>
-	   <password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
-	   <use_datetimesuffix>true</use_datetimesuffix>
+		<name>FullBackup</name>
+		<enabled>true</enabled>
+		<password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
+		<use_datetimesuffix>false</use_datetimesuffix>
 	</backup>
-	
+
 	<deployments>
 		<deployment>
-			<name>MIF_Arbeitslisten</name>
+			<name>IBM_Cognos_QUERYSTUDIO</name>
 			<name_set_datetime_suffix>
-				<!-- 
-					Set Datetime String as Suffix on deployment name appearing in CognosConnection
-				 	true = YYYYMMDD_HHmmss will be appended to name
-				 	false = name as specified will be used, if exists older deployment with same name, it will be overwritten
-				 -->
+				<!-- Set Datetime String as Suffix on deployment name appearing in CognosConnection 
+					true = YYYYMMDD_HHmmss will be appended to name false = name as specified 
+					will be used, if exists older deployment with same name, it will be overwritten -->
 				true
 			</name_set_datetime_suffix>
-			<password></password>
-			<prefix_archive_after_deployent>yyyyMMdd_HHmmss</prefix_archive_after_deployent>
+			<password>Ad63BGTKYKwoMqGMW3xGYw==</password>
+			<prefix_archive_after_deployent>yyyyMMdd_HHmmss
+			</prefix_archive_after_deployent>
 			<recordingLevel>
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>deployment_incoming\MIFReporting_revision_*.zip</archive>
-			<!-- 
-			<delete_items>
-				<item>/content/folder[@name='Samples_PowerCube']</item>
-				<item>/content/folder[@name='Samples_PowerCube_Dummy']</item>
-			</delete_items>
-			-->
-			<runCureJar>false</runCureJar>
-			<runCureJar_searchPath>			
-			<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->
-			<!-- /content/folder[@name='Beispiele']//report | /content/folder[@name='Beispiele']//query -->
-			<!-- ATTENTION!!! following searchpath may read thousands of reports!!!! --> 
-			//query
+			<archive>deployment_incoming/IBM_Cognos_Samples.zip</archive>
+			<!-- <delete_items> <item>/content/folder[@name='Samples_PowerCube']</item> 
+				<item>/content/folder[@name='Samples_PowerCube_Dummy']</item> </delete_items> -->
+			<runCureJar>true</runCureJar>
+			<runCureJar_searchPath>
+				<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->
+				<!-- /content/folder[@name='Beispiele']//report | /content/folder[@name='Beispiele']//query -->
+				<!-- ATTENTION!!! following searchpath may read thousands of reports!!!! -->
+				//query
 			</runCureJar_searchPath>
-			<runCureJar_PackagePath>		
-				<!-- 
-				reportPackagePath is a CognosSearchPath from Cognos 
-				Connection for the Package that was upgraded 
-				This element is optional.
-				-->
-			</runCureJar_PackagePath>		
-	        <mail_sender>amvara.roeber@extaccount.com</mail_sender>
-	        <mail_recipient>amvara.roeber@extaccount.com</mail_recipient>
-	        <mail_subject>[MIF] Cognos Autodeployment {HOST} {STATUS}</mail_subject>
-	        <mail_text>Deployment-Archive: {ARCHIVE}
-	Status: {STATUS}
-	Date: {DATE}
-	Time: {TIME}
-	---
-	Cognos Autodeployment using COCOMA Version {VERSION} on Host {HOST}</mail_text>
-	
+			<runCureJar_PackagePath>
+				<!-- reportPackagePath is a CognosSearchPath from Cognos Connection for 
+					the Package that was upgraded This element is optional. -->
+			</runCureJar_PackagePath>
+
 		</deployment>
 	</deployments>
-	
+
 	<curjar_searchpath>
 		<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->
 		//query

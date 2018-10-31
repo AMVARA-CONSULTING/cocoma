@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.dai.mif.cocoma.cognos.util.C8Access;
@@ -36,7 +35,7 @@ import com.dai.mif.cocoma.config.ServerData;
 import com.dai.mif.cocoma.config.UIData;
 import com.dai.mif.cocoma.crypt.Cryptography;
 import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
-import com.dai.mif.cocoma.exception.CoCoMaConfigException;
+import com.dai.mif.cocoma.exception.ConfigException;
 import com.dai.mif.cocoma.logging.Logging;
 
 /**
@@ -55,8 +54,12 @@ import com.dai.mif.cocoma.logging.Logging;
 public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
-	private static String productVersion = "v2.6";
-	private static String productRevision = " Build: @@Cognos 10.2.1/2015-05-07_1144/85@@ ";
+	private static String productVersion = "v3.1";
+	private static String productRevision = "Build: @@Cognos 10.2.1/2017-02-14_2002/396@@ ";
+	
+	/** Mail Address displayed in CoCoMa Help text **/
+	/* maybe overwritten by commandline argument --mailto */
+	public static String COCOMA_MAILTO_HELPTEXT = "mbox-096-mif-betrieb@daimler.com; mbox_mif_dcxam@daimler.com";
 
 	/** UID used as key for password encryption */
 	private static final String COCOMA_UID = "07369e30-1175-11df-8a39-0800200c9a66";
@@ -77,7 +80,7 @@ public class CoCoMa {
 	 * The default file name for the configuration - can be overridden via
 	 * command line.
 	 */
-	private static String configFileName = "CoCoMa.xml";
+	private static String configFileName = "COCOMA_CONFIG_LOCAL.xml";
 
 	private static boolean interactiveMode = false;
 
@@ -102,6 +105,7 @@ public class CoCoMa {
 
 	private static int errorCode = 0;
 	private static List<String> errorLog;
+	private static boolean dumpAccounts = false;
 
 	/**
 	 * Convenience method to extract the acutal command from a command line
@@ -124,8 +128,8 @@ public class CoCoMa {
 		} else if (command.startsWith("/")) {
 			command = arg.substring(1);
 		}
-
-		return command;
+		
+		return command.toLowerCase();
 	}
 
 	/**
@@ -182,7 +186,16 @@ public class CoCoMa {
 			+ "Does not ask to confirm 'YES, I HAVE A BACKUP'. " 
 			+ "Better set create-fullbackup option in config file to true. " 
 			+ "" + lf + lf;
-
+		helpString += "--mailto emailaddress@domain"
+				+ lf
+				+ "eMail being displayed in helptext information. " 
+				+ "" + lf + lf;
+		helpString += "Almost all options may be combined, e.g. java -jar CoCoMa.jar --dispatcherinfo --config COCOMA_CONFIG_LOCAL.xml --donotaskforbackup"
+				+ lf
+				+ "See CoCoMa documentation for details on howto configure config.xml files." + lf
+				+ "---------- end of help information  --------------------------------" 
+				+ "" 
+				+ "" + lf + lf;
 		return helpString;
 	}
 
@@ -210,15 +223,17 @@ public class CoCoMa {
 		readCommandlineArguments(args);
 
 		if (CoCoMa.getCrypt().length()>0)  {
+			log.info("==> Better use commandline switch --setpass! <==");
 			log.info("Password to crypt: "+CoCoMa.getCrypt());
 			// prepare crypt module
-			@SuppressWarnings("unused")
 			Cryptography cryptClass = Cryptography.initialize(COCOMA_UID);
 			String encryptedPw = cryptClass.encrypt(CoCoMa.getCrypt());
 			log.info("Encrypted Password: "+encryptedPw);
 			log.info("Cut and paste this password into the config.xml file of your choice.");
 			System.exit(0);
 		}
+		
+		
 		
 		
 		if (infoMode) {
@@ -232,6 +247,13 @@ public class CoCoMa {
 			// create an instance of the main program
 			CoCoMa cocoma = new CoCoMa();
 			C8Access c8Access = cocoma.prepare();
+
+			if (CoCoMa.isDumpAccounts() == true) {
+				C8Utility c8util = new C8Utility(c8Access);
+				c8util.dumpAccounts();
+				log.info("done.");
+				System.exit(0);
+			}
 
 			// see if run in interactive mode to set the passwords or in
 			// standard mode to actually run
@@ -262,7 +284,7 @@ public class CoCoMa {
 						cocoma.configuration.setDeploymentPasswords();
 						cocoma.configuration.setDataSourcesPasswords();
 
-					} catch (CoCoMaConfigException ce) {
+					} catch (ConfigException ce) {
 						String msg = ce.getMessage();
 						CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR,
 								msg);
@@ -310,7 +332,7 @@ public class CoCoMa {
 			}
 
 			log.debug("Thank you for using CognosConfigurationManager.");
-			log.debug("Send questions or suggestions to mif_betrieb@daimler.com .");
+			log.debug("Send questions or suggestions to "+COCOMA_MAILTO_HELPTEXT+" .");
 			log.info("end");
 
 		}
@@ -327,7 +349,11 @@ public class CoCoMa {
 	 * @return A String containing the product version information.
 	 */
 	private static String getVersionString() {
-		return productName + " " + productVersion + " " + productRevision;
+		return productName + " " + productVersion;
+	}
+
+	private static String getRevisionString() {
+		return productRevision;
 	}
 
 	private static boolean phaseBasicConfiguration = false;
@@ -441,8 +467,8 @@ public class CoCoMa {
 			// Mail notification
 			if (phaseDeployment && !interactiveMode && !checkConfigMode) {
 
-				log.info("Try sending mail notifications.");
-
+				log.debug("Check, if mail notification has been configured.");
+				
 				MailserverData mailServer = this.configuration
 						.getMailserverData();
 
@@ -470,7 +496,7 @@ public class CoCoMa {
 					}
 				}
 			}
-
+				
 		} catch (CoCoMaC8Exception c8e) {
 			String msg = c8e.getMessage();
 			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
@@ -593,7 +619,7 @@ public class CoCoMa {
 									depData.getRunCureJar_searchPath(),
 									depData.getRunCureJar_packagePath());
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+
 							log.error("Severe error!");
 							log.error(e.getStackTrace());
 							e.printStackTrace();
@@ -617,10 +643,11 @@ public class CoCoMa {
 		// show information about the program itself
 		log.info("---------------------------------------------------o_o-");
 		log.info("Welcome to CoCoMa for IBM Cognos 10.x ");
-		log.info("(C) 2011-2015 Ralf Roeber, AMVARA Consulting, Barcelona");
+		log.info("(C) 2011-2016 Ralf Roeber, AMVARA Consulting, Barcelona");
 		log.info(getVersionString());
+		log.info(getRevisionString());
 		log.info("Use --help to see options.");
-		log.info("------------------------------------");
+		log.info("---------------------------------------------------^o^-");
 
 	}
 
@@ -690,7 +717,7 @@ public class CoCoMa {
 								e.printStackTrace();
 							}
 						} else {
-							log.info("No methods to connect to server other than 10");
+							log.info("No methods to connect to server other than 10. Set <version>10</version> in <server>-section");
 							System.exit(2);
 						}
 
@@ -720,7 +747,7 @@ public class CoCoMa {
 								+ e.getMessage();
 						System.out.println(configCheckResult);
 					}
-				} catch (CoCoMaConfigException e) {
+				} catch (ConfigException e) {
 					access = null;
 					String msg = "Invalid configuration data: "
 							+ e.getMessage();
@@ -730,7 +757,7 @@ public class CoCoMa {
 
 					if (checkConfigMode) {
 						String configCheckResult = "Configuration in "
-								+ configFileName + " is invlaid: "
+								+ configFileName + " is invalid: "
 								+ e.getMessage();
 						System.out.println(configCheckResult);
 					}
@@ -873,70 +900,82 @@ public class CoCoMa {
 	 */
 	private static void readCommandlineArguments(String[] args) {
 
+		String complete_command_line_args = "";
+		
 		// iterate over the given arguments
 		for (int i = 0; i < args.length; i++) {
 
 			// convert the argument to lower case, i.e. command line switches
 			// are not case sensitive for this application
 			String arg = args[i].toLowerCase();
-
+			complete_command_line_args += arg+" ";
+			
 			// command line switches may begin with --, - or /
 			if (arg.startsWith("--") || arg.startsWith("-")
 					|| arg.startsWith("/")) {
 
 				String command = extractCommandLineSwitch(arg);
 
-				if (command.equals("config") && (i < args.length - 1)) {
+				if (command.equalsIgnoreCase("config") && (i < args.length - 1)) {
 					configFileName = args[i + 1];
 				}
 
-				if (command.equals("setpass")) {
+				if (command.equalsIgnoreCase("setpass")) {
 					interactiveMode = true;
 				}
 
-				if (command.equals("dispatcherinfo")) {
+				if (command.equalsIgnoreCase("dispatcherinfo")) {
+					log.debug("Found commandline option disaptcherinfo");
 					checkDispatcherInformation = true;
 				}
 
-				if (command.equals("version") || command.equals("help")) {
+				if (command.equalsIgnoreCase("version") || command.equals("help")) {
 					infoMode = true;
 				}
 
-				if (command.equals("check")) {
+				if (command.equalsIgnoreCase("check")) {
 					checkConfigMode = true;
 				}
 
-				if (command.equals("console")) {
+				if (command.equalsIgnoreCase("console")) {
 					consoleLogging = true;
 				}
 
-				if (command.equals("phasebasic")) {
+				if (command.equalsIgnoreCase("phasebasic")) {
 					phaseBasicConfiguration = true;
 				}
 
-				if (command.equals("advancedDispatcherSetting")) {
+				if (command.equalsIgnoreCase("advancedDispatcherSetting")) {
 					phaseAdvancedDispatcherSetting = true;
 				}
 
-				if (command.equals("phasedeployment")
+				if (command.equalsIgnoreCase("phasedeployment")
 						|| command.equals("phasedeploy")) {
 					phaseDeployment = true;
 				}
 
-				if (command.equals("phasecontent")) {
+				if (command.equalsIgnoreCase("phasecontent")) {
 					phaseContentConfiguration = true;
 				}
 				
-				if (command.equals("donotaskforbackup")) {
+				if (command.equalsIgnoreCase("donotaskforbackup")) {
 					phaseBackupDonotAsk = true;
 				}
 				
-				if (command.equals("crypt")) {
+				if (command.equalsIgnoreCase("crypt")) {
 					setCrypt(args[i+1]);
 				}
 				
+				if (command.equalsIgnoreCase("dumpaccounts")) {
+					setDumpAccounts(true);
+				}
+				
+				if (command.equalsIgnoreCase("mailto")) {
+					COCOMA_MAILTO_HELPTEXT = args[i+1];
+				}
 			}
 		}
+		log.info("Command line parameters: "+complete_command_line_args);
 
 		// if none of the phase switches is set, do a complete run
 		if (!phaseBasicConfiguration 
@@ -1040,5 +1079,19 @@ public class CoCoMa {
 	 */
 	public static String getCrypt() {
 		return crypt;
+	}
+
+	/**
+	 * @param dumpAccounts the dumpAccounts to set
+	 */
+	public static void setDumpAccounts(boolean dumpAccounts) {
+		CoCoMa.dumpAccounts = dumpAccounts;
+	}
+
+	/**
+	 * @return the dumpAccounts
+	 */
+	public static boolean isDumpAccounts() {
+		return dumpAccounts;
 	}
 }
