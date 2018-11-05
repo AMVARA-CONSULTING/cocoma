@@ -11,10 +11,19 @@
 <project name="CoCoMa" default="build-8.4.1">
 
 	<property file="build.properties" />
+	
+	<property name="build.version" value="Cognos 10.2.1" />
+	<tstamp>
+		<format property="build.time" pattern="yyyy-MM-dd_HHmm" unit="hour" />
+	</tstamp>
+	<buildnumber file="build.number" />
 
+	<property name="version.code" value="${build.version}/${build.time}/${build.number}" />
+	
+	<replaceregexp file="${src.dir}/com/dai/mif/cocoma/CoCoMa.java" match="@@[\w \d\.]+/\d{4}-\d{2}-\d{2}_\d{4}/\d+@@" replace="@@${version.code}@@" />
+	
 	<import file="retroweaver-taskdef.xml" />
 	<import file="one-jar-ant-task.xml" />
-	
 	<description>
 	    Build script for the CoCoMa project. It offers ANT targets 
 		to build a JAR export and additionally to convert the code into Java 1.4 
@@ -39,18 +48,17 @@
 	<target name="cognos-8.4.1">
 		<property name="cognosVersion" value="cognos_1021" />
 	</target>
-
+<!--
 	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
 		<antcall target="one-jar" />
 		<antcall target="copy-dist" />
 	</target>
-
-	<target name="build-8.4.1-compat" description="Build the project as JAR" depends="cognos-8.4.1">
-		<antcall target="one-jar-compat" />
-		<antcall target="copy-dist" />
+-->
+	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
+		<antcall target="copy-2mif-share" />
 	</target>
 
-	<target name="copy-dist">
+	<target name="copy-dist" depends="one-jar-compat">
 		<copy todir="${dist.dir}">
 			<fileset dir="${src.dir}/..">
 				<include name="*.properties" />
@@ -63,8 +71,8 @@
 		</copy>
 	</target>
 
-	<target name="copy-2mif-share">
-		<copy todir="mif-share.dir">
+	<target name="copy-2mif-share" depends="copy-dist">
+		<copy todir="${mif-share.dir}">
 			<fileset dir="..">
 				<include name="../templates/" />
 				<include name="README.*" />

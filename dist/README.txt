@@ -48,7 +48,22 @@ Other commandline argument:
 
 As of Version 3.1: Cognos 10.2.1/2016-05-25_1825/153
 --------------------------------------------------------
-
+added support for jdbc variables to xml config file, now we can add jdbc configuration content in xml configuration file, an example:
+...
+	...
+	<dataSources>
+		<dataSource>
+			...
+			<jdbc>
+				<dbserver>DBHOST</dbserver> <!-- this is the url to the jdbc server -->
+				<dbname>FK1XAP03</dbname> <!-- this is the database name, to which we want to connect -->
+				<dbport>60008</dbport> <!-- this is the port to the jdbc server -->
+			</jdb>
+			...
+		</dataSource>
+	</dataSources
+	...
+...
 
 As of Version 2.9: Cognos 10.2.1/2016-05-25_1825/153
 --------------------------------------------------------
