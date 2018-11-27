@@ -4,9 +4,11 @@
 
 package com.dai.mif.cocoma.cognos.util;
 
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import javax.xml.namespace.QName;
+import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
@@ -62,7 +64,15 @@ public class C8Access {
 
 	private MonitorService_ServiceLocator monitorServiceLocator;
 
-	private MonitorService_PortType monitorService;
+	public MonitorService_ServiceLocator getMonitorServiceLocator() {
+		return monitorServiceLocator;
+	}
+
+	public void setMonitorServiceLocator(MonitorService_ServiceLocator monitorServiceLocator) {
+		this.monitorServiceLocator = monitorServiceLocator;
+	}
+
+	private static MonitorService_PortType monitorService;
 
 	/**
 	 * Constructor for this class. It initializes all attributes needed to build
@@ -90,6 +100,14 @@ public class C8Access {
 		this.monitorServiceLocator = new MonitorService_ServiceLocator();
 
 		this.c8Utiliy = new C8Utility(this);
+	}
+
+	public ContentManagerService_ServiceLocator getCmServiceLocator() {
+		return cmServiceLocator;
+	}
+
+	public void setCmServiceLocator(ContentManagerService_ServiceLocator cmServiceLocator) {
+		this.cmServiceLocator = cmServiceLocator;
 	}
 
 	public boolean hasSecondaryRequest(AsynchReply response,
@@ -123,9 +141,24 @@ public class C8Access {
 				
 				if (hasSecondaryRequest(asReply, "wait")) {
 					log.debug("Waiting for converstation to finish.");
-					asReply = this.getMonitorService(false, this.getUrl()).wait(
-							asReply.getPrimaryRequest(),
-							new ParameterValue[] {}, new Option[] {});
+					java.net.URL serverURL = null;
+					try {
+						serverURL = new java.net.URL(this.getUrl());
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			        try {
+						asReply = this.getMonitorServiceLocator().getmonitorService(serverURL).wait(
+								asReply.getPrimaryRequest(),
+								new ParameterValue[] {}, new Option[] {});
+					} catch (ServiceException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			//		asReply = this.getMonitorService(false, this.getUrl()).wait(
+			//				asReply.getPrimaryRequest(),
+			//				new ParameterValue[] {}, new Option[] {});
 					log.debug("asReply received ... ");
 					log.debug("Status: "+asReply.getStatus());
 				} else {
@@ -144,9 +177,23 @@ public class C8Access {
 				if (hasSecondaryRequest(asReply, "wait")) {
 					log.debug("Waiting for converstation to finish.");
 					try {
-						asReply = this.getMonitorService(false, this.getUrl()).wait(
-								asReply.getPrimaryRequest(),
-								new ParameterValue[] {}, new Option[] {});
+//						asReply = this.getMonitorService(false, this.getUrl()).wait(
+//								asReply.getPrimaryRequest(),
+//								new ParameterValue[] {}, new Option[] {});
+						
+						java.net.URL serverURL = null;
+						try {
+							serverURL = new java.net.URL(this.getUrl());
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				        try {
+				        	asReply = this.getMonitorServiceLocator().getmonitorService(serverURL).wait(asReply.getPrimaryRequest(), new ParameterValue[] {}, new Option[] {});
+						} catch (ServiceException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					} catch (RemoteException e) {
 						cntWaitRetries++;
 						log.debug("!!! Received reportError while waiting for AsyncReply. Will keep trying.");
@@ -192,8 +239,8 @@ public class C8Access {
 		log.debug("** cmService connect done ");
 
 		reportServiceLocator = new ReportService_ServiceLocator();
-		repService = reportServiceLocator.getreportService(new java.net.URL(
-				serverURL));
+		setRepService(reportServiceLocator.getreportService(new java.net.URL(
+				serverURL)));
 		log.debug("** repService connect done");
 
 		//
@@ -442,5 +489,21 @@ public class C8Access {
 	 */
 	public String getUrl() {
 		return url;
+	}
+
+	public ReportService_PortType getRepService() {
+		return repService;
+	}
+
+	public void setRepService(ReportService_PortType repService) {
+		this.repService = repService;
+	}
+
+	public static MonitorService_PortType getMonitorService() {
+		return monitorService;
+	}
+
+	public void setMonitorService(MonitorService_PortType monitorService) {
+		C8Access.monitorService = monitorService;
 	}
 }

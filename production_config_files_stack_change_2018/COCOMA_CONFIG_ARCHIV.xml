@@ -32,7 +32,7 @@
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <password>9SLhO9f5dKAvpufhk+OhGQ==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -40,13 +40,18 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
-				
-				<dataSource>
+
+                <dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <password>9SLhO9f5dKAvpufhk+OhGQ==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -55,13 +60,18 @@
                                 <openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>FK1XAT03</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_crn</username>
-                        <password>Iz0kYTGT1NKaBqQ9zKM7VA==</password>
+                        <password>NZzuQz+NYrYKzETPtmG5Hw==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -69,14 +79,24 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
                         <username>crn_aud</username>
-                        <password>flH5QBSUUcYXBPtqZLNjsw==</password>
+                        <password>hlhDQOimR2clGOixLjfk6Q==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
         </dataSources>
@@ -94,7 +114,7 @@
 
                 <auditLevel>
                                 <contentManagerService>BASIC</contentManagerService>
-                                <reportDataService>REQUEST</reportDataService>
+                                <reportDataService>BASIC</reportDataService>
                                 <eventManagementService>BASIC</eventManagementService>
                                 <jobService>BASIC</jobService>
                                 <monitorService>BASIC</monitorService>
@@ -179,7 +199,7 @@
                                 <name>WorklistUser</name>
                                 <members>
                                   <user>rroeber</user>
-                                  <user>kesslera</user>
+								  <user>kesslera</user>
                                   <user>sdkuser</user>
                                 </members>
                         </role>
@@ -188,7 +208,7 @@
                                 <name>QSWorklistUser</name>
                                 <members>
                                   <user>rroeber</user>
-                                  <user>kesslera</user>
+								  <user>kesslera</user>
                                   <user>sdkuser</user>
                                 </members>
                         </role>

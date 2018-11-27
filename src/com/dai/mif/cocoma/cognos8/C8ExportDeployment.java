@@ -71,7 +71,20 @@ public class C8ExportDeployment {
     
     public C8ExportDeployment(C8Access c8Access, BackupData backupData){
         this.cmService = c8Access.getCmService();
-        this.mService = c8Access.getMonitorService(true,c8Access.getUrl());
+        // XXX Throws error with CA11 - this.mService = c8Access.getMonitorService(true,c8Access.getUrl());
+        java.net.URL serverURL = null;
+		try {
+			serverURL = new java.net.URL(c8Access.getUrl());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			this.mService = c8Access.getMonitorServiceLocator().getmonitorService(serverURL);
+		} catch (ServiceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         this.log = Logging.getInstance().getLog(this.getClass());
 
         this.name = backupData.getName();
@@ -190,13 +203,21 @@ public class C8ExportDeployment {
         log.debug("Executing archive");
         try {
             cmService.update(ArchiveInfo, new UpdateOptions());
-            asynchReply = mService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
         } catch (RemoteException remoteEx) {
             log.error("An error occurred while deploying content:"
                     + "\n" + remoteEx.getMessage());
             remoteEx.printStackTrace();
         }
-
+        log.debug("Getting async reply..");
+        try {
+            //asynchReply = mService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+        	asynchReply = C8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+        } catch (RemoteException remoteEx) {
+            log.error("An error occurred while deploying content:"
+                    + "\n" + remoteEx.getMessage());
+            remoteEx.printStackTrace();
+        }
+        
         if (asynchReply != null) {
             reportEventID = "Success";
             log.debug("Content Store Backup was successful");

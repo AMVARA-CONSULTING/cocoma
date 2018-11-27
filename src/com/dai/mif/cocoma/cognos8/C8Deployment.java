@@ -7,11 +7,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.channels.FileChannel;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
+
+import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
 
@@ -377,7 +380,7 @@ public class C8Deployment {
 			deploymentData.setDeploymentOptions(opt);
 
 			doap.setValue(opt);
-			importDeploy.setDeploymentOptions(doap);
+//			importDeploy.setDeploymentOptions(doap);
 
 		} else {
 			log.debug("No password for archiv provided. Skipped password section.");
@@ -623,8 +626,28 @@ public class C8Deployment {
 		// Check for deployment to finish
 		if (deploymentData.getDisplayHistoryAfterDeployment()) {
 			log.debug("Executing Monitoring for deployment ");
-			monitorService = this.c8Access.getMonitorService(false, this.c8Access.getUrl());
-			asynchReply = monitorService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+			/**
+			 * OLD IMPORT CODE
+			 * monitorService = c8Access.getMonitorService(false, this.c8Access.getUrl());
+			 * asynchReply = monitorService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+			 */
+			
+			java.net.URL serverURL = null;
+			try {
+				serverURL = new java.net.URL(c8Access.getUrl());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        try {
+				monitorService = c8Access.getMonitorServiceLocator().getmonitorService(serverURL);
+			} catch (ServiceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
+	        asynchReply = C8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+			
 			if (!(asynchReply.getStatus().equals(AsynchReplyStatusEnum.complete))
 					&& !(asynchReply.getStatus().equals(AsynchReplyStatusEnum.conversationComplete))) {
 				log.debug("Call AsyncReply wait");

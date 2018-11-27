@@ -28,7 +28,9 @@
 			<jdbc>
 				<dbserver>DBHOST</dbserver>
 				<dbname>FK1XAP03</dbname>
-				<dbport>60010</dbport></jdbc></dataSource>
+				<dbport>60010</dbport>
+			</jdbc>
+		</dataSource>
 	</dataSources>
 <dispatchers>
 

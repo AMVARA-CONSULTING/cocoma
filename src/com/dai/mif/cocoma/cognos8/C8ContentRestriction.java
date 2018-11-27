@@ -15,6 +15,7 @@ import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.BooleanProp;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.Group;
+import com.cognos.developer.schemas.bibus._3.MultilingualTokenProp;
 import com.cognos.developer.schemas.bibus._3.Option;
 import com.cognos.developer.schemas.bibus._3.PortalOption;
 import com.cognos.developer.schemas.bibus._3.PortalOptionBoolean;
@@ -233,9 +234,13 @@ public class C8ContentRestriction {
 
 		List<Account> unrestricted = new ArrayList<Account>();
 
-		unrestricted.addAll(gatherUnrestrictedRoles());
-		unrestricted.addAll(gatherUnrestrictedGroups());
-		unrestricted.addAll(gatherUnrestrictedUsers());
+		try {
+			unrestricted.addAll(gatherUnrestrictedRoles());
+			unrestricted.addAll(gatherUnrestrictedGroups());
+			unrestricted.addAll(gatherUnrestrictedUsers());
+		} catch(Exception e) {
+			log.info("Got an null value on gatherUnrestrictedRoles || gatherUnrestrictedGroups || gatherUnrestrictedUsers");
+		}
 
 		return unrestricted;
 	}
@@ -287,6 +292,10 @@ public class C8ContentRestriction {
 			if (role != null) {
 				log.info("Role return not null");
 				List<Account> roleAccounts = gatherAccountsForRole(role);
+				if(roleAccounts == null) {
+					log.info("Role members returned null - you might want to check this.");
+					return null;
+				}
 				accounts.addAll(roleAccounts);
 			} else {
 				log.info("Role return null - you might want to check this.");
@@ -303,28 +312,32 @@ public class C8ContentRestriction {
 	private List<Account> gatherAccountsForRole(Role role) {
 
 		log.info("Gather Accounts for Role");
-
 		List<Account> accounts = new ArrayList<Account>();
-
+		
+		String roleName = getRoleName(role);
+		
 		BaseClass[] members = null;
-
 		try {
 			members = role.getMembers().getValue();
 		} catch (Exception e) {
-			log.info("Working on Role: " + role.getName().toString());
-			log.fatal(" !! will exit now !! ");
-			e.printStackTrace();
-			System.exit(-1);
+			log.info("Working on Role: " + roleName + ". No members found.");
+			return null;
+//			log.fatal(" !! will exit now !! ");
+//			e.printStackTrace();
+//			System.exit(-1);
 		}
 
 		log.info("Looping over members");
 		for (BaseClass member : members) {
-			if (member instanceof Role) {
-				List<Account> accs = gatherAccountsForRole((Role) member);
-				accounts.addAll(accs);
-			}
 			if (member instanceof Group) {
 				List<Account> accs = gatherAccountsForGroup((Group) member);
+				accounts.addAll(accs);
+			}
+			if (member instanceof Role) {
+				List<Account> accs = gatherAccountsForRole((Role) member);
+				if(accs == null) {
+					return null;
+				}
 				accounts.addAll(accs);
 			}
 			if (member instanceof Account) {
@@ -380,7 +393,7 @@ public class C8ContentRestriction {
 
 		List<Account> accounts = new ArrayList<Account>();
 
-		log.debug("Groupname: " + group.getName());
+		log.debug("Groupname: " + getGroupName(group));
 
 		BaseClass[] members;
 		try {
@@ -401,10 +414,65 @@ public class C8ContentRestriction {
 			}
 		} catch (Exception e) {
 			this.log.debug("??? Error ???");
-			this.log.debug("Check why groupmembers for " + group.getName()
+			this.log.debug("Check why groupmembers for " + getGroupName(group)
 					+ " returns null !!");
 		}
 		return accounts;
+	}
+
+	/**
+	 * Get name from object group 
+	 * if that fails it gets it default name and 
+	 * if that also fails it gets it search path
+	 * 
+	 * @author ASOHAIL
+	 * @since 2018-11-13
+	 * @return string with group name
+	 */
+	private String getGroupName(Group group) {
+		String myName = "undefined";
+		try {
+			myName = group.getName().getValue().toString();
+		} catch (Exception e) {
+			try {
+				myName = group.getDefaultName().getValue().toString();
+			} catch (Exception e1) {
+				try {
+					myName = group.getSearchPath().getValue().toString();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+		}
+		
+		return myName;
+	}
+	/**
+	 * Get name from object role 
+	 * if that fails it gets it default name and 
+	 * if that also fails it gets it search path
+	 * 
+	 * @author ASOHAIL
+	 * @since 2018-11-13
+	 * @return string with role name
+	 */
+	private String getRoleName(Role group) {
+		String myName = "undefined";
+		try {
+			myName = group.getName().getValue().toString();
+		} catch (Exception e) {
+			try {
+				myName = group.getDefaultName().getValue().toString();
+			} catch (Exception e1) {
+				try {
+					myName = group.getSearchPath().getValue().toString();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+			}
+		}
+		
+		return myName;
 	}
 
 	/**

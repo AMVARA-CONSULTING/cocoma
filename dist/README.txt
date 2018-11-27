@@ -46,7 +46,10 @@ Other commandline argument:
 --dumpaccounts
 
 
-As of Version 3.1: Cognos 10.2.1/2016-05-25_1825/153
+As of Version 3.1: Cognos 10.2.1/2018-11-12_1653/382
+Modified code so Import and Export won't output error on SOAP Headers.
+
+As of Version 3.1: Cognos 10.2.1/2018-11-07_1553/381
 --------------------------------------------------------
 added support for jdbc variables to xml config file, now we can add jdbc configuration content in xml configuration file, an example:
 ...

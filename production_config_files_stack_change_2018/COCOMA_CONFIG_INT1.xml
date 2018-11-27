@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
-<server>
-                <dispatcherURL>http://localhost:9080/p2pd0/servlet/dispatch</dispatcherURL>
+<!--<server>
+                <dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
                 <version>10</version>
-        </server>
+        </server>		-->
+<server>
+	<dispatcherURL>http://127.0.0.1:9301/bi/v1/disp</dispatcherURL>
+	<namespace>LDAP</namespace>
+	<username>rroeber</username>
+	<password>jxWkxnSGloWpa2NAcfhFVw==</password>
+	<version>10</version>
+	<deploymentFolder></deploymentFolder>
+</server>
 <ui>
 
 <!--
@@ -40,6 +48,11 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 				
 				<dataSource>
@@ -55,6 +68,11 @@
                                 <openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
@@ -69,14 +87,24 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
                         <username>crn_aud</username>
-                        <password>flH5QBSUUcYXBPtqZLNjsw==</password>
+                        <password>9nY58ROdDewKznGTnPkwCA==</password> <!-- Old password found in this configuration "flH5QBSUUcYXBPtqZLNjsw==" -->
                         <isolationLevel>readUncommitted</isolationLevel>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
         </dataSources>
@@ -94,7 +122,7 @@
 
                 <auditLevel>
                                 <contentManagerService>BASIC</contentManagerService>
-                                <reportDataService>REQUEST</reportDataService>
+                                <reportDataService>BASIC</reportDataService>
                                 <eventManagementService>BASIC</eventManagementService>
                                 <jobService>BASIC</jobService>
                                 <monitorService>BASIC</monitorService>

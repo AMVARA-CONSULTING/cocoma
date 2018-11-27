@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><CoCoMa>
+<version>$Revision: 139 $</version>
+	<server>
+		<dispatcherURL>http://127.0.0.1:9301/bi/v1/disp</dispatcherURL>
+		<namespace>LDAP</namespace>
+		<username>rroeber</username>
+                <password>jxWkxnSGloWpa2NAcfhFVw==</password>
+		<version>10</version>
+		<deploymentFolder>/cluster/mif/Cognos/deployment/crn0</deploymentFolder>
+	</server>
+	
+	<backup>
+		<name>ContentStoreFullBackup</name>
+		<enabled>true</enabled>
+		<password>DRTuZlLmF6Y4KLV78IPZZQ==</password>
+		<use_datetimesuffix>false</use_datetimesuffix>
+	</backup>
+</CoCoMa>

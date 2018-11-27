@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
 <server>
-                <dispatcherURL>http://localhost:9080/p2pd0/servlet/dispatch</dispatcherURL>
+                <dispatcherURL>http://localhost:9310/bi/v1/disp</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
                 <version>10</version>
-        </server>
+        </server>	
 <ui>
 
 <!--
@@ -32,7 +32,7 @@
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <password>NrVwvBPWga6XAlSob/WpDA==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -40,13 +40,18 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 				
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <password>NrVwvBPWga6XAlSob/WpDA==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -55,13 +60,18 @@
                                 <openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>FK1XAT03</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_crn</username>
-                        <password>Iz0kYTGT1NKaBqQ9zKM7VA==</password>
+                        <password>B8ne+LhMa+Wfl8gC3kH85g==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -69,14 +79,24 @@
                                 <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
                                 <closeSession/>
                         </connectionCommands>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
-                        <username>crn_aud</username>
-                        <password>flH5QBSUUcYXBPtqZLNjsw==</password>
+                        <username>crn1_aud</username>
+                        <password>N/uZk9/N6gdtCXOBEMLM0g==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
+						<jdbc>
+							<dbserver>DBHOST</dbserver>
+							<dbname>FK1XAP03</dbname>
+							<dbport>60008</dbport>
+						</jdbc>
                 </dataSource>
 
         </dataSources>
@@ -94,7 +114,7 @@
 
                 <auditLevel>
                                 <contentManagerService>BASIC</contentManagerService>
-                                <reportDataService>REQUEST</reportDataService>
+                                <reportDataService>BASIC</reportDataService>
                                 <eventManagementService>BASIC</eventManagementService>
                                 <jobService>BASIC</jobService>
                                 <monitorService>BASIC</monitorService>

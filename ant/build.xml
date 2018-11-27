@@ -58,16 +58,19 @@
 		<antcall target="copy-2mif-share" />
 	</target>
 
-	<target name="copy-dist" depends="one-jar-compat">
+	<target name="copy-dist" depends="one-jar">
 		<copy todir="${dist.dir}">
 			<fileset dir="${src.dir}/..">
 				<include name="*.properties" />
-				<include name="*.xml" />
 				<include name="*.bat" />
 				<include name="*.sh" />
 				<include name="README.*" />
 				<exclude name="TODO.txt" />
 			</fileset>
+			<fileset dir="${src.dir}/../production_config_files_stack_change_2018">
+				<include name="*.xml" />
+			</fileset>
+			
 		</copy>
 	</target>
 
