@@ -5,8 +5,8 @@
 	<server>
 		<dispatcherURL>http://127.0.0.1:9301/bi/v1/disp</dispatcherURL>
 		<namespace>LDAP</namespace>
-		<username>rroeber</username>
-                <password>jxWkxnSGloWpa2NAcfhFVw==</password>
+		<username>apiuser</username>
+                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
 		<version>10</version>
 		<deploymentFolder></deploymentFolder>
 	</server>

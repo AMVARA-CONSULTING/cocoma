@@ -87,7 +87,7 @@ public class C8DataSource {
 		log.info("Creating data source " + dataSourceData.getName());
 
 		// {0}: DSN, {1}: User, {2}: Password, {3}: asynchronous, {4}: dbserver (JDBC), {5}: dbport (JDBC), {6}: dbname (JDBC)
-		String connectionStringPattern = (this.dataSourceData.getJDBC() == true) ? "^User ID:^?Password:;LOCAL;D2;DSN=APP0;UID=%s;PWD=%s;APP0@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR:^User ID:^?Password:;LOCAL;JD-D2;URL=jdbc:db2://{4}:{5}/{6};DRIVER_NAME=com.ibm.db2.jcc.DB2Driver" : "^User ID:^?Password:;LOCAL;D2;DSN=APP0;UID=%s;PWD=%s;APP0@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR";
+		String connectionStringPattern = (this.dataSourceData.getJDBC() == true) ? "^User ID:^?Password:;LOCAL;D2;DSN={0};UID=%s;PWD=%s;@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR:^User ID:^?Password:;LOCAL;JD-D2;URL=jdbc:db2://{4}:{5}/{6};DRIVER_NAME=com.ibm.db2.jcc.DB2Driver" : "^User ID:^?Password:;LOCAL;D2;DSN={0};UID=%s;PWD=%s;@ASYNC=1@0/0@COLSEQ=IBM_JD_CNX_STR";
 
 		String connectionString = MessageFormat.format(connectionStringPattern,
 				this.dataSourceData.getDBAlias(),

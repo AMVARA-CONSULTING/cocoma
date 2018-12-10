@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
-<!--<server>
+		<server>
                 <dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
                 <version>10</version>
-        </server>		-->
-<server>
-	<dispatcherURL>http://127.0.0.1:9301/bi/v1/disp</dispatcherURL>
-	<namespace>LDAP</namespace>
-	<username>rroeber</username>
-	<password>jxWkxnSGloWpa2NAcfhFVw==</password>
-	<version>10</version>
-	<deploymentFolder></deploymentFolder>
-</server>
+        </server>
 <ui>
 
 <!--
@@ -102,8 +94,8 @@
                         <isolationLevel>readUncommitted</isolationLevel>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbname>FK1XAP04</dbname>
+							<dbport>60012</dbport>
 						</jdbc>
                 </dataSource>
 

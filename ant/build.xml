@@ -67,7 +67,7 @@
 				<include name="README.*" />
 				<exclude name="TODO.txt" />
 			</fileset>
-			<fileset dir="${src.dir}/../production_config_files_stack_change_2018">
+			<fileset dir="${src.dir}/../production_config_files">
 				<include name="*.xml" />
 			</fileset>
 			

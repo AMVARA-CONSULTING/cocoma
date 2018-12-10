@@ -6,7 +6,7 @@
 		<username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
 		<version>10</version>
-		<deploymentFolder>/cluster/mif/cognos/deployment/crn0/</deploymentFolder>
+		<deploymentFolder></deploymentFolder>
 	</server>
 	
 	<backup>
