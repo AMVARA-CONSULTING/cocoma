@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
 <server>
-                <dispatcherURL>http://localhost:9320/p2pd/servlet/dispatch</dispatcherURL>
+                <dispatcherURL>http://localhost:9340/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
@@ -31,13 +31,13 @@
                 <dataSource>
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t12</username>
-                        <password>xOfcgSz35u4s6PpjasppFY6YQqzPrsYJCNuaUVGkmHw=</password>
+                        <username>fk1c_t14</username>
+                        <password>cZx5Zaye+PHnihnKG3+8xEL2QCtMDeda33SXk3+nvlI=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=FK1C_T12</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T14</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
@@ -50,14 +50,14 @@
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t12</username>
-                        <password>xOfcgSz35u4s6PpjasppFY6YQqzPrsYJCNuaUVGkmHw=</password>
+                        <username>fk1c_t14</username>
+                        <password>cZx5Zaye+PHnihnKG3+8xEL2QCtMDeda33SXk3+nvlI=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=FK1C_T12</openSession>
-                                <openSession>set current optimization profile=FK1C_T12.QS101WFILTER_STMTKEY</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T14</openSession>
+                                <openSession>set current optimization profile=FK1C_T14.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
@@ -70,13 +70,13 @@
                 <dataSource>
                         <name>FK1XAP03</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t12</username>
-                        <password>xOfcgSz35u4s6PpjasppFY6YQqzPrsYJCNuaUVGkmHw=</password>
+                        <username>fk1c_t14</username>
+                        <password>cZx5Zaye+PHnihnKG3+8xEL2QCtMDeda33SXk3+nvlI=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=FK1C_T12</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T14</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
@@ -89,8 +89,8 @@
                 <dataSource>
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
-                        <username>crn2_aud</username>
-                        <password>JUkjGGlNsd/fggzsnQHMhg==</password>
+                        <username>crn4_aud</username>
+                        <password>k2rrbHCWl9q1fukANSFJVg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>

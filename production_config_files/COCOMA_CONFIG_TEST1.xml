@@ -31,13 +31,13 @@
                 <dataSource>
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>p+EwL9FynmumWb4TZmjemQ==</password>
+                        <username>fk1c_t11</username>
+                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T11</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
@@ -50,14 +50,14 @@
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>p+EwL9FynmumWb4TZmjemQ==</password>
+                        <username>fk1c_t11</username>
+                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
-                                <openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T11</openSession>
+                                <openSession>set current optimization profile=FK1C_T11.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
@@ -70,13 +70,13 @@
                 <dataSource>
                         <name>FK1XAT03</name>
                         <dbalias>APP0</dbalias>
-                        <username>mif_crn</username>
-                        <password>uvr7XhJ7ZwFjzZ1gdbXwIQ==</password>
+                        <username>fk1c_t11</username>
+                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T11</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
