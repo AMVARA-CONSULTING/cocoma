@@ -30,9 +30,9 @@
 
                 <dataSource>
                         <name>QSUSERDS</name>
-                        <dbalias>APP0</dbalias>
-                        <username>mif_dev</username>
-                        <password>JEh438XkzXYXEe4CZmUZ0Q==</password>
+                        <dbalias>APP1C</dbalias>
+                        <username>mif_crn</username>
+                        <password>7lY8IpczqNVBiFB9//ghxw==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -41,17 +41,17 @@
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
-							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbserver>DBHOST1</dbserver>
+							<dbname>FK1XAP15</dbname>
+							<dbport>60056</dbport>
 						</jdbc>
                 </dataSource>
 				
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
-                        <dbalias>APP0</dbalias>
-                        <username>mif_dev</username>
-                        <password>JEh438XkzXYXEe4CZmUZ0Q==</password>
+                        <dbalias>APP1C</dbalias>
+                        <username>mif_crn</username>
+                        <password>7lY8IpczqNVBiFB9//ghxw==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -61,17 +61,17 @@
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
-							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbserver>DBHOST1</dbserver>
+							<dbname>FK1XAP15</dbname>
+							<dbport>60056</dbport>
 						</jdbc>
                 </dataSource>
 
                 <dataSource>
-                        <name>FK1XAP03</name>
-                        <dbalias>APP0</dbalias>
-                        <username>mif_dev</username>
-                        <password>JEh438XkzXYXEe4CZmUZ0Q==</password>
+                        <name>FK1XAT03</name>
+                        <dbalias>APP1C</dbalias>
+                        <username>mif_crn</username>
+                        <password>7lY8IpczqNVBiFB9//ghxw==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -80,9 +80,9 @@
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
-							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbserver>DBHOST1</dbserver>
+							<dbname>FK1XAP15</dbname>
+							<dbport>60056</dbport>
 						</jdbc>
                 </dataSource>
 
@@ -102,7 +102,7 @@
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
+                <name>http://ashost0:9400/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -141,7 +141,7 @@
         </dispatcher>
 <!--
         <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
+                <name>http://ashost0:9400/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>50</governorLimit>
                 <peakStartHour>0</peakStartHour>

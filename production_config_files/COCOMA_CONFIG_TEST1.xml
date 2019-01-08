@@ -31,8 +31,8 @@
                 <dataSource>
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t11</username>
-                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
+                        <username>mif_crn</username>
+                        <password>uvr7XhJ7ZwFjzZ1gdbXwIQ==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -50,8 +50,8 @@
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t11</username>
-                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
+                        <username>mif_crn</username>
+                        <password>uvr7XhJ7ZwFjzZ1gdbXwIQ==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -70,8 +70,8 @@
                 <dataSource>
                         <name>FK1XAT03</name>
                         <dbalias>APP0</dbalias>
-                        <username>fk1c_t11</username>
-                        <password>ixlC/driv5vx8ncpPa6y52HZ1SeaF+teh/xmP/z1hnY=</password>
+                        <username>mif_crn</username>
+                        <password>uvr7XhJ7ZwFjzZ1gdbXwIQ==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -102,7 +102,7 @@
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
+                <name>http://ashost0:9080/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -141,7 +141,7 @@
         </dispatcher>
 <!--
         <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
+                <name>http://ashost0:9080/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>50</governorLimit>
                 <peakStartHour>0</peakStartHour>
