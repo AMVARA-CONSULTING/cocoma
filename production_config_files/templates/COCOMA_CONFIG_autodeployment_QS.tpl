@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 139 $</version>
 	<server>
-			<dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
+			<dispatcherURL>!DEPLURL!</dispatcherURL>
 			<namespace>LDAP</namespace>
 			<username>apiuser</username>
                 	<password>wfS6HJbqU2liRdGZK0AgTw==</password>
@@ -12,8 +12,13 @@
 	
 	<deployments>
 		<deployment>
-			<name>IBM_Cognos_Arbeitslisten</name>
+			<name>IBM_Cognos_QUERYSTUDIO</name>
 			<name_set_datetime_suffix>
+				<!-- 
+					Set Datetime String as Suffix on deployment name appearing in CognosConnection
+				 	true = YYYYMMDD_HHmmss will be appended to name
+				 	false = name as specified will be used, if exists older deployment with same name, it will be overwritten
+				 -->
 				true
 			</name_set_datetime_suffix>
 			<password>Ad63BGTKYKwoMqGMW3xGYw==</password>
@@ -22,18 +27,14 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>/cluster/mif/cognos/deployment/crn0/MIFReporting_revision_*.zip</archive>
+			<archive>/cluster/mif/cognos/deployment/!DEPLENV!/MIF_QueryStudio_3.1_All_*</archive>
+			<!--
 			<delete_items>
-				<item>/content/package[@name='MIF_Adapter']</item>
-				<item>/content/package[@name='MIF_AS']</item>
-				<item>/content/package[@name='MIF_CFO']</item>
-				<item>/content/package[@name='MIF_CONS']</item>
-				<item>/content/package[@name='MIF_DERO']</item>
-				<item>/content/package[@name='MIF_IMI']</item>
-				<item>/content/package[@name='MIF_MNTR']</item>
-				<item>/content/package[@name='MIF_Schatten']</item>
+				<item>/content/folder[@name='Samples_PowerCube']</item>
+				<item>/content/folder[@name='Samples_PowerCube_Dummy']</item>
 			</delete_items>
-			<runCureJar>false</runCureJar>
+			-->
+			<runCureJar>true</runCureJar>
 			<runCureJar_searchPath>			
 			<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->
 			<!-- /content/folder[@name='Beispiele']//report | /content/folder[@name='Beispiele']//query -->
@@ -47,6 +48,17 @@
 				This element is optional.
 				-->
 			</runCureJar_PackagePath>		
+<!--
+	        <mail_sender>amvara.roeber@extaccount.com</mail_sender>
+	        <mail_recipient>amvara.roeber@extaccount.com</mail_recipient>
+	        <mail_subject>[MIF] Cognos Autodeployment {HOST} {STATUS}</mail_subject>
+	        <mail_text>Deployment-Archive: {ARCHIVE}
+	Status: {STATUS}
+	Date: {DATE}
+	Time: {TIME}
+ 	...	
+	Cognos Autodeployment using COCOMA Version {VERSION} on Host {HOST}</mail_text>
+-->
 	
 		</deployment>
 	</deployments>

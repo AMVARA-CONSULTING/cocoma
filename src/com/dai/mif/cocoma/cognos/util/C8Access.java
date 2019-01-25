@@ -506,4 +506,13 @@ public class C8Access {
 	public void setMonitorService(MonitorService_PortType monitorService) {
 		C8Access.monitorService = monitorService;
 	}
+
+	/**
+	 * Returns the username used to connect to Cognos Server
+	 * 
+	 * @return
+	 */
+	public String getUsername() {
+		return username;
+	}
 }

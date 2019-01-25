@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
 <server>
-                <dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
+                <dispatcherURL>http://localhost:9300/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
-		<version>10</version>
-        </server>
+                <version>10</version>
+        </server>	
 <ui>
 
 <!--
@@ -32,7 +32,7 @@
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>MKRmTiGDsEGIRxzncV0rZw==</password>
+                        <password>NrVwvBPWga6XAlSob/WpDA==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -46,12 +46,12 @@
 							<dbport>60008</dbport>
 						</jdbc>
                 </dataSource>
-
-                <dataSource>
+				
+				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_qry</username>
-                        <password>MKRmTiGDsEGIRxzncV0rZw==</password>
+                        <password>NrVwvBPWga6XAlSob/WpDA==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -66,12 +66,12 @@
 							<dbport>60008</dbport>
 						</jdbc>
                 </dataSource>
-				
+
                 <dataSource>
                         <name>FK1XAT03</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_crn</username>
-                        <password>wB3oNKqsfO8G0R5HtYe9xg==</password>
+                        <password>B8ne+LhMa+Wfl8gC3kH85g==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -90,19 +90,19 @@
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
                         <username>crn_aud</username>
-                        <password>F1nCysUHAGFLXjenAMdvRA==</password>
+                        <password>GQnhYKws2NFa98bnDRrFSg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
 							<dbname>FK1XAP04</dbname>
-							<dbport>600012</dbport>
+							<dbport>60012</dbport>
 						</jdbc>
                 </dataSource>
 
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd</name>
+                <name>http://ashost0:9300/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -124,24 +124,24 @@
                                 <systemService>BASIC</systemService>
                                 <dispatcher>BASIC</dispatcher>
                 </auditLevel>
-		<advancedSettings>
-			<name>RSVP.RENDER.RENDERNODATAPAGESETS</name>
-			<value>true</value>
-			<name>RSVP.PROMPT.REMOVEGENERATEDPROMPTASCENDINGSORTORDER</name>
+                <advancedSettings>
+                        <name>RSVP.RENDER.RENDERNODATAPAGESETS</name>
+                        <value>true</value>
+                        <name>RSVP.PROMPT.REMOVEGENERATEDPROMPTASCENDINGSORTORDER</name>
 <value>[QSUSERDS].[PickList_Period_DS3].[PERIODE]\,[QSUSERDS].[PickList_Period_DS4].[PERIODE]\,[QSUSERDS].[PickList_Period_DS5].[PERIODE]\,[QSUSERDS].[PickList_Period_DS2].[PERIODE]\,[QSUSERDS].[PickList_Period_DS6].[PERIODE]\,[QSUSERDS].[PickList_Period_DS1].[PERIODE]\,[(de) QSUSERDS].[PickList_Period_DS].[PERIODE]\,[(de) QSUSERDS].[PickList_Period_DS].[PERIODID]\,[Manuelle Nachbuchungen (legal)].[PickList_Period_DS2].[PERIODE]\,[QSUSERDS].[PickList_Period_DS2].[PERIODID]\,[QSUSERDS].[PickList_Period_DS].[PERIODE]\,[QSUSERDS].[PickList_Period_DS].[PERIODID]\,[QSUSERDS].[Halbbuchungen (legal)].[PickList_Period_DS1].[PERIODE]\,[QSUSERDS].[PickList_Period_DS1].[PERIODID]\,[QSUSERDS].[Maschinelle Buchungen (legal)].[PickList_Period_DS6].[PERIODE]\,[QSUSERDS].[PickList_Period_DS6].[PERIODID]\,[SPR w.consMgnts (mgnt)].[PickList_Period_DS3].[PERIODE]\,[Semipostings with cons. Management Units].[PickList_Period_DS3].[PERIODE]\,[QSUSERDS].[PickList_Period_DS3].[PERIODID]\,[Maschinelle Buchungen (mgnt)].[PickList_Period_DS4].[PERIODE]\,[QSUSERDS].[PickList_Period_DS4].[PERIODID]\,[Manuelle Nachbuchungen (mgnt)].[PickList_Period_DS5].[PERIODE]\,[QSUSERDS].[PickList_Period_DS5].[PERIODID]\,[QSUSERDS].[PickList_Period_DS_EIRF].[PERIODE]\,[QSUSERDS].[PickList_Period_DS_EIRF].[PERIODID]\,[QSUSERDS].[PickList_Period_DS_EIRF].[Periode]</value>
-			<name>RSVP.CONCURRENTQUERY.NUMHELPERSPERPROCESS</name>
-			<value>62</value>
-			<name>RSVP.CONCURRENTQUERY.MAXNUMHELPERSPERREPORT</name>
-			<value>4</value>
-			<name>RSVP.CONCURRENTQUERY.ENABLEDFORINTERACTIVEOUTPUT</name>
-			<value>true</value>
-			<name>RSVP.PROMPT.RECONCILIATION</name>
-			<value>2</value>
-		</advancedSettings>
+                        <name>RSVP.CONCURRENTQUERY.NUMHELPERSPERPROCESS</name>
+                        <value>62</value>
+                        <name>RSVP.CONCURRENTQUERY.MAXNUMHELPERSPERREPORT</name>
+                        <value>4</value>
+                        <name>RSVP.CONCURRENTQUERY.ENABLEDFORINTERACTIVEOUTPUT</name>
+                        <value>true</value>
+                        <name>RSVP.PROMPT.RECONCILIATION</name>
+                        <value>2</value>
+                </advancedSettings>
         </dispatcher>
 <!--
         <dispatcher global="true">
-            	<name>http://ashost0:9080/p2pd</name>
+                <name>http://ashost0:9300/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>50</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -178,6 +178,7 @@
                                         <user>schocra</user>
                                         <user>tbruckn</user>
                                         <user>rroeber</user>
+                                        <user>fsachs</user>
                                 </members>
                                 <removeMembers>
                                         <group>Everyone</group>
@@ -191,7 +192,6 @@
                         <role>
                                 <name>System Administrators (ReadOnly)</name>
                                 <members>
-                                  <user>marscm</user>
                                 </members>
                         </role>         
 
@@ -200,7 +200,7 @@
                                 <members>
                                   <user>rroeber</user>
                                   <user>kesslera</user>
-								  <user>sdkuser</user>
+                                  <user>sdkuser</user>
                                 </members>
                         </role>
 
@@ -209,7 +209,7 @@
                                 <members>
                                   <user>rroeber</user>
                                   <user>kesslera</user>
-								  <user>sdkuser</user>
+                                  <user>sdkuser</user>
                                 </members>
                         </role>
 

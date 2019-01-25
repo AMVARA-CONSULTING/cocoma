@@ -45,27 +45,36 @@ Other commandline argument:
 
 --dumpaccounts
 
+As of Version 3.1: Cognos 10.2.1/2019-01-24_1614/414
+--------------------------------------------------------
+- Cognos11 uses buildin Role "Tenant Administrators", which cannot be deleted.
+  CoCoMa would encounter an error, when trying to delete this fixed object
+- The logged in user must have language settings set to "en", otherwhise
+  the matching configuration items from XML could not be found. Added function
+  to set content and product locale to "en"
+- changed the error output from debug to info + error at the end of CoCoMa run
 
 As of Version 3.1: Cognos 10.2.1/2018-11-12_1653/382
+--------------------------------------------------------
 Modified code so Import and Export won't output error on SOAP Headers.
 
 As of Version 3.1: Cognos 10.2.1/2018-11-07_1553/381
 --------------------------------------------------------
 added support for jdbc variables to xml config file, now we can add jdbc configuration content in xml configuration file, an example:
 ...
-	...
-	<dataSources>
-		<dataSource>
-			...
-			<jdbc>
-				<dbserver>DBHOST</dbserver> <!-- this is the url to the jdbc server -->
-				<dbname>FK1XAP03</dbname> <!-- this is the database name, to which we want to connect -->
-				<dbport>60008</dbport> <!-- this is the port to the jdbc server -->
-			</jdb>
-			...
-		</dataSource>
-	</dataSources
-	...
+        ...
+        <dataSources>
+                <dataSource>
+                        ...
+                        <jdbc>
+                                <dbserver>DBHOST</dbserver> <!-- this is the url to the jdbc server -->
+                                <dbname>FK1XAP03</dbname> <!-- this is the database name, to which we want to connect -->
+                                <dbport>60008</dbport> <!-- this is the port to the jdbc server -->
+                        </jdb>
+                        ...
+                </dataSource>
+        </dataSources
+        ...
 ...
 
 As of Version 2.9: Cognos 10.2.1/2016-05-25_1825/153

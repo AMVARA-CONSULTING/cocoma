@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 139 $</version>
 	<server>
-			<dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
-			<namespace>LDAP</namespace>
-			<username>apiuser</username>
-           		<password>wfS6HJbqU2liRdGZK0AgTw==</password>
-			<version>10</version>
-			<deploymentFolder></deploymentFolder>
+		<dispatcherURL>!DEPLURL!</dispatcherURL>
+		<namespace>LDAP</namespace>
+		<username>apiuser</username>
+                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
+		<version>10</version>
+		<deploymentFolder></deploymentFolder>
 
 	</server>
 	
 	<deployments>
 		<deployment>
-			<name>IBM_Cognos_QUERYSTUDIO</name>
+			<name>IBM_Cognos_CAR</name>
 			<name_set_datetime_suffix>
 				<!-- 
 					Set Datetime String as Suffix on deployment name appearing in CognosConnection
@@ -27,14 +27,12 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>/cluster/mif/cognos/deployment/crn0/MIF_QueryStudio_3.1_All_*</archive>
-			<!--
+			<archive>/cluster/mif/cognos/deployment/!DEPLENV!/MIF_QueryStudio_3.1_CAR*</archive>
 			<delete_items>
-				<item>/content/folder[@name='Samples_PowerCube']</item>
-				<item>/content/folder[@name='Samples_PowerCube_Dummy']</item>
+				<item>/content/folder[@name='Konsmonitor']</item>
+				<item>/content/package[@name='MIF_QS3.1_KONSMONITOR_v18']</item>
 			</delete_items>
-			-->
-			<runCureJar>true</runCureJar>
+			<runCureJar>false</runCureJar>
 			<runCureJar_searchPath>			
 			<!-- reportSearchPath is a CognosSearchPath from Cognos Connection -->
 			<!-- /content/folder[@name='Beispiele']//report | /content/folder[@name='Beispiele']//query -->

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 139 $</version>
 	<server>
-		<dispatcherURL>http://localhost:9300/p2pd/servlet/dispatch</dispatcherURL>
+		<dispatcherURL>!DEPLURL!</dispatcherURL>
 		<namespace>LDAP</namespace>
 		<username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
 		<version>10</version>
-		<deploymentFolder>/cluster/mif/cognos/deployment/crn0/</deploymentFolder>
+		<deploymentFolder>/cluster/mif/cognos/deployment/!DEPLENV!/</deploymentFolder>
 	</server>
 	
 	<backup>

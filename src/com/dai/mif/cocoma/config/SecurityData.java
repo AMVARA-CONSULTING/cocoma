@@ -53,11 +53,15 @@ public class SecurityData {
 
         fixedObjects.add(new UserSecurity("Anonymous", false));
 
+
+        fixedObjects.add(new RoleSecurity("Tenant Administrators"));
+        
         RoleSecurity sysAdminRole = new RoleSecurity("System Administrators");
         sysAdminRole.getRemovedGroupMembers().add("Everyone");
 
         fixedObjects.add(sysAdminRole);
         fixedObjects.add(new RoleSecurity("Report Administrators"));
+
         fixedObjects.add(new RoleSecurity("Consumers"));
 
         // read the additional security objects from config

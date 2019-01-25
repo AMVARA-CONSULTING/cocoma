@@ -1198,13 +1198,4 @@
                         <searchPath>/content/folder[@name='MIF_QueryStudio']</searchPath>
                 </visible>
 </restrictedContent>
-<deployments>
-<!--    
-                <deployment>
-                        <name>CoCoMa Test Deployment</name>
-                        <password></password>
-                        <recordingLevel>full</recordingLevel>
-                </deployment>
--->     
-        </deployments>
 </CoCoMa>

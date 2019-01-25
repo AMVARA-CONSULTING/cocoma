@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 139 $</version>
 	<server>
-			<dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
+			<dispatcherURL>!DEPLURL!</dispatcherURL>
 			<namespace>LDAP</namespace>
 			<username>apiuser</username>
                 	<password>wfS6HJbqU2liRdGZK0AgTw==</password>
@@ -22,7 +22,7 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>/cluster/mif/cognos/deployment/crn0/MIFReporting_revision_*.zip</archive>
+			<archive>/cluster/mif/cognos/deployment/!DEPLENV!/MIFReporting_revision_*.zip</archive>
 			<delete_items>
 				<item>/content/package[@name='MIF_Adapter']</item>
 				<item>/content/package[@name='MIF_AS']</item>

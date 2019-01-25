@@ -22,6 +22,7 @@ import com.dai.mif.cocoma.cognos8.C8Dispatcher;
 import com.dai.mif.cocoma.cognos8.C8ExportDeployment;
 import com.dai.mif.cocoma.cognos8.CognosSecurity;
 import com.dai.mif.cocoma.cognos8.C8UserInterface;
+import com.dai.mif.cocoma.cognos8.CognosAccountInformation;
 import com.dai.mif.cocoma.cognos8.CognosUpdateReport;
 import com.dai.mif.cocoma.config.CapabilityData;
 import com.dai.mif.cocoma.config.CoCoMaConfiguration;
@@ -55,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 10.2.1/2019-01-08_1525/406@@ ";
+	private static String productRevision = "Build: @@Cognos 10.2.1/2019-01-25_1713/436@@ ";
 	
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -271,6 +272,16 @@ public class CoCoMa {
 					log.error("C8 access is null");
 				}
 			}
+			
+			// basic preparation done ... will check languageSettings of logged in user now
+			log.debug("Basic preparation done.");
+			if (c8Access != null) {
+				if (c8Access.isConnected()) {
+					log.debug("Checking language settings of "+c8Access.getUsername());
+					CognosAccountInformation ca = new CognosAccountInformation(c8Access);
+					ca.setLanguageToAccount("CAMID('LDAP')//*[@userName='"+c8Access.getUsername()+"'][@objectClass='account']", "en");
+				}
+			}
 
 			if (!checkConfigMode) {
 
@@ -301,7 +312,7 @@ public class CoCoMa {
 					// if preparation was successful, start the actual work
 					if (c8Access != null) {
 						if (c8Access.isConnected()) {
-
+							
 							// do the work
 							cocoma.process(c8Access);
 
@@ -324,10 +335,10 @@ public class CoCoMa {
 
 			log.info("Ending program with exit code " + CoCoMa.errorCode);
 
-			if (log.isDebugEnabled() && (CoCoMa.errorCode > 0)) {
-				log.debug("The following errors occured during run:");
+			if ( CoCoMa.errorCode > 0) {
+				log.info("The following errors occured during run:");
 				for (String message : CoCoMa.errorLog) {
-					log.debug(message);
+					log.error(message);
 				}
 			}
 
@@ -642,8 +653,8 @@ public class CoCoMa {
 	private static void show_programinformation() {
 		// show information about the program itself
 		log.info("---------------------------------------------------o_o-");
-		log.info("Welcome to CoCoMa for IBM Cognos 10.x ");
-		log.info("(C) 2011-2016 Ralf Roeber, AMVARA Consulting, Barcelona");
+		log.info("Welcome to CoCoMa for IBM Cognos 10.x to 11.x ");
+		log.info("(C) 2011-2019 Ralf Roeber, AMVARA Consulting, Barcelona");
 		log.info(getVersionString());
 		log.info(getRevisionString());
 		log.info("Use --help to see options.");
