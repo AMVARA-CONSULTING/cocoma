@@ -3,10 +3,10 @@
 <log4jloglevel>INFO</log4jloglevel>
 <version>$Revision: 139 $</version>
 	<server>
-		<dispatcherURL>http://localhost:9300/p2pd/servlet/dispatch</dispatcherURL>
+		<dispatcherURL>http://127.0.0.1:9301/bi/v1/disp</dispatcherURL>
 		<namespace>LDAP</namespace>
 		<username>apiuser</username>
-                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
+        <password>wfS6HJbqU2liRdGZK0AgTw==</password>
 		<version>10</version>
 		<deploymentFolder></deploymentFolder>
 	</server>
@@ -19,7 +19,7 @@
 			<!--   
 			name: 	This defines the name of the import to be shown in Cognos Connection.
 			-->
-			<name>DEV1_Deployment_Import</name>
+			<name>Skin_And_Extention_Deployment_Import</name>
 			<!-- 
 			name_set_datetime_suffix:	true or false. The archive name may be suffixed by a timestamp
 										in cognos connection. Settings this option to true will
@@ -50,7 +50,7 @@
 			</recordingLevel>
 			<!-- archive:			name of the archive to be read from disc.	
 			-->
-			<archive>/cluster/mif/cognos/deployment/crn0/ContentStoreFullBackup_DEV1.zip</archive>
+			<archive>/opt/IBM/cognos/crn0/deployment/ExtensionSkins.zip</archive>
 			<!-- show_job_history_after_deployment:		true or false. No comment.  -->
 			<show_job_history_after_deployment>true</show_job_history_after_deployment>
 		</deployment>

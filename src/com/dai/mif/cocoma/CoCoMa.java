@@ -11,6 +11,11 @@ import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
+import com.cognos.developer.schemas.bibus._3.BaseClass;
+import com.cognos.developer.schemas.bibus._3.PropEnum;
+import com.cognos.developer.schemas.bibus._3.QueryOptions;
+import com.cognos.developer.schemas.bibus._3.SearchPathMultipleObject;
+import com.cognos.developer.schemas.bibus._3.Sort;
 import com.dai.mif.cocoma.cognos.util.C8Access;
 import com.dai.mif.cocoma.cognos.util.C8Utility;
 // import com.dai.mif.cocoma.cognos.util.C8Utility;
@@ -56,7 +61,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 10.2.1/2019-01-25_1713/436@@ ";
+	private static String productRevision = "Build: @@Cognos 10.2.1/2019-04-08_1714/564@@ ";
 	
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -107,6 +112,7 @@ public class CoCoMa {
 	private static int errorCode = 0;
 	private static List<String> errorLog;
 	private static boolean dumpAccounts = false;
+	private static boolean dumpDispatchers = false;
 
 	/**
 	 * Convenience method to extract the acutal command from a command line
@@ -255,6 +261,13 @@ public class CoCoMa {
 				log.info("done.");
 				System.exit(0);
 			}
+			
+			if(CoCoMa.isDumpDispatchers() == true) {
+				C8Utility c8util = new C8Utility(c8Access);
+				c8util.dumpDispatchers();
+				log.info("done.");
+				System.exit(0);
+			}
 
 			// see if run in interactive mode to set the passwords or in
 			// standard mode to actually run
@@ -279,7 +292,11 @@ public class CoCoMa {
 				if (c8Access.isConnected()) {
 					log.debug("Checking language settings of "+c8Access.getUsername());
 					CognosAccountInformation ca = new CognosAccountInformation(c8Access);
-					ca.setLanguageToAccount("CAMID('LDAP')//*[@userName='"+c8Access.getUsername()+"'][@objectClass='account']", "en");
+					String returnResult = ca.setLanguageToAccount("CAMID('LDAP')//*[@userName='"+c8Access.getUsername()+"'][@objectClass='account']", "en");
+					if (returnResult.equalsIgnoreCase("needs relogin")) {
+						log.info("Will do basic preparation + login again.");
+						c8Access = cocoma.prepare();
+					}
 				}
 			}
 
@@ -351,6 +368,11 @@ public class CoCoMa {
 		// exit with the error code stored in the static field CoCoMa.errorCode
 		System.exit(errorCode);
 
+	}
+
+	private static boolean isDumpDispatchers() {
+		// TODO Auto-generated method stub
+		return dumpDispatchers ;
 	}
 
 	/**
@@ -788,7 +810,6 @@ public class CoCoMa {
 			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
 			log.error(msg);
 		}
-
 		// return the access reference in its current state
 		return access;
 	}
@@ -981,6 +1002,10 @@ public class CoCoMa {
 					setDumpAccounts(true);
 				}
 				
+				if (command.equalsIgnoreCase("dumpdispatchers")) {
+					setDumpDispatchers(true);
+				}
+				
 				if (command.equalsIgnoreCase("mailto")) {
 					COCOMA_MAILTO_HELPTEXT = args[i+1];
 				}
@@ -1004,6 +1029,11 @@ public class CoCoMa {
 
 		}
 
+	}
+
+	private static void setDumpDispatchers(boolean b) {
+		// TODO Auto-generated method stub
+		CoCoMa.dumpDispatchers = b;
 	}
 
 	/**

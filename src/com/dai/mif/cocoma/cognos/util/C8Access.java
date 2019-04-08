@@ -21,6 +21,8 @@ import com.cognos.developer.schemas.bibus._3.BiBusHeader;
 import com.cognos.developer.schemas.bibus._3.ContentManagerServiceStub;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_ServiceLocator;
+import com.cognos.developer.schemas.bibus._3.Dispatcher_PortType;
+import com.cognos.developer.schemas.bibus._3.Dispatcher_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
 import com.cognos.developer.schemas.bibus._3.MonitorService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.Option;
@@ -59,6 +61,25 @@ public class C8Access {
 
 	private ReportService_ServiceLocator reportServiceLocator = new ReportService_ServiceLocator();
 	private ReportService_PortType repService;
+	
+	private Dispatcher_ServiceLocator dispatcherServiceLocator = new Dispatcher_ServiceLocator();
+	private Dispatcher_PortType dispatcherService = null;
+
+	public Dispatcher_PortType getDispatcherService() {
+		return dispatcherService;
+	}
+
+	public void setDispatcherService(Dispatcher_PortType dispatcherService) {
+		this.dispatcherService = dispatcherService;
+	}
+
+	public Dispatcher_ServiceLocator getDispatcherServiceLocator() {
+		return dispatcherServiceLocator;
+	}
+
+	public void setDispatcherServiceLocator(Dispatcher_ServiceLocator dispatcherServiceLocator) {
+		this.dispatcherServiceLocator = dispatcherServiceLocator;
+	}
 
 	private C8Utility c8Utiliy;
 
@@ -72,7 +93,7 @@ public class C8Access {
 		this.monitorServiceLocator = monitorServiceLocator;
 	}
 
-	private static MonitorService_PortType monitorService;
+	private MonitorService_PortType monitorService;
 
 	/**
 	 * Constructor for this class. It initializes all attributes needed to build
@@ -126,7 +147,7 @@ public class C8Access {
 	
 	public AsynchReply getAsyncReply( AsynchReply asReply ) {
 		
-		int maxWaitRetries = 10;
+		int maxWaitRetries = 15;
 		int cntWaitRetries = 0;
 		int sleepTimeMs = 10000;
 		
@@ -141,24 +162,10 @@ public class C8Access {
 				
 				if (hasSecondaryRequest(asReply, "wait")) {
 					log.debug("Waiting for converstation to finish.");
-					java.net.URL serverURL = null;
-					try {
-						serverURL = new java.net.URL(this.getUrl());
-					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			        try {
-						asReply = this.getMonitorServiceLocator().getmonitorService(serverURL).wait(
-								asReply.getPrimaryRequest(),
-								new ParameterValue[] {}, new Option[] {});
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-			//		asReply = this.getMonitorService(false, this.getUrl()).wait(
-			//				asReply.getPrimaryRequest(),
-			//				new ParameterValue[] {}, new Option[] {});
+
+			        asReply = this.getMonitorService().wait(
+							asReply.getPrimaryRequest(),
+							new ParameterValue[] {}, new Option[] {});
 					log.debug("asReply received ... ");
 					log.debug("Status: "+asReply.getStatus());
 				} else {
@@ -167,8 +174,8 @@ public class C8Access {
 			}
 			return asReply;
 		} catch (Exception e1) {
-			log.error("!!! Received reportError while waiting for AsyncReply");
-			log.error(e1);
+			log.debug("!!! Received reportError while waiting for AsyncReply");
+			log.debug(e1);
 			log.debug("Will ask server again ... just a moment ... ");
 			while (cntWaitRetries<maxWaitRetries && !(asReply.getStatus()
 					.equals(AsynchReplyStatusEnum.complete))
@@ -177,25 +184,12 @@ public class C8Access {
 				if (hasSecondaryRequest(asReply, "wait")) {
 					log.debug("Waiting for converstation to finish.");
 					try {
-//						asReply = this.getMonitorService(false, this.getUrl()).wait(
-//								asReply.getPrimaryRequest(),
-//								new ParameterValue[] {}, new Option[] {});
-						
-						java.net.URL serverURL = null;
-						try {
-							serverURL = new java.net.URL(this.getUrl());
-						} catch (MalformedURLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				        try {
-				        	asReply = this.getMonitorServiceLocator().getmonitorService(serverURL).wait(asReply.getPrimaryRequest(), new ParameterValue[] {}, new Option[] {});
-						} catch (ServiceException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						asReply = this.getMonitorService().wait(
+								asReply.getPrimaryRequest(),
+								new ParameterValue[] {}, new Option[] {});
 					} catch (RemoteException e) {
 						cntWaitRetries++;
+						e.printStackTrace();
 						log.debug("!!! Received reportError while waiting for AsyncReply. Will keep trying.");
 						log.debug("Counter: "+cntWaitRetries+" -> " +maxWaitRetries);
 						log.debug(e1);
@@ -222,7 +216,7 @@ public class C8Access {
 		log.debug("Server: " + serverURL);
 		try {
 			cmService = new ContentManagerServiceStub(new java.net.URL(serverURL), cmServiceLocator);
-			
+			dispatcherService = dispatcherServiceLocator.getdispatcher(new java.net.URL(serverURL));
 			monitorService = monitorServiceLocator.getmonitorService(new java.net.URL(serverURL));
 
 			String timeoutValueConfig = "0";
@@ -284,6 +278,8 @@ public class C8Access {
 						"http://developer.cognos.com/schemas/bibus/3/",	"biBusHeader"));
 		((Stub) monitorService).setHeader(
 				"http://developer.cognos.com/schemas/bibus/3/",
+				"biBusHeader", cmBiBusHeader);
+		((Stub) dispatcherService).setHeader("http://developer.cognos.com/schemas/bibus/3/",
 				"biBusHeader", cmBiBusHeader);
 		log.debug("** setBiBusHeader done ");
 		log.debug("<-- ConnectToCognosServer()");
@@ -499,12 +495,12 @@ public class C8Access {
 		this.repService = repService;
 	}
 
-	public static MonitorService_PortType getMonitorService() {
+	public MonitorService_PortType getMonitorService() {
 		return monitorService;
 	}
 
 	public void setMonitorService(MonitorService_PortType monitorService) {
-		C8Access.monitorService = monitorService;
+		this.monitorService = monitorService;
 	}
 
 	/**

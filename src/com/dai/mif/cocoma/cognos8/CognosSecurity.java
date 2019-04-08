@@ -17,6 +17,7 @@ import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.DeleteOptions;
 import com.cognos.developer.schemas.bibus._3.Group;
+import com.cognos.developer.schemas.bibus._3.IntProp;
 import com.cognos.developer.schemas.bibus._3.Permission;
 import com.cognos.developer.schemas.bibus._3.Policy;
 import com.cognos.developer.schemas.bibus._3.PolicyArrayProp;
@@ -539,12 +540,16 @@ public class CognosSecurity {
 			Role updatedRole = new Role();
 			updatedRole.setSearchPath(myRole.getSearchPath());
 			updatedRole.setUserProfileSettings(userProfileSettings);
+			// Set priority of role to "2" ... to overrule Query Users role
+			IntProp i = myRole.getProfileRank();
+			i.setValue(2);
+			updatedRole.setProfileRank(i);
 			try {
 				BaseClass[] updatedItems = c8Access.getCmService().update(new BaseClass[] { updatedRole },
 						new UpdateOptions());
 				if (updatedItems.length > 0) {
 					log.info("Successfully updated " + updatedRole.getSearchPath().getValue()
-							+ " removenig the \"+\" button from UI.");
+							+ " removenig the \"+\" button from UI and setting profile Priority to 2.");
 					return;
 				}
 			} catch (java.rmi.RemoteException remoteEx) {

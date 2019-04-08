@@ -9,6 +9,7 @@ import com.cognos.developer.schemas.bibus._3.Sort;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.cognos.util.C8Access;
 import com.dai.mif.cocoma.cognos.util.C8Utility;
+import com.dai.mif.cocoma.config.ServerData;
 
 
 public class CognosAccountInformation {
@@ -23,7 +24,7 @@ public class CognosAccountInformation {
 
 	}
 
-	public void setLanguageToAccount(String account, String language) {
+	public String setLanguageToAccount(String account, String language) {
     	
     	String myAccountSearchpath = "CAMID('LDAP')//*[@userName='apiuser'][@objectClass='account']";
     	String myLanguageString = "en";
@@ -54,9 +55,11 @@ public class CognosAccountInformation {
 		logger.debug("ProductLocale: "+myAccount.getProductLocale().getValue());
 		
 		// Return if language is set to myLanguageString
-		if (myAccount.getContentLocale().getValue().equalsIgnoreCase(myLanguageString) 
+		if (myAccount.getContentLocale().getValue() != null
+				&& myAccount.getProductLocale().getValue() != null
+				&& myAccount.getContentLocale().getValue().equalsIgnoreCase(myLanguageString) 
 				&& myAccount.getProductLocale().getValue().equalsIgnoreCase(myLanguageString)) 
-			return;
+			return "everything is fine";
 
 		logger.debug("Language settings of the account must be updated to '"+myLanguageString+"'");
 
@@ -83,16 +86,17 @@ public class CognosAccountInformation {
 			if (updatedItems.length > 0)
 			{
 				logger.info("Successfully updated "+updatedAccount.getSearchPath().getValue());
-				return;
+				return "needs relogin";
 			}
 		}
 		catch (java.rmi.RemoteException remoteEx)
 		{
 			remoteEx.printStackTrace();
 			System.out.println("Exception Caught:\n" + remoteEx.getMessage() );
-			return ; 
+			return "something failed"; 
 		}
-    	
-    }
+		
+		return "";
+    } 
 
 }

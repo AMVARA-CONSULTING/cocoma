@@ -3,8 +3,8 @@
  */
 package com.dai.mif.cocoma.cognos.util;
 
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import javax.xml.rpc.ServiceException;
 
@@ -14,18 +14,19 @@ import org.apache.log4j.Logger;
 import com.cognos.developer.schemas.bibus._3.Account;
 import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
-import com.cognos.developer.schemas.bibus._3.ContentManagerService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.DeleteOptions;
 import com.cognos.developer.schemas.bibus._3.Dispatcher_Type;
 import com.cognos.developer.schemas.bibus._3.Group;
 import com.cognos.developer.schemas.bibus._3.MultilingualToken;
 import com.cognos.developer.schemas.bibus._3.Permission;
+import com.cognos.developer.schemas.bibus._3.PingReply;
 import com.cognos.developer.schemas.bibus._3.Policy;
 import com.cognos.developer.schemas.bibus._3.PropEnum;
 import com.cognos.developer.schemas.bibus._3.QueryOptions;
 import com.cognos.developer.schemas.bibus._3.RefProp;
 import com.cognos.developer.schemas.bibus._3.Role;
 import com.cognos.developer.schemas.bibus._3.SearchPathMultipleObject;
+import com.cognos.developer.schemas.bibus._3.SearchPathSingleObject;
 import com.cognos.developer.schemas.bibus._3.Sort;
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.logging.Logging;
@@ -40,8 +41,8 @@ import com.dai.mif.cocoma.logging.Logging;
  */
 public class C8Utility {
 
-	private static C8Access c8Access;
-	private static Logger log;
+	private C8Access c8Access;
+	private Logger log;
 
 	private ContentManagerService_PortType cmService = null;
 
@@ -458,10 +459,10 @@ public class C8Utility {
 				PropEnum.triggerDescription, PropEnum.triggerName, PropEnum.type, PropEnum.unit, PropEnum.uri,
 				PropEnum.usage, PropEnum.user, PropEnum.userCapabilities, PropEnum.userCapability, PropEnum.userName,
 				PropEnum.userProfileSettings, PropEnum.version, PropEnum.verticalElementsRenderingLimit,
-				PropEnum.viewed, PropEnum.weeklyFriday, PropEnum.weeklyMonday, PropEnum.weeklySaturday,
-				PropEnum.weeklySunday, PropEnum.weeklyThursday, PropEnum.weeklyTuesday, PropEnum.weeklyWednesday,
-				PropEnum.yearlyAbsoluteDay, PropEnum.yearlyAbsoluteMonth, PropEnum.yearlyRelativeDay,
-				PropEnum.yearlyRelativeMonth, PropEnum.yearlyRelativeWeek, };
+				PropEnum.profileRank, PropEnum.viewed, PropEnum.weeklyFriday, PropEnum.weeklyMonday,
+				PropEnum.weeklySaturday, PropEnum.weeklySunday, PropEnum.weeklyThursday, PropEnum.weeklyTuesday,
+				PropEnum.weeklyWednesday, PropEnum.yearlyAbsoluteDay, PropEnum.yearlyAbsoluteMonth,
+				PropEnum.yearlyRelativeDay, PropEnum.yearlyRelativeMonth, PropEnum.yearlyRelativeWeek, };
 		return properties;
 	}
 
@@ -545,12 +546,12 @@ public class C8Utility {
 		return bc;
 	}
 
-	public static void OutputDispatcherInformation(Dispatcher_Type objDispatcher, int dispnum) {
+	public void OutputDispatcherInformation(Dispatcher_Type objDispatcher, int dispnum) {
 		// Basic Dispatcher Information
 		log.info("--------------------------------------------------------------");
 		log.info("Dispatcher Number: " + dispnum);
 		log.info("Dispatcher Path: " + objDispatcher.getDispatcherPath().getValue());
-
+		
 		log.info("ServerGroup: " + objDispatcher.getServerGroup().getValue());
 		log.info("runningState: " + objDispatcher.getRunningState().getValue());
 		log.info("capacity: " + objDispatcher.getCapacity().getValue());
@@ -580,6 +581,82 @@ public class C8Utility {
 		log.info("rsAuditLevel: " + objDispatcher.getRsAuditLevel().getValue());
 		log.info("rsAuditNativeQuery: " + objDispatcher.getRsAuditNativeQuery().isValue());
 
+	}
+
+	public void dumpDispatchers() {
+		// TODO Auto-generated method stub
+		ContentManagerService_PortType cms = c8Access.getCmService();
+		
+		log.debug("Getting dispatchers...");
+		SearchPathMultipleObject spmo = new SearchPathMultipleObject("/configuration/dispatcher");
+		PropEnum[] props = new PropEnum[] { PropEnum.userName, PropEnum.name, PropEnum.searchPath,
+				PropEnum.defaultName };
+		Sort[] sort = new Sort[] {};
+		QueryOptions options = new QueryOptions();
+
+		ArrayList<BaseClass> removeDispatchers = new ArrayList<BaseClass>();
+		
+		try {
+			BaseClass[] results = cms.query(spmo, props, sort, options);
+
+			if (results.length < 1) {
+				log.error("Query for dispatcher did not return any results");
+			} else {
+				for (BaseClass bc : results) {
+					String accData = "Dispatcher: " + bc.getSearchPath().getValue();
+					log.debug(accData);
+					
+					if(!isDispatcherRunning(bc.getSearchPath().getValue())) {
+						removeDispatchers.add(bc);
+					}
+					
+				}
+			}
+
+		} catch (RemoteException e) {
+			log.error("Error querying dispatcher data. " + e.getMessage());
+		}
+		
+		removeDispatchers(removeDispatchers);
+	}
+	
+	private void removeDispatchers(ArrayList<BaseClass> removeDispatchers) {
+		// TODO Auto-generated method stub
+		for(BaseClass object : removeDispatchers) {			
+			try {
+				DeleteOptions del = new DeleteOptions();
+				del.setForce(true);
+				del.setRecursive(true);
+				
+				int deleted = c8Access.getCmService().delete(new BaseClass[] { object }, del);
+				if(0 >= deleted) {
+					log.debug("No dispatchers where deleted...");
+				}else {
+					log.debug(object.getDefaultName().getValue() + " -> got deleted successfully...");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public boolean isDispatcherRunning(String searchPath) {
+		
+		SearchPathSingleObject sPath = new SearchPathSingleObject(searchPath);
+		String pingResult = null;
+		
+		try {
+			PingReply pg = c8Access.getDispatcherService().ping(sPath);
+			if(pg != null) {
+				pingResult = pg.getVersion();
+			}
+		} catch (Exception e) {
+			log.debug("Dispatcher with searchPath: " + searchPath + ", could not find it's version number...");
+			log.debug(e.getMessage());
+		}
+		
+		return (pingResult != null ? true : false);
+		
 	}
 
 }

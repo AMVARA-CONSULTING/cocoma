@@ -16,11 +16,14 @@ import java.util.Calendar;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.log4j.Logger;
 
 import com.cognos.developer.schemas.bibus._3.AddOptions;
 import com.cognos.developer.schemas.bibus._3.AsynchReply;
 import com.cognos.developer.schemas.bibus._3.BaseClass;
+import com.cognos.developer.schemas.bibus._3.BiBusHeader;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.DeploymentDetail;
 import com.cognos.developer.schemas.bibus._3.DeploymentObjectInformation;
@@ -43,6 +46,7 @@ import com.cognos.developer.schemas.bibus._3.FaultDetailArrayProp;
 import com.cognos.developer.schemas.bibus._3.FaultDetailMessage;
 import com.cognos.developer.schemas.bibus._3.ImportDeployment;
 import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
+import com.cognos.developer.schemas.bibus._3.MonitorService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.MultilingualToken;
 import com.cognos.developer.schemas.bibus._3.MultilingualTokenProp;
 import com.cognos.developer.schemas.bibus._3.Option;
@@ -520,7 +524,7 @@ public class C8Deployment {
 		} else {
 			return reportEventID;
 		}
-
+		
 		//
 		log.debug("Finally getting deployment options and finetuning.");
 		Option[] myDeploymentOptionsEnum = null;
@@ -646,7 +650,17 @@ public class C8Deployment {
 				e.printStackTrace();
 			}
 	        
-	        asynchReply = C8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+	        asynchReply = c8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+			BiBusHeader bibus = C8Access.getHeaderObject(((Stub)c8Access.getMonitorService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), false, "");
+	        
+			if(bibus == null) {
+				BiBusHeader CMbibus = null;
+				CMbibus = C8Access.getHeaderObject(((Stub)c8Access.getCmService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, "");
+				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", CMbibus);
+			} else {
+				((Stub)c8Access.getMonitorService()).clearHeaders();
+				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", bibus);
+			}
 			
 			if (!(asynchReply.getStatus().equals(AsynchReplyStatusEnum.complete))
 					&& !(asynchReply.getStatus().equals(AsynchReplyStatusEnum.conversationComplete))) {
@@ -659,7 +673,7 @@ public class C8Deployment {
 		} else {
 			log.debug("Will not display deployment history, because option was configured 'false'.");
 			log.debug(
-					"E.g. for FullBackup-reimports it makes no sense to look for a history. Because the history will be overwritten wiith the very same deployment.");
+					"E.g. for FullBackup-reimports it makes no sense to look for a history. Because the history will be overwritten with the very same deployment.");
 		}
 		reportEventID = "true";
 

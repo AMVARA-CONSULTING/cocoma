@@ -30,6 +30,10 @@
 		compliant code.
     </description>
 
+	<fileset dir="/Program Files/ibm/cognos/analytics/webapps/p2pd/WEB-INF/lib">
+		<include name="**/*.jar" />
+	</fileset>
+
 	<path id="classpath">
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
@@ -39,7 +43,12 @@
 			<!-- exclude name="commons-logging*.jar" / -->
 			<!-- exclude name="log4j*.jar" / -->
 		</fileset>
+		<fileset dir="C:\Program Files\Java\jre1.8.0_191\lib">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
+
+
 
 	<!-- ====================================== 
           target: build targets for Cognos 8.4.1              
@@ -66,11 +75,12 @@
 				<include name="*.sh" />
 				<include name="README.*" />
 				<exclude name="TODO.txt" />
+				<exclude name="copy_files_to_destinations.sh" />
+				<exclude name="sic_log4j.properties" />
 			</fileset>
 			<fileset dir="${src.dir}/../production_config_files">
-				<include name="*.xml" />
+				<include name="**" />
 			</fileset>
-			
 		</copy>
 	</target>
 
@@ -199,6 +209,8 @@
          - - - - - - - - - - - - - - - - - -->
 
 	<target name="compile" depends="init">
+		<echo>ClassPath: ${java.class.path}</echo>
+		<echo>LibraryDir: ${java.library.path}</echo>
 
 		<delete>
 			<fileset dir="${build.dir}">

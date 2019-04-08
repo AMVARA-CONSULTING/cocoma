@@ -50,19 +50,32 @@ public class SecurityData {
 
         fixedObjects.add(new GroupSecurity("All Authenticated Users"));
         fixedObjects.add(new GroupSecurity("Everyone"));
-
         fixedObjects.add(new UserSecurity("Anonymous", false));
-
-
         fixedObjects.add(new RoleSecurity("Tenant Administrators"));
+        fixedObjects.add(new RoleSecurity("Analysis User"));
+        fixedObjects.add(new RoleSecurity("Analytic Administrators"));
+        fixedObjects.add(new RoleSecurity("Analytic Explorers"));
+        fixedObjects.add(new RoleSecurity("Analytics Users"));
+        fixedObjects.add(new RoleSecurity("Analysis Users"));
+        fixedObjects.add(new RoleSecurity("Authors"));
+        fixedObjects.add(new RoleSecurity("Consumers"));
+        fixedObjects.add(new RoleSecurity("Directory Administrators"));
+        fixedObjects.add(new RoleSecurity("Information Distribution"));
+        fixedObjects.add(new RoleSecurity("Library Administrators"));
+        fixedObjects.add(new RoleSecurity("Mobile Administrators"));
+        fixedObjects.add(new RoleSecurity("Mobile Users"));
+        fixedObjects.add(new RoleSecurity("Modelers"));
+        fixedObjects.add(new RoleSecurity("Portal Administrators"));
+        fixedObjects.add(new RoleSecurity("PowerPlay Administrators"));
+        fixedObjects.add(new RoleSecurity("PowerPlay Users"));
+        fixedObjects.add(new RoleSecurity("Query Users"));
+        fixedObjects.add(new RoleSecurity("Readers"));
+        fixedObjects.add(new RoleSecurity("Report Administrators"));
+        fixedObjects.add(new RoleSecurity("Server Administrators"));
         
         RoleSecurity sysAdminRole = new RoleSecurity("System Administrators");
         sysAdminRole.getRemovedGroupMembers().add("Everyone");
-
         fixedObjects.add(sysAdminRole);
-        fixedObjects.add(new RoleSecurity("Report Administrators"));
-
-        fixedObjects.add(new RoleSecurity("Consumers"));
 
         // read the additional security objects from config
 
