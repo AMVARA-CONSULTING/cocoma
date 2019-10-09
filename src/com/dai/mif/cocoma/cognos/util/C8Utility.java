@@ -133,74 +133,90 @@ public class C8Utility {
 	 * @return {@link Account} with the given name, or NULL if the account could
 	 *         not be found.
 	 */
-	public Account findAccount(String userName) {
-		Account theAccount = null;
+	public Account findAccount(String userName) {        
 
-		ContentManagerService_PortType cms = c8Access.getCmService();
+        Account theAccount = null;
 
-		// FIXME As a workaround the account has to be searched manually. For
-		// some reason a query of the form //account[@userName="foo"] does not
-		// return the account as it normally should do.
+        ContentManagerService_PortType cms = c8Access.getCmService();
 
-		SearchPathMultipleObject spmo = new SearchPathMultipleObject("/directory/namespace");
+        // FIXME As a workaround the account has to be searched manually. For
+        // some reason a query of the form //account[@userName="foo"] does not
+        // return the account as it normally should do.
 
-		PropEnum[] props = new PropEnum[] { PropEnum.userName, PropEnum.name, PropEnum.defaultName, PropEnum.searchPath,
-				PropEnum.options };
-		Sort[] sort = new Sort[] {};
-		QueryOptions queryOptions = new QueryOptions();
+        SearchPathMultipleObject spmo = new SearchPathMultipleObject("/directory/namespace");
 
-		BaseClass[] namespaces;
-		BaseClass[] results;
+        PropEnum[] props = new PropEnum[] { PropEnum.userName, PropEnum.name, PropEnum.defaultName, PropEnum.searchPath,
+                PropEnum.options };
+        Sort[] sort = new Sort[] {};
+        QueryOptions queryOptions = new QueryOptions();
 
-		try {
+        BaseClass[] namespaces;
+        BaseClass[] results;
 
-			namespaces = cms.query(spmo, props, sort, queryOptions);
+        // userName in different cases
+        ArrayList<String> caseInSensitiveUserNames = new ArrayList<String>();
+        caseInSensitiveUserNames.add(userName);
+        caseInSensitiveUserNames.add(userName.toLowerCase());
+        caseInSensitiveUserNames.add(userName.toUpperCase());
 
-			for (BaseClass namespace : namespaces) {
+        try {
 
-				String nsSearchPath = namespace.getSearchPath().getValue();
-				spmo.set_value(nsSearchPath + "//account[@userName=\"" + userName + "\"]");
-				// spmo.setValue(nsSearchPath + "//account");
+            namespaces = cms.query(spmo, props, sort, queryOptions);
 
-				results = cms.query(spmo, props, sort, queryOptions);
+            for (BaseClass namespace : namespaces) {
 
-				int i = 0;
+                // check if there is a user with different cases of userName
+                for(String caseInSensitiveUserName : caseInSensitiveUserNames) {
 
-				for (BaseClass bc : results) {
+                    String nsSearchPath = namespace.getSearchPath().getValue();
+                    spmo.set_value(nsSearchPath + "//account[@userName=\"" + caseInSensitiveUserName + "\"]");
+                    // spmo.setValue(nsSearchPath + "//account");
 
-					Account acc = (Account) bc;
-					if (acc != null) {
+                    results = cms.query(spmo, props, sort, queryOptions);
 
-						String accName = acc.getUserName().getValue();
+                    int i = 0;
 
-						if (accName != null) {
-							if (accName.equals(userName)) {
-								theAccount = acc;
-								break;
-							}
-						}
-					} else {
-						log.info("Account at position " + i + " is NULL!");
-					}
-					i++;
-				}
-			}
+                    for (BaseClass bc : results) {
 
-		} catch (RemoteException e) {
-			String msg = "Error querying account " + userName + ": " + e.getMessage();
-			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
-			log.error(msg);
-		}
+                        Account acc = (Account) bc;
+                        if (acc != null) {
 
-		if (theAccount == null) {
-			String msg = "An account for the user name " + userName
-					+ " could not be found within the defined namespaces.";
-			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
-			log.error(msg);
-		}
+                            String accName = acc.getUserName().getValue();
 
-		return theAccount;
-	}
+                            if (accName != null) {
+                                if (accName.equals(caseInSensitiveUserName)) {
+                                    // output that we did not found a userName but we did found a user with different letter case
+                                    if(!caseInSensitiveUserName.equals(userName)) {
+                                        log.info("We could not fount username \"" + userName + "\", but we did found a account with username \""+ caseInSensitiveUserName +"\".");
+                                    }
+                                    return acc;
+                                }
+                            }
+                        } else {
+                            log.info("Account at position " + i + " is NULL!");
+                        }
+                        i++;
+                    }
+
+                }
+
+            }
+
+        } catch (RemoteException e) {
+            String msg = "Error querying account " + userName + ": " + e.getMessage();
+            CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
+            log.error(msg);
+        }
+
+        if (theAccount == null) {
+            String msg = "An account for the user name " + userName
+                    + " could not be found within the defined namespaces.";
+            CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR, msg);
+            log.error(msg);
+        }
+
+        return theAccount;
+    }
 
 	/**
 	 * Convenience method to find a Cognos {@link Role} with the given name
