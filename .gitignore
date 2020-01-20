@@ -45,4 +45,5 @@ x*.log
 .Trashes
 ehthumbs.db
 Thumbs.db
-/.metadata/
+.metadata/
+.settings/
