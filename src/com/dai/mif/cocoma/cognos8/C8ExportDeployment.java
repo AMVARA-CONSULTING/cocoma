@@ -7,12 +7,12 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.cognos.developer.schemas.bibus._3.AddOptions;
@@ -22,12 +22,17 @@ import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.BiBusHeader;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_ServiceLocator;
+import com.cognos.developer.schemas.bibus._3.DeploymentDetail;
 import com.cognos.developer.schemas.bibus._3.DeploymentOption;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionAnyType;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionBoolean;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionEnum;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionString;
 import com.cognos.developer.schemas.bibus._3.ExportDeployment;
+import com.cognos.developer.schemas.bibus._3.FaultDetail;
+import com.cognos.developer.schemas.bibus._3.FaultDetailMessage;
+import com.cognos.developer.schemas.bibus._3.History;
+import com.cognos.developer.schemas.bibus._3.HistoryDetail;
 import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
 import com.cognos.developer.schemas.bibus._3.MonitorService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.MultilingualString;
@@ -37,10 +42,12 @@ import com.cognos.developer.schemas.bibus._3.Option;
 import com.cognos.developer.schemas.bibus._3.OptionArrayProp;
 import com.cognos.developer.schemas.bibus._3.ParameterValue;
 import com.cognos.developer.schemas.bibus._3.SearchPathSingleObject;
+import com.cognos.developer.schemas.bibus._3.Sort;
 import com.cognos.developer.schemas.bibus._3.UpdateActionEnum;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.cognos.developer.schemas.bibus._3.XmlEncodedXML;
 import com.dai.mif.cocoma.cognos.util.C8Access;
+import com.dai.mif.cocoma.cognos.util.C8Utility;
 import com.dai.mif.cocoma.config.BackupData;
 import com.dai.mif.cocoma.logging.Logging;
 
@@ -67,8 +74,10 @@ public class C8ExportDeployment {
 	private String name;
 	private boolean use_DateTimeSuffix;
 	private C8Access c8Access = null;
+	private C8Utility c8Utility = null;
 
 	public C8ExportDeployment(C8Access c8Access, BackupData backupData) {
+		this.c8Utility = new C8Utility(c8Access);
 		this.c8Access = c8Access;
 		this.cmService = c8Access.getCmService();
 		// XXX Throws error with CA11 - this.mService =
@@ -177,8 +186,13 @@ public class C8ExportDeployment {
 	}
 
 	public String deployContentCS(String strArchiveName) {
+				
 		AsynchReply asynchReply = null;
 		String reportEventID = "-1";
+		int sleepTimerMS=15000;
+		int maxTries=15;
+		int counter=0;
+		
 
 		String deployPath;
 		SearchPathSingleObject searchPathObject = new SearchPathSingleObject();
@@ -211,17 +225,75 @@ public class C8ExportDeployment {
 		}
 		log.debug("Getting async reply..");
 		try {
-			// asynchReply = mService.run(searchPathObject, new ParameterValue[]
-			// {}, new Option[] {});
+			// asynchReply = mService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
 			
 			asynchReply = c8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
+			
+			/**
+			 * FIX FOR
+			 * <errorCode>
+			 * 	CANNOT_FORWARD_TO_ABSOLUTE_AFFINITY_NODE
+			 * </errorCode>
+			 * <messageString>
+			 * 	DPR-ERR-2072 Unable to load balance a request with absolute affinity, most likely due to a failure to connect to the remote dispatcher. See the remote dispatcher detailed logs for more information. Check the health status of the installed system by using the dispatcher diagnostics URIs.
+			 * </messageString> 
+			 */
+			BiBusHeader bibus = C8Access.getHeaderObject(((Stub)c8Access.getMonitorService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), false, "");
+	        
+			if(bibus == null) {
+				BiBusHeader CMbibus = null;
+				CMbibus = C8Access.getHeaderObject(((Stub)c8Access.getCmService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, "");
+				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", CMbibus);
+			} else {
+				((Stub)c8Access.getMonitorService()).clearHeaders();
+				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", bibus);
+			}
+			
+			
 			if (!(asynchReply.getStatus().equals(AsynchReplyStatusEnum.complete))
 					&& !(asynchReply.getStatus().equals(AsynchReplyStatusEnum.conversationComplete))) {
 				log.debug("Call AsyncReply wait");
 				asynchReply = c8Access.getAsyncReply(asynchReply);
 				log.debug("Waiting Finished.");
 			}
-			log.debug("AsynchReplyStatus: " + asynchReply.getStatus());
+			log.debug("AsynchReplyStatus: " + asynchReply.getStatus());			
+			
+			History history = null;
+			
+			do {
+				BaseClass[] histories = c8Utility.findObjectsInSearchPath("/adminFolder/exportDeployment[@name='" + strArchiveName + "']/*");
+				
+				// history path: asynchReply.getPrimaryRequest().getOptions()[1].getValue().toString(); // maybe?
+				// Option[] asynchOptions = asynchReply.getPrimaryRequest().getOptions();
+				String eventHistoryLocation = null; // ((AsynchOptionSearchPathSingleObject) asynchOptions[1]).getValue().get_value();
+				eventHistoryLocation = histories[0].getSearchPath().getValue(); 
+				
+				
+				// get the object from CM
+				BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation, c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
+				history = (History) historyObject[0];
+				if(history.getStatus().getValue().equals("succeeded")) {
+					log.debug("The export has been executed successfully... job status: " + history.getStatus().getValue());
+					printHistoryDetails(eventHistoryLocation);
+				}else if (history.getStatus().getValue().equals("executing")) {
+					log.debug("Try: " + counter + " | MAX: " + maxTries);
+					log.debug("Got Job status: " + history.getStatus().getValue());
+					log.debug("Will wait for little while to check if the job has finished.");
+					try {
+						log.debug("Sleeping " + sleepTimerMS + " milliseconds.");
+						Thread.sleep(sleepTimerMS);
+					} catch (InterruptedException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+				}else {
+					log.error("The export did not execute successfully... job status: " + history.getStatus().getValue());
+					printHistoryDetails(eventHistoryLocation);
+					log.error("Will exit with code 5 to prevent further execution.");
+					System.exit(5);
+				}
+				counter++;
+			} while(history.getStatus().getValue().equals("executing") && counter <= maxTries);
 		} catch (RemoteException remoteEx) {
 			log.error("An error occurred while deploying content:" + "\n" + remoteEx.getMessage());
 			remoteEx.printStackTrace();
@@ -231,6 +303,32 @@ public class C8ExportDeployment {
 		}
 
 		return reportEventID;
+	}
+
+	/**
+	 * Pass in the job history location and get the output message from the history.
+	 * @param eventHistoryLocation
+	 */
+	private void printHistoryDetails(String eventHistoryLocation) {
+		log.debug("Export details:");
+		BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation + "/*", c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
+		
+		int index = historyObject[0] instanceof HistoryDetail || historyObject[0] instanceof DeploymentDetail ? 0 : 1;
+		
+		if(historyObject[index] instanceof DeploymentDetail) {
+			DeploymentDetail exportDetails = (DeploymentDetail) c8Utility.fetchObjectsWithQueryOptions(historyObject[index].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps())[0];
+			for(FaultDetail detail : exportDetails.getMessage().getValue()) {
+				for(FaultDetailMessage message : detail.getMessage()) {
+					log.log(Level.toLevel(detail.getSeverity().equals("warning") ? "warn" : detail.getSeverity()), message.getMessage());
+				}
+			}
+		} else if (historyObject[index] instanceof HistoryDetail) {
+			HistoryDetail exportDetails = (HistoryDetail) c8Utility.fetchObjectsWithQueryOptions(historyObject[index].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps())[0];
+			log.error(exportDetails.getDetail().getValue());
+		} else {
+			log.debug("Was expectin HistoryDetail or DeploymentDetail object but found: " + historyObject[index].getClass().getName() + ", which is not implemented yet.");
+		}
+		
 	}
 
 	// /This method logs the user to Cognos BI

@@ -40,12 +40,12 @@ class GlobScanner {
 			// For each file, see if any exclude patterns match.
 			outerLoop:
 			//
-			for (Iterator matchIter = matches.iterator(); matchIter.hasNext();) {
+			for (Iterator<String> matchIter = matches.iterator(); matchIter.hasNext();) {
 				String filePath = (String)matchIter.next();
 				List<Pattern> excludePatterns = new ArrayList<Pattern>(allExcludePatterns);
 				try {
 					// Shortcut for excludes that are "**/XXX", just check file name.
-					for (Iterator excludeIter = excludePatterns.iterator(); excludeIter.hasNext();) {
+					for (Iterator<Pattern> excludeIter = excludePatterns.iterator(); excludeIter.hasNext();) {
 						Pattern exclude = (Pattern)excludeIter.next();
 						if (exclude.values.length == 2 && exclude.values[0].equals("**")) {
 							exclude.incr();
@@ -60,7 +60,7 @@ class GlobScanner {
 					// Get the file names after the root dir.
 					String[] fileNames = filePath.split("\\" + File.separator);
 					for (String fileName : fileNames) {
-						for (Iterator excludeIter = excludePatterns.iterator(); excludeIter.hasNext();) {
+						for (Iterator<Pattern> excludeIter = excludePatterns.iterator(); excludeIter.hasNext();) {
 							Pattern exclude = (Pattern)excludeIter.next();
 							if (!exclude.matches(fileName)) {
 								excludeIter.remove();
@@ -123,7 +123,7 @@ class GlobScanner {
 		// Increment patterns that need to move to the next token.
 		boolean isFinalMatch = false;
 		List<Pattern> incrementedPatterns = new ArrayList<Pattern>();
-		for (Iterator iter = matchingIncludes.iterator(); iter.hasNext();) {
+		for (Iterator<Pattern> iter = matchingIncludes.iterator(); iter.hasNext();) {
 			Pattern include = (Pattern)iter.next();
 			if (include.incr(fileName)) {
 				incrementedPatterns.add(include);

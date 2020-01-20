@@ -11,11 +11,6 @@ import java.util.List;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
-import com.cognos.developer.schemas.bibus._3.BaseClass;
-import com.cognos.developer.schemas.bibus._3.PropEnum;
-import com.cognos.developer.schemas.bibus._3.QueryOptions;
-import com.cognos.developer.schemas.bibus._3.SearchPathMultipleObject;
-import com.cognos.developer.schemas.bibus._3.Sort;
 import com.dai.mif.cocoma.cognos.util.C8Access;
 import com.dai.mif.cocoma.cognos.util.C8Utility;
 // import com.dai.mif.cocoma.cognos.util.C8Utility;
@@ -61,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 10.2.1/2019-04-08_1714/564@@ ";
+	private static String productRevision = "Build: @@Cognos 10.2.1/2020-01-20_1634/604@@ ";
 	
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */

@@ -11,13 +11,14 @@ import java.net.MalformedURLException;
 import java.nio.channels.FileChannel;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Stub;
-import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.log4j.Logger;
 
 import com.cognos.developer.schemas.bibus._3.AddOptions;
@@ -25,19 +26,12 @@ import com.cognos.developer.schemas.bibus._3.AsynchReply;
 import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.BiBusHeader;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
+import com.cognos.developer.schemas.bibus._3.DeleteOptions;
 import com.cognos.developer.schemas.bibus._3.DeploymentDetail;
 import com.cognos.developer.schemas.bibus._3.DeploymentObjectInformation;
 import com.cognos.developer.schemas.bibus._3.DeploymentOption;
-//import com.cognos.developer.schemas.bibus._3.DeploymentOptionAuditLevel;
-//import com.cognos.developer.schemas.bibus._3.DeploymentOptionBoolean;
-//import com.cognos.developer.schemas.bibus._3.DeploymentOptionEnum;
-import com.cognos.developer.schemas.bibus._3.DeploymentOptionMultilingualString;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionObjectInformationArray;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionString;
-//import com.cognos.developer.schemas.bibus._3.Dispatcher_Type;
-//import com.cognos.developer.schemas.bibus._3.History;
-//import com.cognos.developer.schemas.bibus._3.HistoryDetailDeploymentSummary;
-//import com.cognos.developer.schemas.bibus._3.HistoryDetailRequestArguments;
 import com.cognos.developer.schemas.bibus._3.AsynchReplyStatusEnum;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionArrayProp;
 import com.cognos.developer.schemas.bibus._3.DeploymentOptionEnum;
@@ -45,8 +39,6 @@ import com.cognos.developer.schemas.bibus._3.FaultDetail;
 import com.cognos.developer.schemas.bibus._3.FaultDetailArrayProp;
 import com.cognos.developer.schemas.bibus._3.FaultDetailMessage;
 import com.cognos.developer.schemas.bibus._3.ImportDeployment;
-import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
-import com.cognos.developer.schemas.bibus._3.MonitorService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.MultilingualToken;
 import com.cognos.developer.schemas.bibus._3.MultilingualTokenProp;
 import com.cognos.developer.schemas.bibus._3.Option;
@@ -62,6 +54,7 @@ import com.cognos.developer.schemas.bibus._3.UpdateActionEnum;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.cognos.util.C8Access;
+import com.dai.mif.cocoma.cognos.util.C8Utility;
 import com.dai.mif.cocoma.config.DeploymentArchive;
 import com.dai.mif.cocoma.config.DeploymentData;
 import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
@@ -87,13 +80,12 @@ import com.esotericsoftware.wildcard.Paths;
 public class C8Deployment {
 
 	private C8Access c8Access;
+	private C8Utility c8Utility = null;
 	private static Logger log;
 	private DeploymentData deploymentData;
 	private String strLocale = "en";
 
 	private ContentManagerService_PortType cmService = null;
-	private MonitorService_PortType monitorService = null;
-
 	/*
 	 * Target ZIP Archive name of deployment to be place in Deployment folder of
 	 * cognos
@@ -109,6 +101,7 @@ public class C8Deployment {
 	 * @param c8Access
 	 */
 	public C8Deployment(DeploymentData deploymentData, C8Access c8Access) {
+		this.c8Utility = new C8Utility(c8Access);
 		this.c8Access = c8Access;
 		C8Deployment.log = Logging.getInstance().getLog(this.getClass());
 		this.deploymentData = deploymentData;
@@ -118,9 +111,6 @@ public class C8Deployment {
 			String deploymentSourceArchive) throws CoCoMaC8Exception {
 
 		String deploymentFolder = this.deploymentData.getDeploymentFolder();
-		@SuppressWarnings("unused")
-		String archiveName = "";
-
 		log.debug("Preparing deployment archive");
 		log.debug("DeploymentName: " + deploymentName);
 		log.debug("DeploymentSrcArchive: " + deploymentSourceArchive);
@@ -217,7 +207,6 @@ public class C8Deployment {
 			if (!deploymentSourceFile.exists()) {
 				log.warn("The deployment '" + deploymentSourceArchive + "' does not exist.");
 				log.warn("Will try to deploy anyhow. See what Cognos portal can do for us.");
-				archiveName = deploymentSourceArchive;
 				deploymentTargetArchive = deploymentSourceArchive;
 
 			} else {
@@ -241,7 +230,6 @@ public class C8Deployment {
 				this.deploymentData.setDeploymentNameOfArchiveInZipDeploymentFile(zipArchiv.determineOriginName());
 				if (this.deploymentData.getDeploymentNameOfArchiveInZipDeploymentFile().length() == 0) {
 					log.warn("Archive name could not be determined. Using \"" + deploymentName + "\" as fallback.");
-					archiveName = deploymentName + ".zip";
 				}
 			}
 		}
@@ -471,6 +459,7 @@ public class C8Deployment {
 					+ e.getMessage());
 			e.getCause();
 			e.getStackTrace();
+			e.printStackTrace();
 
 			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR,
 					"Deployment Options not found! Archive not found or no access is possible reason. Check filesystem.");
@@ -561,9 +550,6 @@ public class C8Deployment {
 
 				// Option_MultilingualString
 			} else if (DEPLOY_OPTION_MLSTRING == OptionClassName) {
-				DeploymentOptionMultilingualString packDeployOptionStrings = ((DeploymentOptionMultilingualString) myDeploymentOptionsEnum[i]); // ((DeploymentOptionMultilingualString)
-																																				// myDeploymentOptionsEnum[i]).getValue();
-
 				// Loop over DeploymentObjectInformation
 				log.debug("Loop over deploymentOption MultilingualString");
 				// TODO Fix this code
@@ -644,7 +630,7 @@ public class C8Deployment {
 				e.printStackTrace();
 			}
 	        try {
-				monitorService = c8Access.getMonitorServiceLocator().getmonitorService(serverURL);
+				c8Access.getMonitorServiceLocator().getmonitorService(serverURL);
 			} catch (ServiceException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -676,7 +662,8 @@ public class C8Deployment {
 					"E.g. for FullBackup-reimports it makes no sense to look for a history. Because the history will be overwritten with the very same deployment.");
 		}
 		reportEventID = "true";
-
+		log.debug("Checking if there are dispatchers to removed...");
+		removeUnnecessaryDispatchers();
 		return reportEventID;
 	} // deployContent
 
@@ -806,6 +793,41 @@ public class C8Deployment {
 			log.error("Deployment execution not possible. Pls. check CoCoMa Logfile for details.");
 			CoCoMa.setErrorCode(CoCoMa.COCOMA_ERROR_CRTICAL_ERROR,
 					"prepareDeploymentArchive failed. Deployment not executed. Pls. check CoCoMa Logfile for details. ");
+		}
+	}
+	
+	/**
+	 * Removes wrong port dispatchers imported via DEV1 import
+	 */
+	private void removeUnnecessaryDispatchers() {
+		
+		String port = c8Access.getUrl().split(":")[2].split("/")[0];
+		
+		// get all dispatchers
+		BaseClass[] dispatchers = c8Utility.findObjectsInSearchPath("/configuration/dispatcher");
+		// convert array to arraylist for easy array manipulation
+		List<BaseClass> disp = new ArrayList<BaseClass>(Arrays.asList(dispatchers));
+		// remove all the Object that contain the correct port.
+		disp.removeIf(d -> d.getDefaultName().getValue().contains(":" + port));
+		// convert back the arraylist to BaseClass array.
+		disp.toArray(dispatchers);
+		
+		if(disp.size() > 0) {
+			// print out the dispatchers that will be removed.
+			for(BaseClass dispatcher : disp) {
+				log.debug("Removing dispatcher \"" + dispatcher.getDefaultName().getValue() + "\", Reason: Wrong port.");
+			}
+			
+			try {
+				DeleteOptions delete_options = new DeleteOptions();
+				delete_options.setRecursive(true);
+				c8Access.getCmService().delete(dispatchers, delete_options);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			log.debug("No wrong dispatchers found... will keep all the dispatchers.");
 		}
 	}
 }

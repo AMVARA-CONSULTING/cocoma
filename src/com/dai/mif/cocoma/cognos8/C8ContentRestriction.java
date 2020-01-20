@@ -15,7 +15,6 @@ import com.cognos.developer.schemas.bibus._3.BaseClass;
 import com.cognos.developer.schemas.bibus._3.BooleanProp;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.Group;
-import com.cognos.developer.schemas.bibus._3.MultilingualTokenProp;
 import com.cognos.developer.schemas.bibus._3.Option;
 import com.cognos.developer.schemas.bibus._3.PortalOption;
 import com.cognos.developer.schemas.bibus._3.PortalOptionBoolean;

@@ -4,12 +4,8 @@
 
 package com.dai.mif.cocoma.cognos.util;
 
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-
 import javax.xml.namespace.QName;
-import javax.xml.rpc.ServiceException;
-
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.log4j.Logger;
@@ -23,6 +19,8 @@ import com.cognos.developer.schemas.bibus._3.ContentManagerService_PortType;
 import com.cognos.developer.schemas.bibus._3.ContentManagerService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.Dispatcher_PortType;
 import com.cognos.developer.schemas.bibus._3.Dispatcher_ServiceLocator;
+import com.cognos.developer.schemas.bibus._3.EventManagementService_PortType;
+import com.cognos.developer.schemas.bibus._3.EventManagementService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.MonitorService_PortType;
 import com.cognos.developer.schemas.bibus._3.MonitorService_ServiceLocator;
 import com.cognos.developer.schemas.bibus._3.Option;
@@ -65,6 +63,9 @@ public class C8Access {
 	private Dispatcher_ServiceLocator dispatcherServiceLocator = new Dispatcher_ServiceLocator();
 	private Dispatcher_PortType dispatcherService = null;
 
+	EventManagementService_ServiceLocator eventManagerServiceLocator = null;
+	EventManagementService_PortType eventManagerService = null;
+	
 	public Dispatcher_PortType getDispatcherService() {
 		return dispatcherService;
 	}
@@ -119,6 +120,7 @@ public class C8Access {
 
 		this.cmServiceLocator = new ContentManagerService_ServiceLocator();
 		this.monitorServiceLocator = new MonitorService_ServiceLocator();
+		this.eventManagerServiceLocator = new EventManagementService_ServiceLocator();
 
 		this.c8Utiliy = new C8Utility(this);
 	}
@@ -147,7 +149,7 @@ public class C8Access {
 	
 	public AsynchReply getAsyncReply( AsynchReply asReply ) {
 		
-		int maxWaitRetries = 15;
+		int maxWaitRetries = 0;
 		int cntWaitRetries = 0;
 		int sleepTimeMs = 10000;
 		
@@ -218,6 +220,7 @@ public class C8Access {
 			cmService = new ContentManagerServiceStub(new java.net.URL(serverURL), cmServiceLocator);
 			dispatcherService = dispatcherServiceLocator.getdispatcher(new java.net.URL(serverURL));
 			monitorService = monitorServiceLocator.getmonitorService(new java.net.URL(serverURL));
+			eventManagerService = eventManagerServiceLocator.geteventManagementService(new java.net.URL(serverURL));
 
 			String timeoutValueConfig = "0";
 			int timeoutValue = Integer.parseInt(timeoutValueConfig);
@@ -226,6 +229,7 @@ public class C8Access {
 			// in milliseconds, 0 turns the timeout off
 			((Stub) cmService).setTimeout(timeoutValue);
             ((Stub) monitorService).setTimeout(timeoutValue);
+            ((Stub) eventManagerService).setTimeout(timeoutValue);
 
 		} catch (Exception e) {
 			log.error(e);
@@ -280,6 +284,8 @@ public class C8Access {
 				"http://developer.cognos.com/schemas/bibus/3/",
 				"biBusHeader", cmBiBusHeader);
 		((Stub) dispatcherService).setHeader("http://developer.cognos.com/schemas/bibus/3/",
+				"biBusHeader", cmBiBusHeader);
+		((Stub) eventManagerService).setHeader("http://developer.cognos.com/schemas/bibus/3/",
 				"biBusHeader", cmBiBusHeader);
 		log.debug("** setBiBusHeader done ");
 		log.debug("<-- ConnectToCognosServer()");
@@ -510,5 +516,13 @@ public class C8Access {
 	 */
 	public String getUsername() {
 		return username;
+	}
+
+	public EventManagementService_PortType getEventManagerService() {
+		return eventManagerService;
+	}
+
+	public void setEventManagerService(EventManagementService_PortType eventManagerService) {
+		this.eventManagerService = eventManagerService;
 	}
 }

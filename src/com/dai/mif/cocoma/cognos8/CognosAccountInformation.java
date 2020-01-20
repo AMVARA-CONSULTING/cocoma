@@ -9,7 +9,6 @@ import com.cognos.developer.schemas.bibus._3.Sort;
 import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.cognos.util.C8Access;
 import com.dai.mif.cocoma.cognos.util.C8Utility;
-import com.dai.mif.cocoma.config.ServerData;
 
 
 public class CognosAccountInformation {

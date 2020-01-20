@@ -37,7 +37,7 @@ class RegexScanner {
 
 		scanDir(rootDir);
 
-		for (Iterator matchIter = matches.iterator(); matchIter.hasNext();) {
+		for (Iterator<String> matchIter = matches.iterator(); matchIter.hasNext();) {
 			String filePath = (String)matchIter.next();
 			for (Pattern exclude : excludePatterns)
 				if (exclude.matcher(filePath).matches()) matchIter.remove();

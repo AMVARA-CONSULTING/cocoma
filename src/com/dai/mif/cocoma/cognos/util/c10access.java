@@ -22,7 +22,6 @@ public class c10access {
 
 	private Logger log;
 
-	private String serverURL;
 	private String namespaceID;
 	private String userID;
 	private String password;
@@ -37,7 +36,6 @@ public class c10access {
 			String password) {
 		log = Logger.getLogger(this.getClass());
 		log.info("** C10Access");
-		this.serverURL = url;
 		this.namespaceID = namespace;
 		this.userID = username;
 		this.password = password;
