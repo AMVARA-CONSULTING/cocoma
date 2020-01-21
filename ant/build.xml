@@ -12,7 +12,7 @@
 
 	<property file="build.properties" />
 	
-	<property name="build.version" value="Cognos 10.2.1" />
+	<property name="build.version" value="Cognos 11" />
 	<tstamp>
 		<format property="build.time" pattern="yyyy-MM-dd_HHmm" unit="hour" />
 	</tstamp>

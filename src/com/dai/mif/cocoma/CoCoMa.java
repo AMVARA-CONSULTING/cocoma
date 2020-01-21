@@ -56,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 10.2.1/2020-01-20_1634/604@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2020-01-21_1903/606@@ ";
 	
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -671,7 +671,7 @@ public class CoCoMa {
 		// show information about the program itself
 		log.info("---------------------------------------------------o_o-");
 		log.info("Welcome to CoCoMa for IBM Cognos 10.x to 11.x ");
-		log.info("(C) 2011-2019 Ralf Roeber, AMVARA Consulting, Barcelona");
+		log.info("(C) 2011-2020 Ralf Roeber, AMVARA Consulting, Barcelona");
 		log.info(getVersionString());
 		log.info(getRevisionString());
 		log.info("Use --help to see options.");
