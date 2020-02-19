@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 
@@ -186,13 +187,12 @@ public class C8ExportDeployment {
 	}
 
 	public String deployContentCS(String strArchiveName) {
-				
+
 		AsynchReply asynchReply = null;
 		String reportEventID = "-1";
-		int sleepTimerMS=15000;
-		int maxTries=15;
-		int counter=0;
-		
+		int sleepTimerMS = 15000;
+		int maxTries = 15;
+		int counter = 0;
 
 		String deployPath;
 		SearchPathSingleObject searchPathObject = new SearchPathSingleObject();
@@ -225,57 +225,65 @@ public class C8ExportDeployment {
 		}
 		log.debug("Getting async reply..");
 		try {
-			// asynchReply = mService.run(searchPathObject, new ParameterValue[] {}, new Option[] {});
-			
+			// asynchReply = mService.run(searchPathObject, new ParameterValue[] {}, new
+			// Option[] {});
+
 			asynchReply = c8Access.getMonitorService().run(searchPathObject, new ParameterValue[] {}, new Option[] {});
-			
+
 			/**
-			 * FIX FOR
-			 * <errorCode>
-			 * 	CANNOT_FORWARD_TO_ABSOLUTE_AFFINITY_NODE
-			 * </errorCode>
-			 * <messageString>
-			 * 	DPR-ERR-2072 Unable to load balance a request with absolute affinity, most likely due to a failure to connect to the remote dispatcher. See the remote dispatcher detailed logs for more information. Check the health status of the installed system by using the dispatcher diagnostics URIs.
-			 * </messageString> 
+			 * FIX FOR <errorCode> CANNOT_FORWARD_TO_ABSOLUTE_AFFINITY_NODE </errorCode>
+			 * <messageString> DPR-ERR-2072 Unable to load balance a request with absolute
+			 * affinity, most likely due to a failure to connect to the remote dispatcher.
+			 * See the remote dispatcher detailed logs for more information. Check the
+			 * health status of the installed system by using the dispatcher diagnostics
+			 * URIs. </messageString>
 			 */
-			BiBusHeader bibus = C8Access.getHeaderObject(((Stub)c8Access.getMonitorService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), false, "");
-	        
-			if(bibus == null) {
+			BiBusHeader bibus = C8Access.getHeaderObject(((Stub) c8Access.getMonitorService())
+					.getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), false, "");
+
+			if (bibus == null) {
 				BiBusHeader CMbibus = null;
-				CMbibus = C8Access.getHeaderObject(((Stub)c8Access.getCmService()).getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, "");
-				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", CMbibus);
+				CMbibus = C8Access.getHeaderObject(((Stub) c8Access.getCmService())
+						.getResponseHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader"), true, "");
+				((Stub) c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/",
+						"biBusHeader", CMbibus);
 			} else {
-				((Stub)c8Access.getMonitorService()).clearHeaders();
-				((Stub)c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/", "biBusHeader", bibus);
+				((Stub) c8Access.getMonitorService()).clearHeaders();
+				((Stub) c8Access.getMonitorService()).setHeader("http://developer.cognos.com/schemas/bibus/3/",
+						"biBusHeader", bibus);
 			}
-			
-			
+
 			if (!(asynchReply.getStatus().equals(AsynchReplyStatusEnum.complete))
 					&& !(asynchReply.getStatus().equals(AsynchReplyStatusEnum.conversationComplete))) {
 				log.debug("Call AsyncReply wait");
 				asynchReply = c8Access.getAsyncReply(asynchReply);
 				log.debug("Waiting Finished.");
 			}
-			log.debug("AsynchReplyStatus: " + asynchReply.getStatus());			
-			
+			log.debug("AsynchReplyStatus: " + asynchReply.getStatus());
+
 			History history = null;
-			
+
 			do {
-				BaseClass[] histories = c8Utility.findObjectsInSearchPath("/adminFolder/exportDeployment[@name='" + strArchiveName + "']/*");
-				
-				// history path: asynchReply.getPrimaryRequest().getOptions()[1].getValue().toString(); // maybe?
+				BaseClass[] histories = c8Utility
+						.findObjectsInSearchPath("/adminFolder/exportDeployment[@name='" + strArchiveName + "']/*");
+
+				// history path:
+				// asynchReply.getPrimaryRequest().getOptions()[1].getValue().toString(); //
+				// maybe?
 				// Option[] asynchOptions = asynchReply.getPrimaryRequest().getOptions();
-				String eventHistoryLocation = null; // ((AsynchOptionSearchPathSingleObject) asynchOptions[1]).getValue().get_value();
-				eventHistoryLocation = histories[0].getSearchPath().getValue(); 
-				
-				
+				String eventHistoryLocation = null; // ((AsynchOptionSearchPathSingleObject)
+													// asynchOptions[1]).getValue().get_value();
+				eventHistoryLocation = histories[0].getSearchPath().getValue();
+
 				// get the object from CM
-				BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation, c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
+				BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation,
+						c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
 				history = (History) historyObject[0];
-				if(history.getStatus().getValue().equals("succeeded")) {
-					log.debug("The export has been executed successfully... job status: " + history.getStatus().getValue());
+				if (history.getStatus().getValue().equals("succeeded")) {
+					log.debug("The export has been executed successfully... job status: "
+							+ history.getStatus().getValue());
 					printHistoryDetails(eventHistoryLocation);
-				}else if (history.getStatus().getValue().equals("executing")) {
+				} else if (history.getStatus().getValue().equals("executing")) {
 					log.debug("Try: " + counter + " | MAX: " + maxTries);
 					log.debug("Got Job status: " + history.getStatus().getValue());
 					log.debug("Will wait for little while to check if the job has finished.");
@@ -286,14 +294,15 @@ public class C8ExportDeployment {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
-				}else {
-					log.error("The export did not execute successfully... job status: " + history.getStatus().getValue());
+				} else {
+					log.error(
+							"The export did not execute successfully... job status: " + history.getStatus().getValue());
 					printHistoryDetails(eventHistoryLocation);
 					log.error("Will exit with code 5 to prevent further execution.");
 					System.exit(5);
 				}
 				counter++;
-			} while(history.getStatus().getValue().equals("executing") && counter <= maxTries);
+			} while (history.getStatus().getValue().equals("executing") && counter <= maxTries);
 		} catch (RemoteException remoteEx) {
 			log.error("An error occurred while deploying content:" + "\n" + remoteEx.getMessage());
 			remoteEx.printStackTrace();
@@ -307,28 +316,55 @@ public class C8ExportDeployment {
 
 	/**
 	 * Pass in the job history location and get the output message from the history.
+	 * 
 	 * @param eventHistoryLocation
 	 */
 	private void printHistoryDetails(String eventHistoryLocation) {
 		log.debug("Export details:");
-		BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation + "/*", c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
-		
-		int index = historyObject[0] instanceof HistoryDetail || historyObject[0] instanceof DeploymentDetail ? 0 : 1;
-		
-		if(historyObject[index] instanceof DeploymentDetail) {
-			DeploymentDetail exportDetails = (DeploymentDetail) c8Utility.fetchObjectsWithQueryOptions(historyObject[index].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps())[0];
-			for(FaultDetail detail : exportDetails.getMessage().getValue()) {
-				for(FaultDetailMessage message : detail.getMessage()) {
-					log.log(Level.toLevel(detail.getSeverity().equals("warning") ? "warn" : detail.getSeverity()), message.getMessage());
+
+		// get all the objects inside the history path
+		BaseClass[] historyObject = c8Utility.fetchObjectsWithQueryOptions(eventHistoryLocation + "/*",
+				c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps());
+
+		// loop over all the objects
+		for (int i = 0; i < historyObject.length; i++) {
+			if (historyObject[i] instanceof DeploymentDetail) { // if object is of type DeploymentDetail do this
+
+				// get the object to work on
+				DeploymentDetail exportDetails = (DeploymentDetail) c8Utility.fetchObjectsWithQueryOptions(
+						historyObject[i].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {},
+						c8Utility.setQORefProps())[0];
+
+				// check if the object obtained has contains a message or its a null value
+				if (exportDetails.getHasMessage().isValue()) {
+
+					// loop over all the messages and output the message
+					for (FaultDetail detail : exportDetails.getMessage().getValue()) {
+						for (FaultDetailMessage message : detail.getMessage()) {
+							log.log(Level
+									.toLevel(detail.getSeverity().equals("warning") ? "warn" : detail.getSeverity()),
+									message.getMessage());
+						}
+					}
+
+				} else {
+					log.debug("DeploymentDetail does not contain any message will check with other instances...");
 				}
+			} else if (historyObject[i] instanceof HistoryDetail) { // if object obtained is of instance HistoryDetail
+																	// do this
+
+				// get the object to work on
+				HistoryDetail exportDetails = (HistoryDetail) c8Utility.fetchObjectsWithQueryOptions(
+						historyObject[i].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {},
+						c8Utility.setQORefProps())[0];
+
+				// print out the message.
+				log.error(exportDetails.getDetail().getValue());
+			} else {
+				log.debug("Was expectin HistoryDetail or DeploymentDetail object but found: "
+						+ historyObject[i].getClass().getName() + ", which is not implemented yet.");
 			}
-		} else if (historyObject[index] instanceof HistoryDetail) {
-			HistoryDetail exportDetails = (HistoryDetail) c8Utility.fetchObjectsWithQueryOptions(historyObject[index].getSearchPath().getValue(), c8Utility.setPropEnum(), new Sort[] {}, c8Utility.setQORefProps())[0];
-			log.error(exportDetails.getDetail().getValue());
-		} else {
-			log.debug("Was expectin HistoryDetail or DeploymentDetail object but found: " + historyObject[index].getClass().getName() + ", which is not implemented yet.");
 		}
-		
 	}
 
 	// /This method logs the user to Cognos BI
