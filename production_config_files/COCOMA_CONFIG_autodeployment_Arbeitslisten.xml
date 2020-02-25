@@ -3,8 +3,8 @@
 	<server>
 			<dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
 			<namespace>LDAP</namespace>
-			<username>apiuser</username>
-                	<password>wfS6HJbqU2liRdGZK0AgTw==</password>
+			<username>MIF_CRNAPI_tec_00</username>
+                	<password>ONcnuYTUhFNJqcwKa6INbQqFoKrX1q79UnGY9eWyseo=</password>
 			<version>10</version>
 			<deploymentFolder></deploymentFolder>
 
@@ -22,7 +22,7 @@
 				<!-- basic -->
 				full
 			</recordingLevel>
-			<archive>/cluster/mif/cognos/deployment/crn0/MIFReporting_revision_*.zip</archive>
+			<archive>/opt/IBM/cognos/crn0/deployment/MIFReporting_revision_*.zip</archive>
 			<delete_items>
 				<item>/content/package[@name='MIF_Adapter']</item>
 				<item>/content/package[@name='MIF_AS']</item>

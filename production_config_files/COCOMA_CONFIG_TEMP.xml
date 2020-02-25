@@ -3,29 +3,10 @@
 <server>
                 <dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
-                <username>apiuser</username>
-                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
+                <username>MIF_CRNAPI_tec_00</username>
+                <password>ONcnuYTUhFNJqcwKa6INbQqFoKrX1q79UnGY9eWyseo=</password>
 		<version>10</version>
         </server>
-<ui>
-
-<!--
-                <skins>
-                        <skin>
-                                <name>Corporate</name>
-                                <resourceLocation>coporate</resourceLocation>
-                                <preview>../skins/corporate/preview.htm</preview>
-                        </skin>
-                </skins>
--->
-                
-                <defaultProfile>
-                        <skin>Corporate</skin>
-                        <linesPerPage>999</linesPerPage>
-                        <listSeparator>background</listSeparator>
-                </defaultProfile>
-
-    </ui>
 <dataSources>
 
                 <dataSource>
@@ -102,7 +83,7 @@
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd</name>
+                <name>http://localhost:9080/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -141,7 +122,7 @@
         </dispatcher>
 <!--
         <dispatcher global="true">
-            	<name>http://ashost0:9080/p2pd</name>
+            	<name>http://localhost:9080/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>50</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -169,47 +150,43 @@
 <security>
 
                 <roles>
+                        <role>
+                                <name>Query Users</name>
+                                <keepExisting>true</keepExisting>
+                                <members>
+                                        <group>QSWorklistUser</group>
+                                </members>
+                        </role>
                 
                         <role>
                                 <name>System Administrators</name>
                                 <keepExisting>true</keepExisting>
                                 <members>
-                                        <user>apiuser</user>
-                                        <user>schocra</user>
-                                        <user>tbruckn</user>
-                                        <user>rroeber</user>
+                                        <user>MIF_CRNAPI_tec_00</user>
+                                        <user>SCHOCRA</user>
+                                        <user>TBRUCKN</user>
+                                        <user>RROEBER</user>
                                 </members>
                                 <removeMembers>
                                         <group>Everyone</group>
                                 </removeMembers>
                         </role>
 
-                        <!-- ======================= -->
-                        <!-- READONLY Administrators -->
-                        <!-- ======================= -->
-                
-                        <role>
-                                <name>System Administrators (ReadOnly)</name>
-                                <members>
-                                  <user>marscm</user>
-                                </members>
-                        </role>         
-
                         <role>
                                 <name>WorklistUser</name>
                                 <members>
-                                  <user>rroeber</user>
-								  <user>kesslera</user>
-								  <user>sdkuser</user>
+                                  <user>RROEBER</user>
+                                  <user>KESSLERA</user>
+                                  <user>MIF_CRNSDK_tec_00</user>
                                 </members>
                         </role>
 
                         <role>
                                 <name>QSWorklistUser</name>
                                 <members>
-                                  <user>rroeber</user>
-								  <user>kesslera</user>
-								  <user>sdkuser</user>
+                                  <user>RROEBER</user>
+                                  <user>KESSLERA</user>
+                                  <user>MIF_CRNSDK_tec_00</user>
                                 </members>
                         </role>
 
@@ -254,7 +231,7 @@
                                         <role>QSWorklistUser</role>
                                 </members>
                         </permission>
-
+						
                         <permission>
                                 <target>/content/package[@name="MIF_AS"]</target>
                                 <read>true</read>
@@ -267,7 +244,7 @@
                                         <role>QSWorklistUser</role>
                                 </members>
                         </permission>						
-						
+
                         <permission>
                                 <target>/content/package[@name="MIF_CFO"]</target>
                                 <read>true</read>
@@ -308,32 +285,6 @@
                         </permission>
 
                         <permission>
-                                <target>/content/package[@name="MIF_Drucklisten"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-                        <permission>
-                                <target>/content/package[@name="MIF_MDR"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-                        <permission>
                                 <target>/content/package[@name="MIF_MNTR"]</target>
                                 <read>true</read>
                                 <write>false</write>
@@ -349,20 +300,6 @@
 
                         <permission>
                                 <target>/content/package[@name="MIF_Schatten"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-
-                        <permission>
-                                <target>/content/package[@name="SMB"]</target>
                                 <read>true</read>
                                 <write>false</write>
                                 <execute>true</execute>
@@ -603,9 +540,9 @@
                         </permission>
 
                 </permissions>
-        </security>
-<capabilities>
+</security>
 
+<capabilities>
                 <capability>
                         <name>Query Studio</name>
                         <permission>
@@ -962,9 +899,6 @@
                         <features>
                         </features>
                 </capability>
-                <!-- ======================= -->
-                <!-- READONLY Administrators -->
-                <!-- ======================= -->
 
                 <capability>
                         <name>Administration</name>
@@ -974,9 +908,6 @@
                                 <execute>true</execute>
                                 <setPolicy>true</setPolicy>
                                 <traverse>true</traverse>
-                                <members>
-                                        <role>System Administrators (ReadOnly)</role>
-                                </members>
                         </permission>
                         <features>
                                 <feature>
@@ -987,9 +918,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1000,9 +928,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1013,9 +938,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1026,9 +948,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1039,9 +958,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1052,9 +968,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1065,9 +978,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1078,9 +988,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1091,9 +998,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1104,9 +1008,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1117,9 +1018,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1130,9 +1028,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1143,9 +1038,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1156,15 +1048,10 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>                      
                         </features>
                 </capability>           
-
-                
                 
                 <!-- =========================== -->
                 <!-- Remove 'Show Hidden' option -->
@@ -1186,9 +1073,7 @@
                         <features>
                         </features>
                 </capability>
-                
-
-        </capabilities>
+</capabilities>
 <restrictedContent>
                 <unrestricted>
                         <role>System Administrators</role>
@@ -1199,12 +1084,5 @@
                 </visible>
 </restrictedContent>
 <deployments>
-<!--    
-                <deployment>
-                        <name>CoCoMa Test Deployment</name>
-                        <password></password>
-                        <recordingLevel>full</recordingLevel>
-                </deployment>
--->     
-        </deployments>
+</deployments>
 </CoCoMa>

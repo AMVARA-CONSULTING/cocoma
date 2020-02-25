@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
-		<server>
-                <dispatcherURL>http://localhost:9080/p2pd/servlet/dispatch</dispatcherURL>
+<server>
+                <dispatcherURL>http://localhost:9300/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
-                <username>MIF_CRNAPI_tec_00</username>
-                <password>ONcnuYTUhFNJqcwKa6INbQqFoKrX1q79UnGY9eWyseo=</password>
+                <username>apiuser</username>
+                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
                 <version>10</version>
-        </server>
-<ui>
-                
-                <defaultProfile>
-                        <skin>Corporate</skin>
-                        <linesPerPage>999</linesPerPage>
-                        <listSeparator>background</listSeparator>
-                </defaultProfile>
+        </server>	
 
-    </ui>
 <dataSources>
 
                 <dataSource>
                         <name>QSUSERDS</name>
                         <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <username>mif_crn</username>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -40,8 +32,8 @@
 				<dataSource>
                         <name>QSUSERDS_wProfile</name>
                         <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>I3pzcGV5UV33+Jp7GtwRyg==</password>
+                        <username>mif_crn</username>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -58,10 +50,10 @@
                 </dataSource>
 
                 <dataSource>
-                        <name>FK1XAT03</name>
+                        <name>fk1xat03</name>
                         <dbalias>APP0</dbalias>
                         <username>mif_crn</username>
-                        <password>Iz0kYTGT1NKaBqQ9zKM7VA==</password>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
@@ -80,7 +72,7 @@
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
                         <username>crn_aud</username>
-                        <password>9nY58ROdDewKznGTnPkwCA==</password> <!-- Old password found in this configuration "flH5QBSUUcYXBPtqZLNjsw==" -->
+                        <password>ImJdAT8fZOa09bKmBD1P+w==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
@@ -92,7 +84,7 @@
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://localhost:9080/p2pd</name>
+                <name>http://ashost0:9300/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -145,10 +137,14 @@
                                 <name>System Administrators</name>
                                 <keepExisting>true</keepExisting>
                                 <members>
-                                        <user>MIF_CRNAPI_tec_00</user>
-                                        <user>SCHOCRA</user>
-                                        <user>TBRUCKN</user>
-                                        <user>RROEBER</user>
+                                        <user>apiuser</user>
+                                        <user>schocra</user>
+                                        <user>tbruckn</user>
+                                        <user>rroeber</user>
+                                        <user>KARSAIM</user>
+                                        <user>tampapp</user>
+                                        <user>asarukh</user>
+                                        <user>fsachs</user>
                                 </members>
                                 <removeMembers>
                                         <group>Everyone</group>
@@ -158,18 +154,35 @@
                         <role>
                                 <name>WorklistUser</name>
                                 <members>
-                                  <user>RROEBER</user>
-                                  <user>KESSLERA</user>
-                                  <user>MIF_CRNSDK_tec_00</user>
+                                  <user>sdkuser</user>
+                                  <user>nostrak</user>
+                                  <user>muenchm</user>
+                                  <user>anwulf</user>
+                                  <user>gfetz54</user>
+                                  <user>magkohl</user>
+                                  <user>uthalhe</user>
+                                  <user>WITTECR</user>
+                                  <user>vltitov</user>
+                                  <user>nohorky</user>
+                                  <user>pourraa</user>
                                 </members>
                         </role>
 
                         <role>
                                 <name>QSWorklistUser</name>
                                 <members>
-                                  <user>RROEBER</user>
-                                  <user>KESSLERA</user>
-                                  <user>MIF_CRNSDK_tec_00</user>
+                                  <user>kesslera</user>
+                                  <user>sdkuser</user>
+                                  <user>nostrak</user>
+                                  <user>muenchm</user>
+                                  <user>anwulf</user>
+                                  <user>gfetz54</user>
+                                  <user>magkohl</user>
+                                  <user>uthalhe</user>
+                                  <user>WITTECR</user>
+                                  <user>vltitov</user>
+                                  <user>nohorky</user>
+                                  <user>pourraa</user>
                                 </members>
                         </role>
 

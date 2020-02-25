@@ -1,96 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?><CoCoMa>
 <version>$Revision: 123 $</version>
 <server>
-                <dispatcherURL>http://localhost:9080/p2pd0/servlet/dispatch</dispatcherURL>
+                <dispatcherURL>http://localhost:9310/p2pd/servlet/dispatch</dispatcherURL>
                 <namespace>LDAP</namespace>
                 <username>apiuser</username>
                 <password>wfS6HJbqU2liRdGZK0AgTw==</password>
                 <version>10</version>
-        </server>
-<ui>
+        </server>	
 
-<!--
-                <skins>
-                        <skin>
-                                <name>Corporate</name>
-                                <resourceLocation>coporate</resourceLocation>
-                                <preview>../skins/corporate/preview.htm</preview>
-                        </skin>
-                </skins>
--->
-                
-                <defaultProfile>
-                        <skin>Corporate</skin>
-                        <linesPerPage>999</linesPerPage>
-                        <listSeparator>background</listSeparator>
-                </defaultProfile>
-
-    </ui>
 <dataSources>
 
                 <dataSource>
                         <name>QSUSERDS</name>
-                        <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>9SLhO9f5dKAvpufhk+OhGQ==</password>
+                        <dbalias>APP1</dbalias>
+                        <username>mif_crn</username>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T21</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbname>FK1XAP09</dbname>
+							<dbport>60032</dbport>
 						</jdbc>
                 </dataSource>
-
-                <dataSource>
+				
+				<dataSource>
                         <name>QSUSERDS_wProfile</name>
-                        <dbalias>APP0</dbalias>
-                        <username>mif_qry</username>
-                        <password>9SLhO9f5dKAvpufhk+OhGQ==</password>
+                        <dbalias>APP1</dbalias>
+                        <username>mif_crn</username>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
-                                <openSession>set current optimization profile=MIF_DEV.QS101WFILTER_STMTKEY</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T21</openSession>
+                                <openSession>set current optimization profile=FK1C_T21.QS101WFILTER_STMTKEY</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbname>FK1XAP09</dbname>
+							<dbport>60032</dbport>
 						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>FK1XAT03</name>
-                        <dbalias>APP0</dbalias>
+                        <dbalias>APP1</dbalias>
                         <username>mif_crn</username>
-                        <password>NZzuQz+NYrYKzETPtmG5Hw==</password>
+                        <password>CIeAnKY5VHpzswPDS+moIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
                         <connectionCommands>
                                 <openConnection/>
                                 <closeConnection/>
-                                <openSession>SET CURRENT SCHEMA=MIF_DEV</openSession>
+                                <openSession>SET CURRENT SCHEMA=FK1C_T21</openSession>
                                 <closeSession/>
                         </connectionCommands>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
-							<dbname>FK1XAP03</dbname>
-							<dbport>60008</dbport>
+							<dbname>FK1XAP09</dbname>
+							<dbport>60032</dbport>
 						</jdbc>
                 </dataSource>
 
                 <dataSource>
                         <name>Audit</name>
                         <dbalias>AUD0</dbalias>
-                        <username>crn_aud</username>
-                        <password>hlhDQOimR2clGOixLjfk6Q==</password>
+                        <username>crn1_aud</username>
+                        <password>MrI+OJe8l6pctPApITGsIg==</password>
                         <isolationLevel>readUncommitted</isolationLevel>
 						<jdbc>
 							<dbserver>DBHOST</dbserver>
@@ -102,7 +84,7 @@
         </dataSources>
 <dispatchers>
          <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
+                <name>http://ashost0:9310/p2pd</name>
                 <loadBalancingMode>clusterCompatible</loadBalancingMode>
                 <governorLimit>500</governorLimit>
                 <peakStartHour>0</peakStartHour>
@@ -139,37 +121,18 @@
                         <value>2</value>
                 </advancedSettings>
         </dispatcher>
-<!--
-        <dispatcher global="true">
-                <name>http://ashost0:9080/p2pd0</name>
-                <loadBalancingMode>clusterCompatible</loadBalancingMode>
-                <governorLimit>50</governorLimit>
-                <peakStartHour>0</peakStartHour>
-                <peakEndHour>23</peakEndHour>
-                <connectionsHighAffinity>1</connectionsHighAffinity>
-                <connectionsLowAffinity>2</connectionsLowAffinity>
-                <maxProcessesInteractiveReporting>10</maxProcessesInteractiveReporting>
-                <queueTimeoutReporting>120</queueTimeoutReporting>
-
-                <auditLevel>
-                                <contentManagerService>BASIC</contentManagerService>
-                                <reportDataService>REQUEST</reportDataService>
-                                <eventManagementService>BASIC</eventManagementService>
-                                <jobService>BASIC</jobService>
-                                <monitorService>BASIC</monitorService>
-                                <presentationService>BASIC</presentationService>
-                                <reportService>REQUEST</reportService>
-                                <reportServiceNativeQuery>TRUE</reportServiceNativeQuery>
-                                <systemService>BASIC</systemService>
-                                <dispatcher>BASIC</dispatcher>
-                </auditLevel>
-        </dispatcher>
--->
 </dispatchers>
 <security>
 
                 <roles>
-                
+                        <role>
+                                <name>Query Users</name>
+                                <keepExisting>true</keepExisting>
+                                <members>
+                                        <group>QSWorklistUser</group>
+                                </members>
+                        </role>
+
                         <role>
                                 <name>System Administrators</name>
                                 <keepExisting>true</keepExisting>
@@ -178,38 +141,48 @@
                                         <user>schocra</user>
                                         <user>tbruckn</user>
                                         <user>rroeber</user>
+                                        <user>KARSAIM</user>
+                                        <user>tampapp</user>
+                                        <user>asarukh</user>
+                                        <user>fsachs</user>
                                 </members>
                                 <removeMembers>
                                         <group>Everyone</group>
                                 </removeMembers>
                         </role>
 
-                        <!-- ======================= -->
-                        <!-- READONLY Administrators -->
-                        <!-- ======================= -->
-                
-                        <role>
-                                <name>System Administrators (ReadOnly)</name>
-                                <members>
-                                  <user>marscm</user>
-                                </members>
-                        </role>         
-
                         <role>
                                 <name>WorklistUser</name>
                                 <members>
-                                  <user>rroeber</user>
-								  <user>kesslera</user>
                                   <user>sdkuser</user>
+                                  <user>nostrak</user>
+                                  <user>muenchm</user>
+                                  <user>anwulf</user>
+                                  <user>gfetz54</user>
+                                  <user>magkohl</user>
+                                  <user>uthalhe</user>
+                                  <user>WITTECR</user>
+                                  <user>vltitov</user>
+                                  <user>nohorky</user>
+                                  <user>pourraa</user>
                                 </members>
                         </role>
 
                         <role>
                                 <name>QSWorklistUser</name>
                                 <members>
-                                  <user>rroeber</user>
-								  <user>kesslera</user>
+                                  <user>kesslera</user>
                                   <user>sdkuser</user>
+                                  <user>nostrak</user>
+                                  <user>muenchm</user>
+                                  <user>anwulf</user>
+                                  <user>gfetz54</user>
+                                  <user>magkohl</user>
+                                  <user>uthalhe</user>
+                                  <user>WITTECR</user>
+                                  <user>vltitov</user>
+                                  <user>nohorky</user>
+                                  <user>pourraa</user>
                                 </members>
                         </role>
 
@@ -308,32 +281,6 @@
                         </permission>
 
                         <permission>
-                                <target>/content/package[@name="MIF_Drucklisten"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-                        <permission>
-                                <target>/content/package[@name="MIF_MDR"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-                        <permission>
                                 <target>/content/package[@name="MIF_MNTR"]</target>
                                 <read>true</read>
                                 <write>false</write>
@@ -349,20 +296,6 @@
 
                         <permission>
                                 <target>/content/package[@name="MIF_Schatten"]</target>
-                                <read>true</read>
-                                <write>false</write>
-                                <execute>true</execute>
-                                <setPolicy>false</setPolicy>
-                                <traverse>true</traverse>
-                                <members>
-                                        <role>WorklistUser</role>
-                                        <role>QSWorklistUser</role>
-                                </members>
-                        </permission>
-
-
-                        <permission>
-                                <target>/content/package[@name="SMB"]</target>
                                 <read>true</read>
                                 <write>false</write>
                                 <execute>true</execute>
@@ -603,9 +536,9 @@
                         </permission>
 
                 </permissions>
-        </security>
-<capabilities>
+</security>
 
+<capabilities>
                 <capability>
                         <name>Query Studio</name>
                         <permission>
@@ -962,9 +895,6 @@
                         <features>
                         </features>
                 </capability>
-                <!-- ======================= -->
-                <!-- READONLY Administrators -->
-                <!-- ======================= -->
 
                 <capability>
                         <name>Administration</name>
@@ -974,9 +904,6 @@
                                 <execute>true</execute>
                                 <setPolicy>true</setPolicy>
                                 <traverse>true</traverse>
-                                <members>
-                                        <role>System Administrators (ReadOnly)</role>
-                                </members>
                         </permission>
                         <features>
                                 <feature>
@@ -987,9 +914,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1000,9 +924,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1013,9 +934,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1026,9 +944,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1039,9 +954,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1052,9 +964,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1065,9 +974,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1078,9 +984,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1091,9 +994,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1104,9 +1004,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1117,9 +1014,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1130,9 +1024,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1143,9 +1034,6 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>
                                 <feature>
@@ -1156,15 +1044,10 @@
                                                 <execute>true</execute>
                                                 <setPolicy>false</setPolicy>
                                                 <traverse>true</traverse>
-                                                <members>
-                                                        <role>System Administrators (ReadOnly)</role>
-                                                </members>
                                         </permission>
                                 </feature>                      
                         </features>
                 </capability>           
-
-                
                 
                 <!-- =========================== -->
                 <!-- Remove 'Show Hidden' option -->
@@ -1186,9 +1069,7 @@
                         <features>
                         </features>
                 </capability>
-                
-
-        </capabilities>
+</capabilities>
 <restrictedContent>
                 <unrestricted>
                         <role>System Administrators</role>
@@ -1199,12 +1080,5 @@
                 </visible>
 </restrictedContent>
 <deployments>
-<!--    
-                <deployment>
-                        <name>CoCoMa Test Deployment</name>
-                        <password></password>
-                        <recordingLevel>full</recordingLevel>
-                </deployment>
--->     
-        </deployments>
+</deployments>
 </CoCoMa>

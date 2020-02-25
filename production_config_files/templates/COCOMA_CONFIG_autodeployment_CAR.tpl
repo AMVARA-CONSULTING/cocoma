@@ -3,8 +3,8 @@
 	<server>
 		<dispatcherURL>!DEPLURL!</dispatcherURL>
 		<namespace>LDAP</namespace>
-		<username>apiuser</username>
-                <password>wfS6HJbqU2liRdGZK0AgTw==</password>
+		<username>MIF_CRNAPI_tec_00</username>
+                <password>ONcnuYTUhFNJqcwKa6INbQqFoKrX1q79UnGY9eWyseo=</password>
 		<version>10</version>
 		<deploymentFolder></deploymentFolder>
 

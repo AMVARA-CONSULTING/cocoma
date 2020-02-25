@@ -1,6 +1,7 @@
 .svn/
 dist/
 build/
+bin/
 deployment_incoming/
 samples/
 src_sicherung_20141113/

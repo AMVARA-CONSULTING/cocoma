@@ -41,7 +41,6 @@ import com.dai.mif.cocoma.config.SecurityPermission;
 import com.dai.mif.cocoma.exception.CoCoMaC8Exception;
 import com.dai.mif.cocoma.logging.Logging;
 
-
 /**
  * This class encapsulated the C8n security routines. Based on a given
  * SecurityData object, the Cognos Security is modified and enhanced.
@@ -65,12 +64,10 @@ public class CognosSecurity {
 	/**
 	 * Constructor for the C8Security class.
 	 *
-	 * @param secData
-	 *            {@link SecurityData} object defining all security settings to
-	 *            be applied on the Cognos system.
-	 * @param c8Access
-	 *            The {@link C8Access} object to be used for accessing the
-	 *            content store.
+	 * @param secData  {@link SecurityData} object defining all security settings to
+	 *                 be applied on the Cognos system.
+	 * @param c8Access The {@link C8Access} object to be used for accessing the
+	 *                 content store.
 	 */
 	public CognosSecurity(SecurityData secData, C8Access c8Access) {
 
@@ -81,9 +78,9 @@ public class CognosSecurity {
 	}
 
 	/**
-	 * Apply the security data that is defined by the {@link SecurityData}
-	 * object held as member of this class to the C8 system. Users, Roles and
-	 * Groups are modified and extended.
+	 * Apply the security data that is defined by the {@link SecurityData} object
+	 * held as member of this class to the C8 system. Users, Roles and Groups are
+	 * modified and extended.
 	 */
 	public void applyCognosSecurity() throws CoCoMaC8Exception {
 		// purge Cognos security and only keep the given fixed objects
@@ -97,9 +94,9 @@ public class CognosSecurity {
 	}
 
 	/**
-	 * Apply the security data that is defined by the {@link SecurityData} field
-	 * on the content of the C8 system. Permissions on folders and packages are
-	 * set according to the current configuration.
+	 * Apply the security data that is defined by the {@link SecurityData} field on
+	 * the content of the C8 system. Permissions on folders and packages are set
+	 * according to the current configuration.
 	 */
 	public void applyContentSecurity() throws CoCoMaC8Exception {
 		// set content permissions as defined in the config
@@ -111,9 +108,8 @@ public class CognosSecurity {
 	 * Set the permission on the content elements (folders, packages) in cognos
 	 * according to the {@link SecurityPermission} objects given as argument.
 	 *
-	 * @param permissions
-	 *            The {@link SecurityPermission} objects to be applied
-	 *            succesively to the C8 system.
+	 * @param permissions The {@link SecurityPermission} objects to be applied
+	 *                    succesively to the C8 system.
 	 */
 	private void setContentPermissions(List<SecurityPermission> permissions) {
 
@@ -239,16 +235,13 @@ public class CognosSecurity {
 	/**
 	 * Convenience method to create an array of {@link Permission}. This array
 	 * defines the permissions for read, write, execute, setPolicy and traverse
-	 * rights as they are defined in the given {@link SecurityPermission}
-	 * object.
+	 * rights as they are defined in the given {@link SecurityPermission} object.
 	 *
-	 * @param permissions
-	 *            {@link SecurityPermission} object defining the permissions as
-	 *            they are defined in the config.
+	 * @param permissions {@link SecurityPermission} object defining the permissions
+	 *                    as they are defined in the config.
 	 *
 	 * @return Array of {@link Permission} object representing exactly the same
-	 *         permissions as defined in the given argument, but in Cognos
-	 *         manner.
+	 *         permissions as defined in the given argument, but in Cognos manner.
 	 */
 	private Permission[] buildPermissions(SecurityPermission permission) {
 		// prepare the permissions on this target
@@ -305,11 +298,11 @@ public class CognosSecurity {
 	}
 
 	/**
-	 * Print information about the given {@link SecurityPermission} object to
-	 * the debug channel of the current logging object.
+	 * Print information about the given {@link SecurityPermission} object to the
+	 * debug channel of the current logging object.
 	 *
-	 * @param permission
-	 *            The {@link SecurityPermission} object that is to be debugged.
+	 * @param permission The {@link SecurityPermission} object that is to be
+	 *                   debugged.
 	 */
 	private void debugPermissions(SecurityPermission permission) {
 		log.debug("Setting permissions on " + permission.getTargetName());
@@ -351,9 +344,8 @@ public class CognosSecurity {
 	/**
 	 * Add new elements to the Cognos security
 	 *
-	 * @param securityObjects
-	 *            List of {@link AbstractSecurityObject} instances that are to
-	 *            be added to the Cognos security.
+	 * @param securityObjects List of {@link AbstractSecurityObject} instances that
+	 *                        are to be added to the Cognos security.
 	 */
 	private void extendCognosSecurityObjects(List<AbstractSecurityObject> securityObjects) {
 		ContentManagerService_PortType cms = this.c8Access.getCmService();
@@ -430,11 +422,10 @@ public class CognosSecurity {
 
 					// Check if name of object is QSWorklistUser
 					// remove UI Features "+" from userProfileSettings
-					if ( aso.getName().equalsIgnoreCase("QSWorklistUser")) {
+					if (aso.getName().equalsIgnoreCase("QSWorklistUser")) {
 						removePlusButtonsUiFeatureFromRole(c8Utility, aso.getName());
 					}
-					
-					
+
 				} else {
 					String msg = "Could not create Cognos object for " + aso.getClass().getSimpleName() + " "
 							+ aso.getName();
@@ -458,6 +449,7 @@ public class CognosSecurity {
 
 				if (aso instanceof RoleSecurity) {
 					RoleSecurity rs = (RoleSecurity) aso;
+					query = "//" + bc.getClass().getSimpleName().toLowerCase() + "[@name='" + aso.getName() + "']";
 					rs.assignMembers(securityObjects, query);
 
 					ArrayList<Account> accounts = new ArrayList<Account>();
@@ -520,9 +512,8 @@ public class CognosSecurity {
 	}
 
 	private void removePlusButtonsUiFeatureFromRole(C8Utility ch, String RoleName) {
-		
-		
-		BaseClass[] bcResult = ch.fetchObjectsWithQueryOptions("CAMID(':"+RoleName+"')", ch.setPropEnum(),
+
+		BaseClass[] bcResult = ch.fetchObjectsWithQueryOptions("CAMID(':" + RoleName + "')", ch.setPropEnum(),
 				new Sort[] {}, ch.setQORefProps());
 
 		log.debug("Found Results:" + bcResult.length);
@@ -563,14 +554,13 @@ public class CognosSecurity {
 
 	/**
 	 * Purge the Cognos security by removing ALL BUT the given fixed objects.
-	 * Additionally the remaining fixed security objects are modified and saved
-	 * in Cognos security.
+	 * Additionally the remaining fixed security objects are modified and saved in
+	 * Cognos security.
 	 *
-	 * @param fixedObjects
-	 *            List of {@link AbstractSecurityObject} instances defining
-	 *            those objects from the Cognos security that shall not be
-	 *            removed. Currently this list is defined in the
-	 *            {@link SecurityData} class.
+	 * @param fixedObjects List of {@link AbstractSecurityObject} instances defining
+	 *                     those objects from the Cognos security that shall not be
+	 *                     removed. Currently this list is defined in the
+	 *                     {@link SecurityData} class.
 	 */
 	private void purgeCognosSecurity(List<AbstractSecurityObject> fixedObjects) throws CoCoMaC8Exception {
 
