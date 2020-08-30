@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoCoMa>
+<log4jloglevel>INFO</log4jloglevel>
+<version>$Revision: 139 $</version>
+	<server>
+			<dispatcherURL>http://127.0.0.1:9300/bi/v1/disp</dispatcherURL>
+			<namespace>LDAP</namespace>
+			<username>MIF_CRNAPI_tec_00</username>
+			<password>ONcnuYTUhFNJqcwKa6INbQqFoKrX1q79UnGY9eWyseo=</password>
+			<version>10</version>
+	 </server>
+</CoCoMa>

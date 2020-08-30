@@ -26,6 +26,7 @@ import com.cognos.developer.schemas.bibus._3.Role;
 import com.cognos.developer.schemas.bibus._3.SearchPathMultipleObject;
 import com.cognos.developer.schemas.bibus._3.SearchPathSingleObject;
 import com.cognos.developer.schemas.bibus._3.Sort;
+import com.cognos.developer.schemas.bibus._3.UpdateOptions;
 import com.dai.mif.cocoma.CoCoMa;
 import com.dai.mif.cocoma.logging.Logging;
 
@@ -54,11 +55,10 @@ public class C8Utility {
 	 * Convenience method to find Cognos objects in {@link searchpath} with the
 	 * given name within the Cognos namespace.
 	 *
-	 * @param searchPath
-	 *            The name of the {@link searchPath} that is to be found.
+	 * @param searchPath The name of the {@link searchPath} that is to be found.
 	 *
-	 * @return BaseClass[] results with the given name, or NULL if the group
-	 *         could not be found.
+	 * @return BaseClass[] results with the given name, or NULL if the group could
+	 *         not be found.
 	 */
 	public BaseClass[] findObjectsInSearchPath(String searchPath) {
 
@@ -84,14 +84,13 @@ public class C8Utility {
 	}
 
 	/**
-	 * Convenience method to find a Cognos {@link Group} with the given name
-	 * within the Cognos namespace.
+	 * Convenience method to find a Cognos {@link Group} with the given name within
+	 * the Cognos namespace.
 	 *
-	 * @param groupName
-	 *            The name of the {@link Group} that is to be found.
+	 * @param groupName The name of the {@link Group} that is to be found.
 	 *
-	 * @return {@link Group} with the given name, or NULL if the group could not
-	 *         be found.
+	 * @return {@link Group} with the given name, or NULL if the group could not be
+	 *         found.
 	 */
 	public Group findGroup(String groupName) {
 		Group theGroup = null;
@@ -125,14 +124,13 @@ public class C8Utility {
 	 * Convenience method to find a Cognos {@link Account} with the given name
 	 * within the security namespace that is defined in the config.
 	 *
-	 * @param userName
-	 *            The name of the {@link Account} that is to be found.
+	 * @param userName The name of the {@link Account} that is to be found.
 	 *
-	 * @return {@link Account} with the given name, or NULL if the account could
-	 *         not be found.
+	 * @return {@link Account} with the given name, or NULL if the account could not
+	 *         be found.
 	 */
-	public Account findAccount(String userName) {		
-		
+	public Account findAccount(String userName) {
+
 		Account theAccount = null;
 
 		ContentManagerService_PortType cms = c8Access.getCmService();
@@ -150,7 +148,7 @@ public class C8Utility {
 
 		BaseClass[] namespaces;
 		BaseClass[] results;
-		
+
 		// userName in different cases
 		ArrayList<String> caseInSensitiveUserNames = new ArrayList<String>();
 		caseInSensitiveUserNames.add(userName);
@@ -164,8 +162,8 @@ public class C8Utility {
 			for (BaseClass namespace : namespaces) {
 
 				// check if there is a user with different cases of userName
-				for(String caseInSensitiveUserName : caseInSensitiveUserNames) {
-					
+				for (String caseInSensitiveUserName : caseInSensitiveUserNames) {
+
 					String nsSearchPath = namespace.getSearchPath().getValue();
 					spmo.set_value(nsSearchPath + "//account[@userName=\"" + caseInSensitiveUserName + "\"]");
 					// spmo.setValue(nsSearchPath + "//account");
@@ -183,9 +181,12 @@ public class C8Utility {
 
 							if (accName != null) {
 								if (accName.equals(caseInSensitiveUserName)) {
-									// output that we did not found a userName but we did found a user with different letter case
-									if(!caseInSensitiveUserName.equals(userName)) {
-										log.info("Could not find user with name \"" + userName + "\", but did find user with name \""+ caseInSensitiveUserName +"\". Will use this one.");
+									// output that we did not found a userName but we did found a user with
+									// different letter case
+									if (!caseInSensitiveUserName.equals(userName)) {
+										log.info("Could not find user with name \"" + userName
+												+ "\", but did find user with name \"" + caseInSensitiveUserName
+												+ "\". Will use this one.");
 									}
 									return acc;
 								}
@@ -195,9 +196,9 @@ public class C8Utility {
 						}
 						i++;
 					}
-					
+
 				}
-				
+
 			}
 
 		} catch (RemoteException e) {
@@ -217,14 +218,13 @@ public class C8Utility {
 	}
 
 	/**
-	 * Convenience method to find a Cognos {@link Role} with the given name
-	 * within the Cognos namespace.
+	 * Convenience method to find a Cognos {@link Role} with the given name within
+	 * the Cognos namespace.
 	 *
-	 * @param roleName
-	 *            The name of the {@link Role} that is to be found.
+	 * @param roleName The name of the {@link Role} that is to be found.
 	 *
-	 * @return {@link Role} with the given name, or NULL if the role could not
-	 *         be found.
+	 * @return {@link Role} with the given name, or NULL if the role could not be
+	 *         found.
 	 */
 	public Role findRole(String roleName) {
 
@@ -258,15 +258,13 @@ public class C8Utility {
 
 	/**
 	 * Convenience method to create a {@link Policy} object on the given target
-	 * holding the permissions provided by the given array of {@link Permission}
-	 * .
+	 * holding the permissions provided by the given array of {@link Permission} .
 	 *
-	 * @param target
-	 *            The target as {@link BaseClass} that the permission shall be
-	 *            applied on.
-	 * @param c8Permissions
-	 *            Array of {@link Permission} objects defining the permissions
-	 *            for read, write, execute, setPolicy and traverse.
+	 * @param target        The target as {@link BaseClass} that the permission
+	 *                      shall be applied on.
+	 * @param c8Permissions Array of {@link Permission} objects defining the
+	 *                      permissions for read, write, execute, setPolicy and
+	 *                      traverse.
 	 *
 	 * @return {@link Policy} object encapsulating the permissions on the given
 	 *         target.
@@ -279,12 +277,11 @@ public class C8Utility {
 	}
 
 	/**
-	 * Convenience method for testing purposes. While working on CoCoMa the
-	 * problem has come up, that various accounts within the D4 namespace do nor
-	 * have a proper userName set no is the defaultName or any localized name
-	 * filled with the proper userName. This method queries all accounts from
-	 * the security namespace and dumps the relevant account data to the logging
-	 * debug channel.
+	 * Convenience method for testing purposes. While working on CoCoMa the problem
+	 * has come up, that various accounts within the D4 namespace do nor have a
+	 * proper userName set no is the defaultName or any localized name filled with
+	 * the proper userName. This method queries all accounts from the security
+	 * namespace and dumps the relevant account data to the logging debug channel.
 	 */
 	public void dumpAccounts() {
 
@@ -418,8 +415,8 @@ public class C8Utility {
 	// that was specified by the PropEnum.
 
 	/**
-	 * Description: set the most common available Enums to a Cognos BaseClass,
-	 * e.g. DefaultName, ancestors, detailTime, ... Technote 1341976
+	 * Description: set the most common available Enums to a Cognos BaseClass, e.g.
+	 * DefaultName, ancestors, detailTime, ... Technote 1341976
 	 * 
 	 * @author RROEBER
 	 * @return
@@ -446,10 +443,8 @@ public class C8Utility {
 				PropEnum.identity, PropEnum.isolationLevel,
 				// PropEnum.msNonPeakDemandBeginHour,
 				/*
-				 * PropEnum.msNonPeakDemandMaximumTasks,
-				 * PropEnum.msPeakDemandBeginHour,
-				 * PropEnum.msNonPeakDemandBeginHour,
-				 * PropEnum.msPeakDemandMaximumTasks,
+				 * PropEnum.msNonPeakDemandMaximumTasks, PropEnum.msPeakDemandBeginHour,
+				 * PropEnum.msNonPeakDemandBeginHour, PropEnum.msPeakDemandMaximumTasks,
 				 */
 				PropEnum.lastConfigurationModificationTime, PropEnum.lastPage, PropEnum.loadBalancingMode,
 				PropEnum.locale, PropEnum.location, PropEnum.asAuditLevel, PropEnum.asAuditLevel, PropEnum.members,
@@ -480,8 +475,7 @@ public class C8Utility {
 				/**
 				 * Addition History information
 				 */
-				PropEnum.detail, PropEnum.data, PropEnum.output, PropEnum.maximumDetailSeverity, PropEnum.message
-		};
+				PropEnum.detail, PropEnum.data, PropEnum.output, PropEnum.maximumDetailSeverity, PropEnum.message };
 		return properties;
 	}
 
@@ -570,7 +564,7 @@ public class C8Utility {
 		log.info("--------------------------------------------------------------");
 		log.info("Dispatcher Number: " + dispnum);
 		log.info("Dispatcher Path: " + objDispatcher.getDispatcherPath().getValue());
-		
+
 		log.info("ServerGroup: " + objDispatcher.getServerGroup().getValue());
 		log.info("runningState: " + objDispatcher.getRunningState().getValue());
 		log.info("capacity: " + objDispatcher.getCapacity().getValue());
@@ -605,7 +599,7 @@ public class C8Utility {
 	public void dumpDispatchers() {
 		// TODO Auto-generated method stub
 		ContentManagerService_PortType cms = c8Access.getCmService();
-		
+
 		log.debug("Getting dispatchers...");
 		SearchPathMultipleObject spmo = new SearchPathMultipleObject("/configuration/dispatcher");
 		PropEnum[] props = new PropEnum[] { PropEnum.userName, PropEnum.name, PropEnum.searchPath,
@@ -614,7 +608,7 @@ public class C8Utility {
 		QueryOptions options = new QueryOptions();
 
 		ArrayList<BaseClass> removeDispatchers = new ArrayList<BaseClass>();
-		
+
 		try {
 			BaseClass[] results = cms.query(spmo, props, sort, options);
 
@@ -624,33 +618,33 @@ public class C8Utility {
 				for (BaseClass bc : results) {
 					String accData = "Dispatcher: " + bc.getSearchPath().getValue();
 					log.debug(accData);
-					
-					if(!isDispatcherRunning(bc.getSearchPath().getValue())) {
+
+					if (!isDispatcherRunning(bc.getSearchPath().getValue())) {
 						removeDispatchers.add(bc);
 					}
-					
+
 				}
 			}
 
 		} catch (RemoteException e) {
 			log.error("Error querying dispatcher data. " + e.getMessage());
 		}
-		
+
 		removeDispatchers(removeDispatchers);
 	}
-	
+
 	private void removeDispatchers(ArrayList<BaseClass> removeDispatchers) {
 		// TODO Auto-generated method stub
-		for(BaseClass object : removeDispatchers) {			
+		for (BaseClass object : removeDispatchers) {
 			try {
 				DeleteOptions del = new DeleteOptions();
 				del.setForce(true);
 				del.setRecursive(true);
-				
+
 				int deleted = c8Access.getCmService().delete(new BaseClass[] { object }, del);
-				if(0 >= deleted) {
+				if (0 >= deleted) {
 					log.debug("No dispatchers where deleted...");
-				}else {
+				} else {
 					log.debug(object.getDefaultName().getValue() + " -> got deleted successfully...");
 				}
 			} catch (Exception e) {
@@ -660,22 +654,96 @@ public class C8Utility {
 	}
 
 	public boolean isDispatcherRunning(String searchPath) {
-		
+
 		SearchPathSingleObject sPath = new SearchPathSingleObject(searchPath);
 		String pingResult = null;
-		
+
 		try {
 			PingReply pg = c8Access.getDispatcherService().ping(sPath);
-			if(pg != null) {
+			if (pg != null) {
 				pingResult = pg.getVersion();
 			}
 		} catch (Exception e) {
 			log.debug("Dispatcher with searchPath: " + searchPath + ", could not find it's version number...");
 			log.debug(e.getMessage());
 		}
-		
+
 		return (pingResult != null ? true : false);
-		
+
+	}
+
+	public void fixPersonalFolderPermissions() {
+
+		// updated accounts array to save
+		ArrayList<Account> updatedAccounts = new ArrayList<Account>();
+
+		// get the content manager service instance
+		ContentManagerService_PortType cms = c8Access.getCmService();
+
+		// get all the accounts
+		SearchPathMultipleObject spmo = new SearchPathMultipleObject("//account");
+
+		// minimum propenums that are required for this to work
+		PropEnum[] props = new PropEnum[] { PropEnum.userName, PropEnum.name, PropEnum.searchPath, PropEnum.defaultName,
+				PropEnum.policies };
+
+		// query for the search path
+		BaseClass[] results = null;
+		try {
+			results = cms.query(spmo, props, new Sort[] {}, new QueryOptions());
+		} catch (RemoteException e) {
+			log.error("Error querying account data. " + e.getMessage());
+		}
+
+		if (results == null || results.length < 1) {
+			log.error("Query for accounts did not return any results");
+		} else {
+
+			// loop over all accounts
+			for (BaseClass bc : results) {
+
+				// convert it to Account object
+				Account acc = (Account) bc;
+
+				// check if account comes from LDAP namespace
+				if (!acc.getSearchPath().getValue().contains("LDAP:"))
+					continue;
+
+				// print policies security object value for debugging
+				log.debug("Found these policy records for " + acc.getSearchPath().getValue());
+				for (Policy p : acc.getPolicies().getValue()) {
+					log.debug("=> " + p.getSecurityObject().getSearchPath().getValue());
+				}
+
+				// update the security object for the first value
+				acc.getPolicies().getValue()[0].getSecurityObject().setSearchPath(acc.getSearchPath());
+
+				// create a new account object since we can't update existing accounts
+				Account updatedAccount = new Account();
+				// set the search path that will be updated
+				updatedAccount.setSearchPath(acc.getSearchPath());
+				// set the new policies
+				updatedAccount.setPolicies(acc.getPolicies());
+
+				// add it to the update list so all the accounts are updated at once and to
+				// reduce the save timings.
+				updatedAccounts.add(updatedAccount);
+
+			}
+
+			try {
+				BaseClass[] updatedItems = cms.update(updatedAccounts.toArray(new BaseClass[] {}), new UpdateOptions());
+
+				if (updatedItems.length > 0) {
+					log.debug("Account (" + updatedAccounts.size() + ") policies has been updated.");
+				}
+			} catch (Exception E) {
+				log.debug("Unable to update the object...");
+				log.debug(E.getMessage());
+			}
+
+		}
+
 	}
 
 }
