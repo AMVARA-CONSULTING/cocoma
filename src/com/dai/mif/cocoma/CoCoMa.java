@@ -271,7 +271,7 @@ public class CoCoMa {
 
 			if (FIX_PERSONAL_FOLDER_PERMISSIONS) {
 				C8Utility c8util = new C8Utility(c8Access);
-				c8util.fixPersonalFolderPermissions();
+				c8util.fixPersonalFolderPermissions(FORCE);
 				log.info("done");
 				System.exit(0);
 			}
@@ -368,6 +368,7 @@ public class CoCoMa {
 	private static boolean phaseContentConfiguration = false;
 	private static boolean phaseBackupDonotAsk = false;
 	private static boolean FIX_PERSONAL_FOLDER_PERMISSIONS;
+	private static boolean FORCE = false;
 
 	/**
 	 * Start the actual work by applying the configured data to the C8 system to
@@ -936,6 +937,9 @@ public class CoCoMa {
 
 				if (command.equalsIgnoreCase("fixPersonalFolderPermissions")) {
 					FIX_PERSONAL_FOLDER_PERMISSIONS = true;
+				}
+				if (command.equalsIgnoreCase("force")) {
+					FORCE = true;
 				}
 			}
 		}

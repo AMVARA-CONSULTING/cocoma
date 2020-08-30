@@ -672,7 +672,7 @@ public class C8Utility {
 
 	}
 
-	public void fixPersonalFolderPermissions() {
+	public void fixPersonalFolderPermissions(Boolean force) {
 
 		// updated accounts array to save
 		ArrayList<Account> updatedAccounts = new ArrayList<Account>();
@@ -709,14 +709,29 @@ public class C8Utility {
 				if (!acc.getSearchPath().getValue().contains("LDAP:"))
 					continue;
 
+				// get the index that has the userid in the searchpath default should be 0 but
+				// just in case
+				int index = 0;
+
 				// print policies security object value for debugging
 				log.debug("Found these policy records for " + acc.getSearchPath().getValue());
-				for (Policy p : acc.getPolicies().getValue()) {
-					log.debug("=> " + p.getSecurityObject().getSearchPath().getValue());
+				for (int i = 0; i < acc.getPolicies().getValue().length; i++) {
+
+					Policy p = acc.getPolicies().getValue()[i];
+					String searchPath = p.getSecurityObject().getSearchPath().getValue();
+					if (searchPath.toLowerCase().contains(acc.getUserName().getValue().toLowerCase()))
+						index = i;
+					log.debug("=> " + searchPath);
+
 				}
 
 				// update the security object for the first value
-				acc.getPolicies().getValue()[0].getSecurityObject().setSearchPath(acc.getSearchPath());
+				if (force || !acc.getPolicies().getValue()[index].getSecurityObject().getSearchPath().getValue()
+						.equals(acc.getSearchPath().getValue())) {
+					acc.getPolicies().getValue()[index].getSecurityObject().setSearchPath(acc.getSearchPath());
+				} else {
+					continue;
+				}
 
 				// create a new account object since we can't update existing accounts
 				Account updatedAccount = new Account();
