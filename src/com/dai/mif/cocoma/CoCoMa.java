@@ -56,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 11/2020-08-31_0923/614@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2020-08-31_1109/616@@ ";
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -170,6 +170,13 @@ public class CoCoMa {
 				+ "store the crypted password to the right place in your config.xml." + lf + lf;
 		helpString += "--donotaskforbackup" + lf + "Does not ask to confirm 'YES, I HAVE A BACKUP'. "
 				+ "Better set create-fullbackup option in config file to true. " + "" + lf + lf;
+		helpString += "--fixPersonalFolderPermissions" + lf + "Updates account with incorrect account policies camids."
+				+ lf
+				+ "Checkout: [0053728249] https://wiki.e.corpintra.net/pages/viewpage.action?spaceKey=TQ&title=CoCoMa#CoCoMa-Logbook"
+				+ lf + lf;
+		helpString += "--force" + lf
+				+ "if used with --fixPersonalFolderPermissions it will update all the users even if the account has correct policies."
+				+ lf + lf;
 		helpString += "--mailto emailaddress@domain" + lf + "eMail being displayed in helptext information. " + "" + lf
 				+ lf;
 		helpString += "Almost all options may be combined, e.g. java -jar CoCoMa.jar --dispatcherinfo --config COCOMA_CONFIG_LOCAL.xml --donotaskforbackup"
