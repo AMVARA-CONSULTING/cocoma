@@ -56,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 11/2020-02-25_0942/610@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2020-08-31_0923/614@@ ";
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -269,13 +269,6 @@ public class CoCoMa {
 				}
 			}
 
-			if (FIX_PERSONAL_FOLDER_PERMISSIONS) {
-				C8Utility c8util = new C8Utility(c8Access);
-				c8util.fixPersonalFolderPermissions(FORCE);
-				log.info("done");
-				System.exit(0);
-			}
-
 			if (!checkConfigMode) {
 
 				if (interactiveMode) {
@@ -321,6 +314,13 @@ public class CoCoMa {
 						log.error(msg);
 					}
 				}
+			}
+
+			if (FIX_PERSONAL_FOLDER_PERMISSIONS) {
+				log.info("Fixing accounts personal policies");
+				C8Utility c8util = new C8Utility(c8Access);
+				c8util.fixPersonalFolderPermissions(FORCE);
+				log.info("done");
 			}
 
 			log.info("Ending program with exit code " + CoCoMa.errorCode);
