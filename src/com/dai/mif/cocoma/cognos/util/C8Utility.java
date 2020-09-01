@@ -698,38 +698,61 @@ public class C8Utility {
 		if (results == null || results.length < 1) {
 			log.error("Query for accounts did not return any results");
 		} else {
+			log.info("Found " + results.length + " accounts will check which accounts needs policy fixing.");
 
 			// loop over all accounts
 			for (BaseClass bc : results) {
 
-				// convert it to Account object
-				Account acc = (Account) bc;
-
 				// check if account comes from LDAP namespace
-				if (!acc.getSearchPath().getValue().contains("LDAP:"))
+				if (!bc.getSearchPath().getValue().contains("LDAP:"))
 					continue;
+
+				log.debug("Working on: " + bc.getSearchPath().getValue());
+				// get accounts releted to the searchpath
+				BaseClass[] accounts = null;
+
+				try {
+					accounts = cms.query(new SearchPathMultipleObject(bc.getSearchPath().getValue()), props,
+							new Sort[] {}, new QueryOptions());
+				} catch (RemoteException e) {
+					log.error("=> Error querying account data. " + e.getMessage());
+				}
+
+				if (accounts == null || accounts.length < 1) {
+					log.debug("=> No object found for " + bc.getSearchPath().getValue());
+					continue;
+				}
+
+				// convert it to Account object
+				Account acc = (Account) accounts[0];
 
 				// get the index that has the userid in the searchpath default should be 0 but
 				// just in case
 				int index = 0;
 
 				// print policies security object value for debugging
-				log.debug("Found these policy records for " + acc.getSearchPath().getValue());
+				log.debug("=> Found these policy records for " + acc.getSearchPath().getValue());
 				for (int i = 0; i < acc.getPolicies().getValue().length; i++) {
 
 					Policy p = acc.getPolicies().getValue()[i];
 					String searchPath = p.getSecurityObject().getSearchPath().getValue();
 					if (searchPath.toLowerCase().contains(acc.getUserName().getValue().toLowerCase()))
 						index = i;
-					log.debug("=> " + searchPath);
+					log.debug("=>> " + searchPath);
 
 				}
 
 				// update the security object for the first value
+				log.debug("=> Will update policies for " + acc.getSearchPath().getValue());
 				if (force || !acc.getPolicies().getValue()[index].getSecurityObject().getSearchPath().getValue()
 						.equals(acc.getSearchPath().getValue())) {
+					log.debug("=>> Updating "
+							+ acc.getPolicies().getValue()[index].getSecurityObject().getSearchPath().getValue()
+							+ " policy to " + acc.getSearchPath().getValue() + ".");
 					acc.getPolicies().getValue()[index].getSecurityObject().setSearchPath(acc.getSearchPath());
 				} else {
+					log.debug("=>> Policies for " + acc.getSearchPath().getValue()
+							+ " are correct, please use --force in case this is incorrect.");
 					continue;
 				}
 
@@ -744,13 +767,21 @@ public class C8Utility {
 				// reduce the save timings.
 				updatedAccounts.add(updatedAccount);
 
+				log.debug("");
+				log.debug("");
+				log.debug("");
 			}
 
 			try {
-				BaseClass[] updatedItems = cms.update(updatedAccounts.toArray(new BaseClass[] {}), new UpdateOptions());
+				if (updatedAccounts.size() > 0) {
+					BaseClass[] updatedItems = cms.update(updatedAccounts.toArray(new BaseClass[] {}),
+							new UpdateOptions());
 
-				if (updatedItems.length > 0) {
-					log.debug("Account (" + updatedAccounts.size() + ") policies has been updated.");
+					if (updatedItems.length > 0) {
+						log.info(updatedAccounts.size() + " accounts policies has been updated.");
+					}
+				} else {
+					log.info("0 Accounts need update...");
 				}
 			} catch (Exception E) {
 				log.debug("Unable to update the object...");

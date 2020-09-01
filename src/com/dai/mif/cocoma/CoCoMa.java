@@ -56,7 +56,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 11/2020-08-31_1109/616@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2020-09-01_2019/622@@ ";
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -324,7 +324,6 @@ public class CoCoMa {
 			}
 
 			if (FIX_PERSONAL_FOLDER_PERMISSIONS) {
-				log.info("Fixing accounts personal policies");
 				C8Utility c8util = new C8Utility(c8Access);
 				c8util.fixPersonalFolderPermissions(FORCE);
 				log.info("done");
