@@ -60,7 +60,7 @@ public class CoCoMa {
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
-	public static String COCOMA_MAILTO_HELPTEXT = "mbox-096-mif-betrieb@daimler.com; mbox_mif_dcxam@daimler.com";
+	public static String COCOMA_MAILTO_HELPTEXT = "tec_dev@amvara.de; ralf.roeber@amvara.de";
 
 	/** UID used as key for password encryption */
 	private static final String COCOMA_UID = "07369e30-1175-11df-8a39-0800200c9a66";
