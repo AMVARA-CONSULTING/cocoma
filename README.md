@@ -1,5 +1,3 @@
-$Id: README.txt 165 2015-05-07 10:13:28Z rroeber $
-
 CoCoMa - Cognos Configuration Manager
 -------------------------------------
 
