@@ -5,7 +5,7 @@ stages:
   - release
 
 compile:
-  stage: compile
+#  stage: compile
   image: openjdk:8u312-jdk
   script:
     - echo COMPILE_JOB_ID=$CI_JOB_ID >> compile.env
