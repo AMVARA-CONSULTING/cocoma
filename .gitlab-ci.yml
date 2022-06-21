@@ -1,5 +1,7 @@
 stages:
-  - compile
+#   Compile stage is no longer needed since
+#   JAR file are not provided.
+#   - compile
   - release
 
 compile:
@@ -24,13 +26,14 @@ compile:
 release_job:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs:
-    - job: compile
-      artifacts: true
+# No need for artifacts.
+#  needs:
+#    - job: compile
+#      artifacts: true
   script:
     - echo "Creating a release..."
-    - echo "Last Job ID"
-    - echo "${COMPILE_JOB_ID}"
+#    - echo "Last Job ID"
+#    - echo "${COMPILE_JOB_ID}"
   release:                               # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
     tag_name: '$(grep -o "@@.*@@" src/com/dai/mif/cocoma/CoCoMa.java | sed "s/@//g" | cut -d" " -f2)'
     description: 'CHANGELOG'
