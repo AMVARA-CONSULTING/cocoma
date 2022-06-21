@@ -4,8 +4,10 @@ stages:
 #   - compile
   - release
 
-compile:
-#  stage: compile
+# remove . from the start of the job if
+# compile is needed in future.
+.compile:
+  stage: compile
   image: openjdk:8u312-jdk
   script:
     - echo COMPILE_JOB_ID=$CI_JOB_ID >> compile.env
