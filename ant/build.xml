@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2010-02-18                                                        
+
+     CoCoMa    
+        Build script for the CoCoMa project. It offers ANT targets 
+        to build a JAR export and additionally to convert the code into Java 1.4 
+        compliant code.
+                   
+     ====================================================================== -->
+<project name="CoCoMa" default="build-8.4.1">
+	<property environment="env" />
+	<property file="build.properties" />
+	
+	<property name="build.version" value="Cognos 11" />
+	<tstamp>
+		<format property="build.time" pattern="yyyy-MM-dd_HHmm" unit="hour" />
+	</tstamp>
+	<buildnumber file="build.number" />
+
+	<property name="version.code" value="${build.version}/${build.time}/${build.number}" />
+	
+	<replaceregexp file="${src.dir}/com/dai/mif/cocoma/CoCoMa.java" match="@@[\w \d\.]+/\d{4}-\d{2}-\d{2}_\d{4}/\d+@@" replace="@@${version.code}@@" />
+	
+	<import file="retroweaver-taskdef.xml" />
+	<import file="one-jar-ant-task.xml" />
+	<description>
+	    Build script for the CoCoMa project. It offers ANT targets 
+		to build a JAR export and additionally to convert the code into Java 1.4 
+		compliant code.
+    </description>
+
+	<fileset dir="/Program Files/ibm/cognos/analytics/webapps/p2pd/WEB-INF/lib">
+		<include name="**/*.jar" />
+	</fileset>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+			<!-- exclude name="commons-collections-*.jar" / -->
+			<!-- exclude name="commons-configuration-*.jar" / -->
+			<!-- exclude name="commons-lang-*.jar" / -->
+			<!-- exclude name="commons-logging*.jar" / -->
+			<!-- exclude name="log4j*.jar" / -->
+		</fileset>
+		<fileset dir="${env.JAVA_HOME}\jre\lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+
+
+	<!-- ====================================== 
+          target: build targets for Cognos 8.4.1              
+         ====================================== -->
+
+	<target name="cognos-8.4.1">
+		<property name="cognosVersion" value="cognos_1021" />
+	</target>
+<!--
+	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
+		<antcall target="one-jar" />
+		<antcall target="copy-dist" />
+	</target>
+-->
+	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
+		<antcall target="copy-dist" />
+	</target>
+<!--	
+	<target name="build-8.4.1" description="Build the project as JAR" depends="cognos-8.4.1">
+		<antcall target="copy-2mif-share" />
+	</target>
+-->
+
+	<target name="copy-dist" depends="one-jar">
+		<copy todir="${dist.dir}">
+			<fileset dir="${src.dir}/..">
+				<include name="*.properties" />
+				<include name="*.bat" />
+				<include name="*.sh" />
+				<include name="README.*" />
+				<exclude name="TODO.txt" />
+				<exclude name="copy_files_to_destinations.sh" />
+				<exclude name="sic_log4j.properties" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy-2mif-share" depends="copy-dist">
+		<copy todir="${mif-share.dir}">
+			<fileset dir="..">
+				<include name="../templates/" />
+				<include name="README.*" />
+				<include name="*.sh" />
+			</fileset>
+			<fileset dir="../production_config_files/">
+				<include name="*.xml" />
+			</fileset>
+			<fileset dir="../documentation/">
+				<include name="*.pdf" />
+			</fileset>
+			<fileset dir="../src/">
+				<include name="*.properties" />
+			</fileset>
+			<fileset dir="../dist/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: one-jar                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="one-jar" depends="jar">
+		<property name="one-jar.name" value="${jar.one-jar.prefix}_${cognosVersion}.jar" />
+		<mkdir dir="${dist.dir}" />
+		<one-jar destfile="${dist.dir}/${one-jar.name}" manifest="MANIFEST.MF">
+			<manifest>
+				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
+				<attribute name="One-Jar-Main-Class" value="${main.class}" />
+			</manifest>
+			<main jar="${dist.dir}/${cocoma.jar.name}" />
+			<lib>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+					<!-- exclude name="commons-collections-*.jar" / -->
+					<!-- exclude name="commons-configuration-*.jar" / -->
+					<!-- exclude name="commons-lang-*.jar" / -->
+					<!-- exclude name="commons-logging*.jar" / -->
+					<!-- exclude name="log4j*.jar" / -->
+				</fileset>
+			</lib>
+			<binlib>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.dll" />
+				</fileset>
+			</binlib>
+		</one-jar>
+		<delete dir="${dist.dir}" includeemptydirs="true">
+			<include name="**/*" />
+			<exclude name="${one-jar.name}" />
+		</delete>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: one-jar-compat                      
+         - - - - - - - - - - - - - - - - - -->
+
+	<target name="one-jar-compat" depends="jar-compat">
+		<property name="one-jar.name" value="${jar.one-jar.prefix}_${cognosVersion}_compat.jar" />
+		<mkdir dir="${dist.dir}" />
+		<one-jar destfile="${dist.dir}/${one-jar.name}" manifest="MANIFEST.MF">
+			<manifest>
+				<attribute name="Main-Class" value="com.simontuffs.onejar.Boot" />
+				<attribute name="One-Jar-Main-Class" value="${main.class}" />
+			</manifest>
+			<main jar="${dist.dir}/${cocoma.compat.jar.name}" />
+			<lib>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.jar" />
+					<!-- exclude name="commons-collections-*.jar" / -->
+					<!-- exclude name="commons-configuration-*.jar" / -->
+					<!-- exclude name="commons-lang-*.jar" / -->
+					<!-- exclude name="commons-logging*.jar" / -->
+					<!-- exclude name="log4j*.jar" / -->
+				</fileset>
+			</lib>
+			<binlib>
+				<fileset dir="${lib.dir}">
+					<include name="**/*.dll" />
+				</fileset>
+			</binlib>
+		</one-jar>
+		<delete dir="${dist.dir}" includeemptydirs="true">
+			<include name="**/*" />
+			<exclude name="${one-jar.name}" />
+		</delete>
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: jar                      
+         - - - - - - - - - - - - - - - - - -->
+
+	<target name="jar" depends="compile">
+
+		<jar destfile="${dist.dir}/${cocoma.jar.name}">
+			<fileset dir="${build.dir}">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: jar-compat                      
+         - - - - - - - - - - - - - - - - - -->
+
+	<target name="jar-compat" depends="compile">
+		<jar destfile="${dist.dir}/${cocoma.jar.name}">
+			<fileset dir="${build.dir}">
+				<include name="**/*" />
+			</fileset>
+		</jar>
+
+		<retroweaver target="1.4" inputjar="${dist.dir}/${cocoma.jar.name}" outputjar="${dist.dir}/${cocoma.compat.jar.name}" />
+		<property name="one-jar-input" value="${cocoma.compat.jar.name}" />
+
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: compile                      
+         - - - - - - - - - - - - - - - - - -->
+
+	<target name="compile" depends="init">
+		<echo>ClassPath: ${java.class.path}</echo>
+		<echo>LibraryDir: ${java.library.path}</echo>
+
+		<delete>
+			<fileset dir="${build.dir}">
+				<include name="**/*" />
+			</fileset>
+		</delete>
+
+		<javac classpathref="classpath" srcdir="${src.dir}" destdir="${build.dir}" debug="true" />
+
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+
+	</target>
+
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: init                      
+         - - - - - - - - - - - - - - - - - -->
+
+	<target name="init">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${build.dir}" />
+	</target>
+
+</project>

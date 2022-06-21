@@ -1,0 +1,45 @@
+stages:
+  - compile
+  - release
+
+compile:
+  stage: compile
+  image: openjdk:8u312-jdk
+  script:
+    - echo COMPILE_JOB_ID=$CI_JOB_ID >> compile.env
+    - $(pwd)/entrypoint.sh
+  artifacts:
+    paths:
+      - dist/CoCoMa_cognos_1021.jar
+    reports:
+      # To ensure we've access to this file in the next stage
+      dotenv: compile.env
+  tags:
+    - cocoma-builder  
+  only: # on what branch we'd like to run this job
+    refs:
+      - master
+
+
+release_job:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: compile
+      artifacts: true
+  script:
+    - echo "Creating a release..."
+    - echo "Last Job ID"
+    - echo "${COMPILE_JOB_ID}"
+  release:                               # See https://docs.gitlab.com/ee/ci/yaml/#release for available properties
+    tag_name: '$(grep -o "@@.*@@" src/com/dai/mif/cocoma/CoCoMa.java | sed "s/@//g" | cut -d" " -f2)'
+    description: 'CHANGELOG'
+#    assets:
+#      links:
+#        - name: 'CoCoMa JAR File'
+#          url: "https://git.amvara.de/amvara/cocoma-public/-/jobs/${COMPILE_JOB_ID}/artifacts/raw/dist/CoCoMa_cognos_1021.jar"
+  tags:
+    - cocoma-builder
+  only: # on what branch we'd like to run this job
+    refs:
+      - master

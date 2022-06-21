@@ -1,0 +1,8 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+## [658] - 2022-06-17
+### Added
+- New dispatcher property called maxProcessesInteractiveBatch.
+### Changed
+- Removed namespace when accessing the user data.
