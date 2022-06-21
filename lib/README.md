@@ -1,6 +1,6 @@
 # Libraries
 
-## Missing Libraries ( PAID LIBRARIES )
+## Missing Libraries ( NON OPEN SOURCE )
 * axisCrnpClient.jar
 * jaxrpc.jar
 * saaj.jar
