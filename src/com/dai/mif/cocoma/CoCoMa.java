@@ -57,7 +57,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 11/2022-06-17_1547/658@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2022-08-08_1404/660@@ ";
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
@@ -277,9 +277,8 @@ public class CoCoMa {
 				if (c8Access.isConnected()) {
 					log.debug("Checking language settings of " + c8Access.getUsername());
 					CognosAccountInformation ca = new CognosAccountInformation(c8Access);
-					String returnResult = ca.setLanguageToAccount(
-							"CAMID('LDAP')//*[@userName='" + c8Access.getUsername() + "'][@objectClass='account']",
-							"en");
+					String returnResult = ca.setLanguageToAccount("CAMID('" + c8Access.getNameSpaceName()
+							+ "')//*[@userName='" + c8Access.getUsername() + "'][@objectClass='account']", "en");
 					if (returnResult.equalsIgnoreCase("needs relogin")) {
 						log.info("Will do basic preparation + login again.");
 						c8Access = cocoma.prepare();

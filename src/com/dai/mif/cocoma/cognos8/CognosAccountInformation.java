@@ -24,7 +24,8 @@ public class CognosAccountInformation {
 
 	public String setLanguageToAccount(String account, String language) {
 
-		String myAccountSearchpath = "//*[@userName='" + c8Access.getUsername() + "'][@objectClass='account']";
+		String myAccountSearchpath = "CAMID('" + c8Access.getNameSpaceName() + "')//*[@userName='"
+				+ c8Access.getUsername() + "'][@objectClass='account']";
 		String myLanguageString = "en";
 
 		// Update myAccountSearchpath if incoming account string has value
