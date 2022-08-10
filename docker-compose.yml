@@ -5,5 +5,5 @@ services:
     container_name: jdk_8u232
     volumes:
       - "./:/code"
-    workdir: /code
+    working_dir: /code
     entrypoint: /code/entrypoint.sh -ant
