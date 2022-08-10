@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [662] - 2022-08-10
+### Added
+- Docker compose file that will compile the cocoma given the libraries are present.
+- Entrypoint script for docker container that holds the logic for the compilation.
+
+## [660] - 2022-08-08
+### Changed
+- Using namespace from configuration file instead of static "LDAP" value.
+
 ## [658] - 2022-06-17
 ### Added
 - New dispatcher property called maxProcessesInteractiveBatch.

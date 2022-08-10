@@ -1,0 +1,9 @@
+version: '3.0'
+services:
+  jdk:
+    image: openjdk:8u232-jdk
+    container_name: jdk_8u232
+    volumes:
+      - "./:/code"
+    workdir: /code
+    entrypoint: /code/entrypoint.sh -ant

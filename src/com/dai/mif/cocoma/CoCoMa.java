@@ -57,7 +57,7 @@ public class CoCoMa {
 
 	private static String productName = "CoCoMa - Cognos Configuration Manager";
 	private static String productVersion = "v3.1";
-	private static String productRevision = "Build: @@Cognos 11/2022-08-08_1404/660@@ ";
+	private static String productRevision = "Build: @@Cognos 11/2022-08-10_1527/662@@ ";
 
 	/** Mail Address displayed in CoCoMa Help text **/
 	/* maybe overwritten by commandline argument --mailto */
